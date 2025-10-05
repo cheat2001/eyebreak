@@ -30,6 +30,11 @@ class AppSettings: ObservableObject {
     @AppStorage("eyeExerciseDurationSeconds") var eyeExerciseDurationSeconds: Int = 300 // 5 minutes default
     @AppStorage("exerciseIntervalSeconds") var exerciseIntervalSeconds: Int = 3 // Change direction every 3 seconds
     
+    // Ambient reminders
+    @AppStorage("ambientRemindersEnabled") var ambientRemindersEnabled: Bool = false
+    @AppStorage("ambientReminderIntervalMinutes") var ambientReminderIntervalMinutes: Int = 5 // Pop up every 5 minutes
+    @AppStorage("ambientReminderDurationSeconds") var ambientReminderDurationSeconds: Int = 8 // Stay for 8 seconds
+    
     // MARK: - Computed Properties
     
     var breakStyle: BreakStyle {

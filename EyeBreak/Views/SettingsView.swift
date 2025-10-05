@@ -257,6 +257,62 @@ struct BreakSettingsView: View {
             }
             
             Section {
+                Toggle("Enable Ambient Reminders", isOn: Binding(
+                    get: { settings.ambientRemindersEnabled },
+                    set: { newValue in
+                        settings.ambientRemindersEnabled = newValue
+                        if newValue {
+                            AmbientReminderManager.shared.startAmbientReminders()
+                        } else {
+                            AmbientReminderManager.shared.stopAmbientReminders()
+                        }
+                    }
+                ))
+                .toggleStyle(.switch)
+                
+                if settings.ambientRemindersEnabled {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Reminder Interval: \(settings.ambientReminderIntervalMinutes) minutes")
+                            .font(.headline)
+                        
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.ambientReminderIntervalMinutes) },
+                                set: { settings.ambientReminderIntervalMinutes = Int($0) }
+                            ),
+                            in: 1...15,
+                            step: 1
+                        )
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Display Duration: \(settings.ambientReminderDurationSeconds) seconds")
+                            .font(.headline)
+                        
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.ambientReminderDurationSeconds) },
+                                set: { settings.ambientReminderDurationSeconds = Int($0) }
+                            ),
+                            in: 3...15,
+                            step: 1
+                        )
+                    }
+                }
+                
+                Text(settings.ambientRemindersEnabled 
+                    ? "Cute animated reminders will pop up on your screen while you work (blink, look left/right, etc.)"
+                    : "Enable to show quick eye exercise reminders while working - separate from scheduled breaks")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("🎯 Ambient Reminders (While Working)")
+            } footer: {
+                Text("These fun emoji reminders appear randomly while you work, without interrupting. They're different from scheduled break overlays.")
+                    .font(.caption)
+            }
+            
+            Section {
                 Stepper(
                     "Daily Break Goal: \(settings.dailyBreakGoal)",
                     value: $settings.dailyBreakGoal,

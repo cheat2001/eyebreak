@@ -21,6 +21,8 @@
 		A10000015 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000014 /* OnboardingView.swift */; };
 		A10000017 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000016 /* StatsView.swift */; };
 		A10000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000018 /* Assets.xcassets */; };
+		A1000001D /* AmbientReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001C /* AmbientReminderManager.swift */; };
+		A1000001F /* AmbientReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001E /* AmbientReminderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		A10000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1000001B /* EyeBreak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EyeBreak.entitlements; sourceTree = "<group>"; };
+		A1000001C /* AmbientReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientReminderManager.swift; sourceTree = "<group>"; };
+		A1000001E /* AmbientReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientReminderView.swift; sourceTree = "<group>"; };
 		A1FFFFFF1 /* EyeBreak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EyeBreak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,6 +75,7 @@
 				A10000008 /* IdleDetector.swift */,
 				A1000000A /* NotificationManager.swift */,
 				A1000000C /* ScreenBlurManager.swift */,
+				A1000001C /* AmbientReminderManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -83,6 +88,7 @@
 				A10000012 /* BreakOverlayView.swift */,
 				A10000014 /* OnboardingView.swift */,
 				A10000016 /* StatsView.swift */,
+				A1000001E /* AmbientReminderView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -207,6 +213,8 @@
 				A10000013 /* BreakOverlayView.swift in Sources */,
 				A10000015 /* OnboardingView.swift in Sources */,
 				A10000017 /* StatsView.swift in Sources */,
+				A1000001D /* AmbientReminderManager.swift in Sources */,
+				A1000001F /* AmbientReminderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

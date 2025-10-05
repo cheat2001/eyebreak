@@ -60,6 +60,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup global keyboard shortcuts
         setupGlobalKeyboardShortcuts()
         
+        // Start ambient reminders if enabled
+        if AppSettings.shared.ambientRemindersEnabled {
+            AmbientReminderManager.shared.startAmbientReminders()
+        }
+        
         print("✅ App launched successfully!")
         print("👀 Look for EyeBreak in:")
         print("   1. Menu bar (top-right, near clock)")
