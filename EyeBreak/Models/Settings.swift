@@ -27,6 +27,8 @@ class AppSettings: ObservableObject {
     @AppStorage("idleThresholdMinutes") var idleThresholdMinutes: Int = 5
     @AppStorage("hasLaunchedBefore") var hasLaunchedBefore: Bool = false
     @AppStorage("dailyBreakGoal") var dailyBreakGoal: Int = 24 // Roughly every 20 min for 8 hours
+    @AppStorage("eyeExerciseDurationSeconds") var eyeExerciseDurationSeconds: Int = 300 // 5 minutes default
+    @AppStorage("exerciseIntervalSeconds") var exerciseIntervalSeconds: Int = 3 // Change direction every 3 seconds
     
     // MARK: - Computed Properties
     

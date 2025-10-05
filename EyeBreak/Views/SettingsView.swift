@@ -217,6 +217,46 @@ struct BreakSettingsView: View {
             }
             
             Section {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Exercise Interval: \(settings.exerciseIntervalSeconds) seconds")
+                        .font(.headline)
+                    
+                    Slider(
+                        value: Binding(
+                            get: { Double(settings.exerciseIntervalSeconds) },
+                            set: { settings.exerciseIntervalSeconds = Int($0) }
+                        ),
+                        in: 2...10,
+                        step: 1
+                    )
+                }
+                
+                Text("How long to hold each eye position during exercise")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Eye Exercise Duration: \(settings.eyeExerciseDurationSeconds / 60) minutes")
+                        .font(.headline)
+                    
+                    Slider(
+                        value: Binding(
+                            get: { Double(settings.eyeExerciseDurationSeconds) },
+                            set: { settings.eyeExerciseDurationSeconds = Int($0) }
+                        ),
+                        in: 60...1800,
+                        step: 60
+                    )
+                }
+                
+                Text("Duration for dedicated eye exercise breaks (1-30 minutes)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Eye Exercise Settings")
+            }
+            
+            Section {
                 Stepper(
                     "Daily Break Goal: \(settings.dailyBreakGoal)",
                     value: $settings.dailyBreakGoal,
