@@ -16,20 +16,58 @@ struct AmbientReminderView: View {
     @State private var opacity: Double = 0
     @State private var rotation: Double = 0
     @State private var bounce: CGFloat = 0
+    @State private var progress: Double = 1.0  // Countdown progress (1.0 to 0.0)
+    @State private var remainingSeconds: Int = 8  // Countdown number display
+    @State private var countdownTimer: Timer?
     
     var body: some View {
         HStack(spacing: 16) {
-            // Animated emoji
-            Text(reminderType.emoji)
-                .font(.system(size: 50))
-                .scaleEffect(scale)
-                .rotationEffect(.degrees(rotation))
-                .offset(y: bounce)
+            // Animated emoji with circular progress ring
+            ZStack {
+                // Progress ring background
+                Circle()
+                    .stroke(
+                        reminderType.color.opacity(0.3),
+                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                    )
+                    .frame(width: 64, height: 64)
+                
+                // Progress ring foreground (animated countdown)
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(
+                        reminderType.color,
+                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                    )
+                    .frame(width: 64, height: 64)
+                    .rotationEffect(.degrees(-90))  // Start from top
+                    .animation(.linear(duration: 0.5), value: progress)
+                
+                // Emoji in center
+                Text(reminderType.emoji)
+                    .font(.system(size: 36))
+                    .scaleEffect(scale)
+                    .rotationEffect(.degrees(rotation))
+                    .offset(y: bounce)
+            }
             
             // Message
             Text(reminderType.message)
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
+            
+            Spacer()
+            
+            // Countdown seconds display
+            Text("\(remainingSeconds)s")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundColor(.white.opacity(0.9))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    Capsule()
+                        .fill(.white.opacity(0.2))
+                )
             
             // Close button (X)
             Button(action: onDismiss) {
@@ -52,6 +90,11 @@ struct AmbientReminderView: View {
         .onAppear {
             playSound()
             startAnimations()
+            startCountdown()
+        }
+        .onDisappear {
+            countdownTimer?.invalidate()
+            countdownTimer = nil
         }
     }
     
@@ -60,11 +103,34 @@ struct AmbientReminderView: View {
         NSSound(named: "Glass")?.play()
     }
     
+    private func startCountdown() {
+        // Initialize remaining seconds from settings
+        remainingSeconds = AppSettings.shared.ambientReminderDurationSeconds
+        
+        // Start countdown timer (update every second)
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [self] _ in
+            if remainingSeconds > 0 {
+                remainingSeconds -= 1
+            } else {
+                countdownTimer?.invalidate()
+                countdownTimer = nil
+            }
+        }
+    }
+    
     private func startAnimations() {
+        // Get duration from settings
+        let duration = TimeInterval(AppSettings.shared.ambientReminderDurationSeconds)
+        
         // Initial pop-in animation
         withAnimation(.spring(response: 0.5, dampingFraction: 0.65)) {
             scale = 1.0
             opacity = 1.0
+        }
+        
+        // Start countdown progress animation
+        withAnimation(.linear(duration: duration)) {
+            progress = 0.0
         }
         
         // Continuous bounce animation for emoji
