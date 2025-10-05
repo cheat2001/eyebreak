@@ -52,6 +52,11 @@ class AmbientReminderManager: ObservableObject {
         hideAllReminders()
     }
     
+    func showTestReminder() {
+        print("🧪 Showing test ambient reminder")
+        showRandomReminder()
+    }
+    
     // MARK: - Private Methods
     
     private func scheduleNextReminder() {
@@ -70,19 +75,29 @@ class AmbientReminderManager: ObservableObject {
     private func showRandomReminder() {
         guard isEnabled else { return }
         
-        let reminderType = reminderTypes.randomElement() ?? .blink
+        let settings = AppSettings.shared
+        
+        // Check if using custom reminder
+        let reminderType: ReminderType
+        if settings.useCustomReminder && !settings.customReminderEmoji.isEmpty {
+            reminderType = .custom
+        } else {
+            reminderType = reminderTypes.randomElement() ?? .blink
+        }
+        
         print("👁️ Showing ambient reminder: \(reminderType.rawValue)")
         
-        // Get random position on screen
+        // Get screen dimensions
         guard let screen = NSScreen.main else { return }
         let screenFrame = screen.visibleFrame
         
-        // Random position (avoiding edges)
-        let margin: CGFloat = 100
-        let x = CGFloat.random(in: (screenFrame.minX + margin)...(screenFrame.maxX - margin - 300))
-        let y = CGFloat.random(in: (screenFrame.minY + margin)...(screenFrame.maxY - margin - 200))
+        // Center horizontally, position at top
+        let windowWidth: CGFloat = 350
+        let windowHeight: CGFloat = 220
+        let x = screenFrame.midX - (windowWidth / 2)
+        let y = screenFrame.maxY - windowHeight - 80  // 80pt from top
         
-        let windowRect = NSRect(x: x, y: y, width: 300, height: 200)
+        let windowRect = NSRect(x: x, y: y, width: windowWidth, height: windowHeight)
         
         // Create floating window
         let window = NSWindow(
@@ -113,7 +128,6 @@ class AmbientReminderManager: ObservableObject {
         activeReminders.append(window)
         
         // Auto-dismiss after duration
-        let settings = AppSettings.shared
         let duration = TimeInterval(settings.ambientReminderDurationSeconds)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self, weak window] in
@@ -143,6 +157,7 @@ enum ReminderType: String {
     case lookUp = "Look Up"
     case lookDown = "Look Down"
     case lookAround = "Look Around"
+    case custom = "Custom"
     
     var emoji: String {
         switch self {
@@ -152,6 +167,9 @@ enum ReminderType: String {
         case .lookUp: return "☝️"
         case .lookDown: return "👇"
         case .lookAround: return "🔄"
+        case .custom: 
+            let emoji = AppSettings.shared.customReminderEmoji
+            return emoji.isEmpty ? "💡" : emoji
         }
     }
     
@@ -163,6 +181,9 @@ enum ReminderType: String {
         case .lookUp: return "Look up"
         case .lookDown: return "Look down"
         case .lookAround: return "Look around"
+        case .custom:
+            let message = AppSettings.shared.customReminderMessage
+            return message.isEmpty ? "Take care of your eyes" : message
         }
     }
     
@@ -174,6 +195,7 @@ enum ReminderType: String {
         case .lookUp: return .green
         case .lookDown: return .green
         case .lookAround: return .orange
+        case .custom: return .pink
         }
     }
 }

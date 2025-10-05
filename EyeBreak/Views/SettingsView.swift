@@ -298,6 +298,69 @@ struct BreakSettingsView: View {
                             step: 1
                         )
                     }
+                    
+                    // Test button
+                    Button(action: {
+                        AmbientReminderManager.shared.showTestReminder()
+                    }) {
+                        HStack {
+                            Image(systemName: "sparkles")
+                            Text("Test Reminder Now")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.blue)
+                    
+                    Text("Or press ⌘⇧R to test anytime")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Divider()
+                    
+                    // Custom reminder section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Toggle("Use Custom Reminder", isOn: $settings.useCustomReminder)
+                            .toggleStyle(.switch)
+                        
+                        if settings.useCustomReminder {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Custom Emoji")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                HStack {
+                                    TextField("Enter emoji (e.g., 🌟 😊 🎯)", text: $settings.customReminderEmoji)
+                                        .textFieldStyle(.roundedBorder)
+                                        .font(.system(size: 24))
+                                    
+                                    if !settings.customReminderEmoji.isEmpty {
+                                        Text(settings.customReminderEmoji)
+                                            .font(.system(size: 40))
+                                    }
+                                }
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Custom Message")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                TextField("Enter reminder message", text: $settings.customReminderMessage)
+                                    .textFieldStyle(.roundedBorder)
+                            }
+                            
+                            HStack(spacing: 8) {
+                                Image(systemName: "lightbulb.fill")
+                                    .foregroundColor(.yellow)
+                                Text("Try: 💧 \"Drink water\" or 🧘 \"Stretch your body\" or 🌳 \"Look far away\"")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
                 }
                 
                 Text(settings.ambientRemindersEnabled 

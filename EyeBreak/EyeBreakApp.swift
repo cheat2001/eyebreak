@@ -41,6 +41,13 @@ struct EyeBreakApp: App {
                     BreakTimerManager.shared.stop()
                 }
                 .keyboardShortcut("x", modifiers: [.command, .shift])
+                
+                Divider()
+                
+                Button("Test Ambient Reminder") {
+                    AmbientReminderManager.shared.showTestReminder()
+                }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
             }
         }
     }
@@ -69,7 +76,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("👀 Look for EyeBreak in:")
         print("   1. Menu bar (top-right, near clock)")
         print("   2. Dock (bottom of screen)")
-        print("   3. Press ⌘⇧S to start timer")
+        print("")
+        print("⌨️  Keyboard Shortcuts:")
+        print("   ⌘⇧S - Start timer")
+        print("   ⌘⇧B - Take break now")
+        print("   ⌘⇧X - Stop timer")
+        print("   ⌘⇧R - Test ambient reminder (instant)")
     }
     
     func applicationWillTerminate(_ notification: Notification) {
@@ -100,6 +112,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     BreakTimerManager.shared.stop()
                 }
             }
+            // Check for Command+Shift+R (Test Ambient Reminder)
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
+                DispatchQueue.main.async {
+                    AmbientReminderManager.shared.showTestReminder()
+                }
+            }
         }
         
         if let monitor = breakNowMonitor {
@@ -126,6 +144,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "x" {
                 DispatchQueue.main.async {
                     BreakTimerManager.shared.stop()
+                }
+                return nil
+            }
+            // Check for Command+Shift+R
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
+                DispatchQueue.main.async {
+                    AmbientReminderManager.shared.showTestReminder()
                 }
                 return nil
             }

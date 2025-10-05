@@ -34,6 +34,9 @@ class AppSettings: ObservableObject {
     @AppStorage("ambientRemindersEnabled") var ambientRemindersEnabled: Bool = false
     @AppStorage("ambientReminderIntervalMinutes") var ambientReminderIntervalMinutes: Int = 5 // Pop up every 5 minutes
     @AppStorage("ambientReminderDurationSeconds") var ambientReminderDurationSeconds: Int = 8 // Stay for 8 seconds
+    @AppStorage("customReminderEmoji") var customReminderEmoji: String = "" // Custom emoji
+    @AppStorage("customReminderMessage") var customReminderMessage: String = "" // Custom message
+    @AppStorage("useCustomReminder") var useCustomReminder: Bool = false // Use custom instead of random
     
     // MARK: - Computed Properties
     
