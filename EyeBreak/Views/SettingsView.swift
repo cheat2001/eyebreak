@@ -299,13 +299,13 @@ struct BreakSettingsView: View {
                         )
                     }
                     
-                    // Test button
+                    // Show reminder button
                     Button(action: {
-                        AmbientReminderManager.shared.showTestReminder()
+                        AmbientReminderManager.shared.showAmbientReminder()
                     }) {
                         HStack {
                             Image(systemName: "sparkles")
-                            Text("Test Reminder Now")
+                            Text("Show Reminder Now")
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
@@ -313,7 +313,7 @@ struct BreakSettingsView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(.blue)
                     
-                    Text("Or press ⌘⇧R to test anytime")
+                    Text("Or press ⌘⇧R anytime")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     

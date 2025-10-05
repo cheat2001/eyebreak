@@ -18,52 +18,51 @@ struct AmbientReminderView: View {
     @State private var bounce: CGFloat = 0
     
     var body: some View {
-        VStack(spacing: 12) {
+        HStack(spacing: 16) {
             // Animated emoji
             Text(reminderType.emoji)
-                .font(.system(size: 80))
+                .font(.system(size: 50))
                 .scaleEffect(scale)
                 .rotationEffect(.degrees(rotation))
                 .offset(y: bounce)
-                .shadow(color: reminderType.color.opacity(0.5), radius: 20)
             
             // Message
             Text(reminderType.message)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .background(
-                    Capsule()
-                        .fill(reminderType.color.gradient)
-                        .shadow(color: reminderType.color.opacity(0.3), radius: 10)
-                )
             
             // Close button (X)
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .font(.system(size: 18))
+                    .foregroundStyle(.white.opacity(0.6))
             }
             .buttonStyle(.plain)
             .opacity(opacity)
         }
-        .padding(20)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.2), radius: 20)
+            Capsule()
+                .fill(reminderType.color.gradient)
+                .shadow(color: reminderType.color.opacity(0.4), radius: 15, y: 5)
         )
         .scaleEffect(scale)
         .opacity(opacity)
         .onAppear {
+            playSound()
             startAnimations()
         }
     }
     
+    private func playSound() {
+        // Play system sound for notification
+        NSSound(named: "Glass")?.play()
+    }
+    
     private func startAnimations() {
         // Initial pop-in animation
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.65)) {
             scale = 1.0
             opacity = 1.0
         }
@@ -73,7 +72,7 @@ struct AmbientReminderView: View {
             .easeInOut(duration: 0.8)
             .repeatForever(autoreverses: true)
         ) {
-            bounce = -10
+            bounce = -8
         }
         
         // Rotation animation for some emojis
@@ -102,7 +101,7 @@ struct AmbientReminderView: View {
             // Simulate blinking with scale
             Timer.scheduledTimer(withTimeInterval: 0.8, repeats: true) { _ in
                 withAnimation(.easeInOut(duration: 0.15)) {
-                    scale = 0.9
+                    scale = 0.85
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     withAnimation(.easeInOut(duration: 0.15)) {
@@ -116,5 +115,4 @@ struct AmbientReminderView: View {
 
 #Preview {
     AmbientReminderView(reminderType: .blink, onDismiss: {})
-        .frame(width: 300, height: 200)
 }

@@ -44,8 +44,8 @@ struct EyeBreakApp: App {
                 
                 Divider()
                 
-                Button("Test Ambient Reminder") {
-                    AmbientReminderManager.shared.showTestReminder()
+                Button("Show Ambient Reminder") {
+                    AmbientReminderManager.shared.showAmbientReminder()
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
             }
@@ -81,7 +81,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("   ⌘⇧S - Start timer")
         print("   ⌘⇧B - Take break now")
         print("   ⌘⇧X - Stop timer")
-        print("   ⌘⇧R - Test ambient reminder (instant)")
+        print("   ⌘⇧R - Show ambient reminder")
     }
     
     func applicationWillTerminate(_ notification: Notification) {
@@ -112,10 +112,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     BreakTimerManager.shared.stop()
                 }
             }
-            // Check for Command+Shift+R (Test Ambient Reminder)
+            // Check for Command+Shift+R (Show Ambient Reminder)
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
                 DispatchQueue.main.async {
-                    AmbientReminderManager.shared.showTestReminder()
+                    AmbientReminderManager.shared.showAmbientReminder()
                 }
             }
         }
@@ -150,7 +150,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Check for Command+Shift+R
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
                 DispatchQueue.main.async {
-                    AmbientReminderManager.shared.showTestReminder()
+                    AmbientReminderManager.shared.showAmbientReminder()
                 }
                 return nil
             }

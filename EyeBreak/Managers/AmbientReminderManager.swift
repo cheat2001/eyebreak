@@ -52,8 +52,8 @@ class AmbientReminderManager: ObservableObject {
         hideAllReminders()
     }
     
-    func showTestReminder() {
-        print("🧪 Showing test ambient reminder")
+    func showAmbientReminder() {
+        print("👁️ Showing ambient reminder on demand")
         showRandomReminder()
     }
     
@@ -91,11 +91,11 @@ class AmbientReminderManager: ObservableObject {
         guard let screen = NSScreen.main else { return }
         let screenFrame = screen.visibleFrame
         
-        // Center horizontally, position at top
-        let windowWidth: CGFloat = 350
-        let windowHeight: CGFloat = 220
+        // Center horizontally, position at top (smaller size now)
+        let windowWidth: CGFloat = 280
+        let windowHeight: CGFloat = 80
         let x = screenFrame.midX - (windowWidth / 2)
-        let y = screenFrame.maxY - windowHeight - 80  // 80pt from top
+        let y = screenFrame.maxY - windowHeight - 60  // 60pt from top
         
         let windowRect = NSRect(x: x, y: y, width: windowWidth, height: windowHeight)
         
