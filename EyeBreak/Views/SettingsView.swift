@@ -299,7 +299,7 @@ struct BreakSettingsView: View {
                         )
                     }
                     
-                    // Show reminder button
+                    // Test button
                     Button(action: {
                         AmbientReminderManager.shared.showAmbientReminder()
                     }) {
@@ -313,7 +313,7 @@ struct BreakSettingsView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(.blue)
                     
-                    Text("Or press ⌘⇧R anytime")
+                    Text("Or press ⌘⇧R to test anytime")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     

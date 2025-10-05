@@ -12,6 +12,7 @@ struct EyeBreakApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
+        // Settings window - not shown by default, only via menu
         Window("EyeBreak Settings", id: "settings") {
             SettingsView()
                 .environmentObject(BreakTimerManager.shared)
@@ -19,6 +20,9 @@ struct EyeBreakApp: App {
                 .frame(minWidth: 600, minHeight: 500)
         }
         .defaultSize(width: 700, height: 600)
+        .defaultPosition(.center)
+        // CRITICAL: Don't show window on launch - this prevents app from being tied to a specific Space
+        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("About EyeBreak") {
@@ -58,8 +62,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventMonitors: [Any] = []
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Set activation policy to regular so app appears in Dock
-        NSApp.setActivationPolicy(.regular)
+        // CRITICAL: Use .accessory policy so app doesn't "own" any space
+        // This prevents the app from being tied to a specific desktop
+        NSApp.setActivationPolicy(.accessory)
+        
+        // Hide all windows on launch - Settings can be opened via menu only
+        for window in NSApplication.shared.windows {
+            window.orderOut(nil)
+        }
         
         // Initialize status bar
         statusBar = StatusBarController()
@@ -73,9 +83,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         print("✅ App launched successfully!")
-        print("👀 Look for EyeBreak in:")
-        print("   1. Menu bar (top-right, near clock)")
-        print("   2. Dock (bottom of screen)")
+        print("👀 EyeBreak running in background (accessory mode)")
+        print("   - No Settings window shown by default")
+        print("   - Open Settings from menubar or Dock if needed")
         print("")
         print("⌨️  Keyboard Shortcuts:")
         print("   ⌘⇧S - Start timer")

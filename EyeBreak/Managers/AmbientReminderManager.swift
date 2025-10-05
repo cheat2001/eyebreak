@@ -87,9 +87,13 @@ class AmbientReminderManager: ObservableObject {
         
         print("👁️ Showing ambient reminder: \(reminderType.rawValue)")
         
-        // Get screen dimensions
-        guard let screen = NSScreen.main else { return }
-        let screenFrame = screen.visibleFrame
+        // Get the screen with mouse cursor (the active screen user is on)
+        let mouseLocation = NSEvent.mouseLocation
+        let activeScreen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
+        let screenFrame = activeScreen.visibleFrame
+        
+        print("👁️ Mouse location: \(mouseLocation)")
+        print("👁️ Active screen: \(activeScreen.frame)")
         
         // Center horizontally, position at top (smaller size now)
         let windowWidth: CGFloat = 280
@@ -109,8 +113,9 @@ class AmbientReminderManager: ObservableObject {
         
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.level = .floating
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))  // Highest possible level - above everything
+        // CRITICAL: Use .canJoinAllSpaces to show on ALL desktops simultaneously
+        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .transient, .fullScreenAuxiliary]
         window.hasShadow = false
         window.isMovable = false
         
@@ -123,7 +128,15 @@ class AmbientReminderManager: ObservableObject {
         )
         
         window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
+        
+        // CRITICAL: Force window to the calculated position on the active screen
+        window.setFrame(windowRect, display: true, animate: false)
+        
+        print("👁️ Window frame: \(window.frame), Calculated rect: \(windowRect)")
+        
+        // CRITICAL: Show window WITHOUT activating the app
+        // This prevents desktop switching but still shows the reminder
+        window.orderFrontRegardless()
         
         activeReminders.append(window)
         
