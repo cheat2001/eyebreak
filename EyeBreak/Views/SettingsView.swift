@@ -38,19 +38,29 @@ struct SettingsView: View {
             }
             .navigationSplitViewColumnWidth(150)
         } detail: {
-            Group {
-                switch selectedTab {
-                case .general:
-                    GeneralSettingsView()
-                case .breaks:
-                    BreakSettingsView()
-                case .statistics:
-                    StatsView()
-                case .about:
-                    AboutView()
+            VStack(spacing: 0) {
+                // Large Countdown Timer Display at the top
+                TimerStatusBanner()
+                    .environmentObject(timerManager)
+                    .environmentObject(settings)
+                
+                Divider()
+                
+                // Main content
+                Group {
+                    switch selectedTab {
+                    case .general:
+                        GeneralSettingsView()
+                    case .breaks:
+                        BreakSettingsView()
+                    case .statistics:
+                        StatsView()
+                    case .about:
+                        AboutView()
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle("EyeBreak Settings")
     }
@@ -324,6 +334,162 @@ struct FeatureRow: View {
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Timer Status Banner
+
+struct TimerStatusBanner: View {
+    @EnvironmentObject var timerManager: BreakTimerManager
+    @EnvironmentObject var settings: AppSettings
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 20) {
+                // Status indicator
+                statusIndicator
+                
+                // Timer display
+                timerDisplay
+                
+                Spacer()
+                
+                // Control buttons
+                controlButtons
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
+            
+            // Progress bar
+            if case .working(let remaining) = timerManager.state {
+                ProgressView(value: Double(remaining), total: Double(settings.workIntervalSeconds))
+                    .progressViewStyle(.linear)
+                    .tint(.blue)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 8)
+            } else if case .breaking(let remaining) = timerManager.state {
+                ProgressView(value: Double(remaining), total: Double(settings.breakDurationSeconds))
+                    .progressViewStyle(.linear)
+                    .tint(.green)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 8)
+            }
+        }
+        .background(Color(NSColor.controlBackgroundColor))
+    }
+    
+    private var statusIndicator: some View {
+        Circle()
+            .fill(statusColor)
+            .frame(width: 12, height: 12)
+            .overlay(
+                Circle()
+                    .stroke(statusColor.opacity(0.3), lineWidth: 4)
+            )
+    }
+    
+    private var statusColor: Color {
+        switch timerManager.state {
+        case .idle:
+            return .gray
+        case .working:
+            return .blue
+        case .preBreak:
+            return .orange
+        case .breaking:
+            return .green
+        case .paused:
+            return .yellow
+        }
+    }
+    
+    private var timerDisplay: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(statusText)
+                .font(.headline)
+                .foregroundColor(.primary)
+            
+            Text(timeText)
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundColor(.primary)
+                .monospacedDigit()
+        }
+    }
+    
+    private var statusText: String {
+        switch timerManager.state {
+        case .idle:
+            return "Idle"
+        case .working:
+            return "Next break in:"
+        case .preBreak:
+            return "Break starting soon:"
+        case .breaking:
+            return "Break time remaining:"
+        case .paused:
+            return "Paused"
+        }
+    }
+    
+    private var timeText: String {
+        switch timerManager.state {
+        case .idle:
+            return "--:--"
+        case .working(let remainingSeconds), .preBreak(let remainingSeconds), .breaking(let remainingSeconds):
+            let minutes = remainingSeconds / 60
+            let seconds = remainingSeconds % 60
+            return String(format: "%02d:%02d", minutes, seconds)
+        case .paused:
+            return "--:--"
+        }
+    }
+    
+    private var controlButtons: some View {
+        HStack(spacing: 12) {
+            switch timerManager.state {
+            case .idle:
+                Button {
+                    timerManager.start()
+                } label: {
+                    Label("Start", systemImage: "play.fill")
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut("s", modifiers: [.command, .shift])
+                
+            case .working, .preBreak:
+                Button {
+                    timerManager.takeBreakNow()
+                } label: {
+                    Label("Break Now", systemImage: "pause.fill")
+                }
+                .buttonStyle(.bordered)
+                .keyboardShortcut("b", modifiers: [.command, .shift])
+                
+                Button {
+                    timerManager.stop()
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                }
+                .buttonStyle(.bordered)
+                .keyboardShortcut("x", modifiers: [.command, .shift])
+                
+            case .breaking:
+                Button {
+                    timerManager.skipBreak()
+                } label: {
+                    Label("Skip Break", systemImage: "forward.fill")
+                }
+                .buttonStyle(.bordered)
+                
+            case .paused:
+                Button {
+                    timerManager.resume()
+                } label: {
+                    Label("Resume", systemImage: "play.fill")
+                }
+                .buttonStyle(.borderedProminent)
             }
         }
     }
