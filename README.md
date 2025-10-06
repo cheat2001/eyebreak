@@ -63,15 +63,32 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ## 🚀 Installation
 
-### Download the App (Easiest) ⭐️
+### Download the App (Recommended) ⭐️
 
 1. **[Download EyeBreak-v1.0.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
-2. **Open** the DMG file
-3. **Drag** `EyeBreak.app` to your `Applications` folder
-4. **Right-click** the app and select **"Open"** (first time only)
-5. Look for the **eye icon 👁️** in your menu bar!
+2. **Remove quarantine** (required for unsigned apps):
+   ```bash
+   cd ~/Downloads
+   xattr -cr EyeBreak-v1.0.0.dmg
+   ```
+3. **Open** the DMG file
+4. **Drag** `EyeBreak.app` to your `Applications` folder
+5. **Launch**: 
+   ```bash
+   open /Applications/EyeBreak.app
+   ```
+6. Look for the **eye icon 👁️** in your menu bar!
 
-> **Note**: Since the app isn't code-signed, you must right-click → "Open" on first launch.
+> **⚠️ Why the terminal command?** The app isn't signed with an Apple Developer certificate ($99/year).  
+> macOS blocks unsigned downloads, so you must remove the quarantine flag first.
+
+### Quick One-Line Install
+
+```bash
+curl -L https://github.com/cheat2001/eyebreak/releases/download/v1.0.0/EyeBreak-v1.0.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
+```
+
+Then just drag to Applications!
 
 ### For Developers: Build from Source
 
