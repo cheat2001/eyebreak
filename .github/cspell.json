@@ -1,0 +1,32 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "eyebreak",
+    "macOS",
+    "SwiftUI",
+    "Xcode",
+    "xcodeproj",
+    "xcassets",
+    "appiconset",
+    "pomodoro",
+    "colorset",
+    "pbxproj",
+    "xcworkspace",
+    "xcuserdata",
+    "xcschemes",
+    "entitlements",
+    "IOKit",
+    "VoiceOver",
+    "Sonoma"
+  ],
+  "ignoreWords": [],
+  "ignorePaths": [
+    "node_modules/**",
+    ".git/**",
+    "*.xcodeproj/**",
+    "DerivedData/**",
+    "build/**",
+    "*.log"
+  ]
+}
