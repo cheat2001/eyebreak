@@ -14,7 +14,7 @@ This guide explains how to distribute EyeBreak so others can easily install and 
 
 ```bash
 # Initialize git if not already done
-cd /Users/chansocheat.sok/Desktop/vibe-coding/lookaway
+cd /path/to/eyebreak
 git init
 git add .
 git commit -m "Initial release of EyeBreak v1.0.0"

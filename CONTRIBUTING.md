@@ -55,8 +55,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 1. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/lookaway.git
-   cd lookaway
+   git clone https://github.com/YOUR-USERNAME/eyebreak.git
+   cd eyebreak
    ```
 
 2. Open the project in Xcode:

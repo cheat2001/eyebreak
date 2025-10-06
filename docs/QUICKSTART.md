@@ -121,7 +121,7 @@ If you prefer 25-minute work intervals, enable Pomodoro mode in Settings.
 
 Having issues? 
 - Check the [FAQ](FAQ.md)
-- Open an [Issue](https://github.com/YOUR-USERNAME/lookaway/issues)
+- Open an [Issue](https://github.com/cheat2001/eyebreak/issues)
 - Review [Common Problems](FAQ.md#troubleshooting)
 
 ---

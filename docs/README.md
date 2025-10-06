@@ -80,7 +80,7 @@ See [Contributing Guide](../CONTRIBUTING.md) for details.
 
 ## Need Help?
 
-- 💬 [Open an issue](https://github.com/YOUR-USERNAME/lookaway/issues)
+- 💬 [Open an issue](https://github.com/cheat2001/eyebreak/issues)
 - 📧 Contact the maintainers
 - 📖 Read the [FAQ](FAQ.md)
 

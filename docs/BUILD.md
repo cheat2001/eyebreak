@@ -11,7 +11,7 @@
 ### 1. Open in Xcode
 
 ```bash
-cd /Users/chansocheat.sok/Desktop/vibe-coding/lookaway
+cd /path/to/eyebreak
 open EyeBreak.xcodeproj
 ```
 

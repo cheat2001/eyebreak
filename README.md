@@ -261,7 +261,7 @@ See [docs/FAQ.md](docs/FAQ.md) for more troubleshooting help.
 - [ ] Integration with calendar apps
 - [ ] Ambient reminder sounds
 
-See [issues](https://github.com/YOUR-USERNAME/lookaway/issues) for planned features and vote on what you'd like to see!
+See [issues](https://github.com/cheat2001/eyebreak/issues) for planned features and vote on what you'd like to see!
 
 ## 📜 License
 
@@ -274,15 +274,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by [LookAway.app](https://lookaway.app)
 - Icons by [SF Symbols](https://developer.apple.com/sf-symbols/)
 - Built with ❤️ for healthier screen time habits
-- Thanks to all [contributors](https://github.com/YOUR-USERNAME/lookaway/graphs/contributors)
+- Thanks to all [contributors](https://github.com/cheat2001/eyebreak/graphs/contributors)
 
 ## 📞 Support
 
 - 📖 [Read the docs](docs/)
-- 💬 [Open an issue](https://github.com/YOUR-USERNAME/lookaway/issues)
-- ⭐️ [Star the project](https://github.com/YOUR-USERNAME/lookaway)
-- 🐛 [Report a bug](https://github.com/YOUR-USERNAME/lookaway/issues/new?template=bug_report.md)
-- 💡 [Request a feature](https://github.com/YOUR-USERNAME/lookaway/issues/new?template=feature_request.md)
+- 💬 [Open an issue](https://github.com/cheat2001/eyebreak/issues)
+- ⭐️ [Star the project](https://github.com/cheat2001/eyebreak)
+- 🐛 [Report a bug](https://github.com/cheat2001/eyebreak/issues/new?template=bug_report.md)
+- 💡 [Request a feature](https://github.com/cheat2001/eyebreak/issues/new?template=feature_request.md)
 
 ## ⭐️ Show Your Support
 

@@ -16,7 +16,7 @@ We take security seriously at EyeBreak. If you discover a security vulnerability
 
 Instead:
 
-1. **Email**: Send details to [YOUR-EMAIL@example.com] with the subject "EyeBreak Security Vulnerability"
+1. **Email**: Send details to [chansocheatsok2001@gmail.com](mailto:chansocheatsok2001@gmail.com) with the subject "EyeBreak Security Vulnerability"
 2. **Include**:
    - Description of the vulnerability
    - Steps to reproduce
@@ -107,7 +107,7 @@ When contributing code, please ensure:
 
 ## Contact
 
-For non-security issues, please use [GitHub Issues](https://github.com/YOUR-USERNAME/lookaway/issues).
+For non-security issues, please use [GitHub Issues](https://github.com/cheat2001/eyebreak/issues).
 
 For security issues, email: [YOUR-EMAIL@example.com]
 
