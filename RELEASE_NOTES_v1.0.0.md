@@ -6,24 +6,34 @@ EyeBreak is a minimalistic macOS menu bar app that helps reduce digital eye stra
 
 ---
 
-## 📦 Installation
+## � Installation
 
-### Easy 3-Step Install
+### Easy Installation Steps
 
-1. **Download** `EyeBreak-v1.0.0.dmg` from the Assets below ⬇️
-2. **Open** the DMG and drag the app to Applications
-3. **Right-click** the app, select "Open", and click "Open" again
+1. **Download** `EyeBreak-v1.0.0.dmg` from Assets below ⬇️
+2. **Open** the DMG and drag app to Applications folder
+3. **⚠️ IMPORTANT**: Open Terminal and run this command:
+   ```bash
+   xattr -cr /Applications/EyeBreak.app && open /Applications/EyeBreak.app
+   ```
+   
+**Or** if you prefer Finder method:
+1. Download the DMG
+2. Open Terminal and paste:
+   ```bash
+   cd ~/Downloads
+   xattr -cr EyeBreak-v1.0.0.dmg
+   ```
+3. Then open the DMG and drag to Applications
+4. Right-click EyeBreak.app → Open
 
-That's it! Look for the 👁️ icon in your menu bar.
+> **Why this step?** The app isn't signed with an Apple Developer certificate ($99/year).  
+> This removes macOS's quarantine flag that blocks unsigned downloads.
 
-> **Why right-click?** The app isn't code-signed, so macOS requires this on first launch.
-
-### Alternative: Terminal Command
+### Quick One-Line Install
 
 ```bash
-# After downloading the DMG
-xattr -cr /Applications/EyeBreak.app
-open /Applications/EyeBreak.app
+curl -L https://github.com/cheat2001/eyebreak/releases/download/v1.0.0/EyeBreak-v1.0.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
 ```
 
 ---
