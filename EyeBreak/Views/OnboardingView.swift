@@ -89,21 +89,77 @@ struct OnboardingView: View {
 // MARK: - Welcome Page
 
 struct WelcomePage: View {
+    @State private var animateIcon = false
+    @State private var animateGlow = false
+    
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
             
-            Image(systemName: "eye.fill")
-                .font(.system(size: 100))
-                .foregroundStyle(.blue)
+            ZStack {
+                // Animated glow rings
+                ForEach(0..<3) { index in
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [.blue.opacity(0.3), .cyan.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
+                        .frame(width: CGFloat(120 + index * 40), height: CGFloat(120 + index * 40))
+                        .scaleEffect(animateGlow ? 1.2 : 1.0)
+                        .opacity(0.5 - Double(index) * 0.15)
+                        .animation(
+                            .easeInOut(duration: 2.0 + Double(index) * 0.5)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(index) * 0.3),
+                            value: animateGlow
+                        )
+                }
+                
+                // Main icon with gradient
+                Image(systemName: "eye.fill")
+                    .font(.system(size: 100))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .cyan, .blue],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: .blue.opacity(0.3), radius: 20)
+                    .scaleEffect(animateIcon ? 1.0 : 0.8)
+                    .rotationEffect(.degrees(animateIcon ? 0 : -10))
+            }
+            .onAppear {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) {
+                    animateIcon = true
+                }
+                animateGlow = true
+            }
             
             VStack(spacing: 12) {
                 Text("Welcome to EyeBreak")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.primary, .blue],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                 
-                Text("Your eyes deserve a break")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles")
+                        .foregroundColor(.yellow)
+                    Text("Your eyes deserve a break")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                    Image(systemName: "sparkles")
+                        .foregroundColor(.yellow)
+                }
             }
             
             Text("""
@@ -114,6 +170,7 @@ struct WelcomePage: View {
             .foregroundColor(.secondary)
             .multilineTextAlignment(.center)
             .frame(maxWidth: 400)
+            .padding(.horizontal)
             
             Spacer()
         }
@@ -176,22 +233,52 @@ struct RuleCard: View {
     let icon: String
     let color: Color
     
+    @State private var animate = false
+    
     var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.title)
-                .foregroundStyle(color)
-                .frame(width: 40)
+        HStack(spacing: 20) {
+            // Enhanced icon with gradient background
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.2), color.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 64, height: 64)
+                    .shadow(color: color.opacity(0.2), radius: 8)
+                
+                Image(systemName: icon)
+                    .font(.title)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .scaleEffect(animate ? 1.0 : 0.8)
+            .animation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.2), value: animate)
             
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(number)
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundColor(color)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                     
                     Text(unit)
                         .font(.title3)
                         .foregroundColor(.secondary)
+                        .fontWeight(.medium)
                 }
                 
                 Text(description)
@@ -201,10 +288,26 @@ struct RuleCard: View {
             
             Spacer()
         }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(12)
-        .frame(width: 350)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(color.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                colors: [color.opacity(0.3), color.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                )
+        )
+        .shadow(color: color.opacity(0.1), radius: 8, x: 0, y: 4)
+        .onAppear {
+            animate = true
+        }
     }
 }
 

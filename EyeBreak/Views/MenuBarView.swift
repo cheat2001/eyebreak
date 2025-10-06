@@ -47,12 +47,43 @@ struct MenuBarView: View {
     
     private var headerSection: some View {
         HStack {
-            Image(systemName: "eye.fill")
-                .font(.title2)
-                .foregroundStyle(.blue)
+            ZStack {
+                // Animated background circle
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.blue.opacity(0.3), Color.cyan.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 44, height: 44)
+                    .scaleEffect(timerManager.state.isActive ? 1.1 : 1.0)
+                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: timerManager.state.isActive)
+                
+                // Eye icon with animation
+                Image(systemName: timerManager.state.isActive ? "eye.fill" : "eye")
+                    .font(.title2)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .symbolEffect(.pulse.byLayer, options: .repeating, value: timerManager.state.isActive)
+            }
             
-            Text("EyeBreak")
-                .font(.headline)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("EyeBreak")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                
+                Text(statusText)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .transition(.opacity.combined(with: .scale))
+            }
             
             Spacer()
             
@@ -61,53 +92,188 @@ struct MenuBarView: View {
         .padding()
     }
     
+    private var statusText: String {
+        switch timerManager.state {
+        case .idle: return "Ready to start"
+        case .working: return "Working"
+        case .preBreak: return "Break soon"
+        case .breaking: return "On break"
+        case .paused: return "Paused"
+        }
+    }
+    
     private var statusIndicator: some View {
-        Circle()
-            .fill(timerManager.state.isActive ? Color.green : Color.gray)
-            .frame(width: 8, height: 8)
-            .overlay(
-                Circle()
-                    .fill(timerManager.state.isActive ? Color.green.opacity(0.3) : Color.clear)
-                    .frame(width: 16, height: 16)
-                    .scaleEffect(timerManager.state.isActive ? 1.5 : 1.0)
-                    .animation(
-                        timerManager.state.isActive ?
-                        .easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default,
-                        value: timerManager.state.isActive
+        ZStack {
+            // Outer pulse ring
+            Circle()
+                .fill(timerManager.state.isActive ? Color.green.opacity(0.2) : Color.clear)
+                .frame(width: 20, height: 20)
+                .scaleEffect(timerManager.state.isActive ? 1.8 : 1.0)
+                .animation(
+                    timerManager.state.isActive ?
+                    .easeInOut(duration: 1.5).repeatForever(autoreverses: true) : .default,
+                    value: timerManager.state.isActive
+                )
+            
+            // Inner pulse ring
+            Circle()
+                .fill(timerManager.state.isActive ? Color.green.opacity(0.4) : Color.clear)
+                .frame(width: 14, height: 14)
+                .scaleEffect(timerManager.state.isActive ? 1.3 : 1.0)
+                .animation(
+                    timerManager.state.isActive ?
+                    .easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default,
+                    value: timerManager.state.isActive
+                )
+            
+            // Core indicator with gradient
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: timerManager.state.isActive ? 
+                            [Color.green, Color.green.opacity(0.8)] : 
+                            [Color.gray, Color.gray.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-            )
+                )
+                .frame(width: 8, height: 8)
+                .shadow(color: timerManager.state.isActive ? .green.opacity(0.5) : .clear, radius: 4)
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: timerManager.state.isActive)
     }
     
     // MARK: - Status Section
     
     private var statusSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             Text(timerManager.state.displayText)
                 .font(.system(.body, design: .rounded))
                 .foregroundColor(.secondary)
+                .animation(.easeInOut, value: timerManager.state)
             
             if case .working(let seconds) = timerManager.state {
-                ProgressView(value: progressValue, total: 1.0)
-                    .tint(.blue)
+                VStack(spacing: 12) {
+                    // Progress ring with gradient
+                    ZStack {
+                        Circle()
+                            .stroke(Color.blue.opacity(0.2), lineWidth: 6)
+                            .frame(width: 100, height: 100)
+                        
+                        Circle()
+                            .trim(from: 0, to: progressValue)
+                            .stroke(
+                                AngularGradient(
+                                    colors: [.blue, .cyan, .blue],
+                                    center: .center
+                                ),
+                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                            )
+                            .frame(width: 100, height: 100)
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 1), value: progressValue)
+                        
+                        // Time display
+                        VStack(spacing: 4) {
+                            Text(formatTime(seconds))
+                                .font(.system(.title2, design: .monospaced))
+                                .fontWeight(.bold)
+                                .contentTransition(.numericText())
+                            
+                            Text("remaining")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    // Mini progress bar
+                    ProgressView(value: progressValue, total: 1.0)
+                        .tint(.blue)
+                        .scaleEffect(y: 0.5)
+                }
+                .transition(.scale.combined(with: .opacity))
                 
-                Text(formatTime(seconds))
-                    .font(.system(.title, design: .monospaced))
-                    .fontWeight(.bold)
             } else if case .breaking(let seconds) = timerManager.state {
-                ProgressView(value: progressValue, total: 1.0)
-                    .tint(.green)
+                VStack(spacing: 12) {
+                    // Animated break indicator
+                    ZStack {
+                        Circle()
+                            .stroke(Color.green.opacity(0.2), lineWidth: 6)
+                            .frame(width: 100, height: 100)
+                        
+                        Circle()
+                            .trim(from: 0, to: progressValue)
+                            .stroke(
+                                AngularGradient(
+                                    colors: [.green, .mint, .green],
+                                    center: .center
+                                ),
+                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                            )
+                            .frame(width: 100, height: 100)
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 1), value: progressValue)
+                        
+                        VStack(spacing: 4) {
+                            Text("\(seconds)")
+                                .font(.system(.title, design: .monospaced))
+                                .fontWeight(.bold)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.green, .mint],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .contentTransition(.numericText())
+                            
+                            Text("seconds")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Text("👁️ Rest your eyes")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                .transition(.scale.combined(with: .opacity))
                 
-                Text("\(seconds)s")
-                    .font(.system(.title, design: .monospaced))
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
             } else if case .preBreak(let seconds) = timerManager.state {
-                Text("\(seconds)s until break")
-                    .font(.system(.title2, design: .monospaced))
-                    .fontWeight(.semibold)
-                    .foregroundColor(.orange)
+                VStack(spacing: 8) {
+                    // Warning icon with pulse
+                    Image(systemName: "bell.badge.fill")
+                        .font(.system(size: 40))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.orange, .yellow],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .symbolEffect(.bounce.byLayer, options: .repeating)
+                    
+                    Text("\(seconds)s until break")
+                        .font(.system(.title3, design: .monospaced))
+                        .fontWeight(.semibold)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.orange, .yellow],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .contentTransition(.numericText())
+                    
+                    Text("Prepare to rest")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                }
+                .transition(.scale.combined(with: .opacity))
             }
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: timerManager.state)
     }
     
     private var progressValue: Double {
@@ -128,26 +294,82 @@ struct MenuBarView: View {
     private var controlsSection: some View {
         VStack(spacing: 12) {
             if timerManager.state == .idle {
-                Button(action: timerManager.start) {
-                    Label("Start Timer", systemImage: "play.fill")
-                        .frame(maxWidth: .infinity)
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        timerManager.start()
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "play.circle.fill")
+                            .font(.title3)
+                        Text("Start Timer")
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(
+                        LinearGradient(
+                            colors: [.blue, .blue.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                .buttonStyle(.plain)
+                .scaleEffect(1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: timerManager.state)
+                
             } else if timerManager.state.isActive {
                 HStack(spacing: 8) {
-                    Button(action: timerManager.stop) {
-                        Label("Stop", systemImage: "stop.fill")
-                            .frame(maxWidth: .infinity)
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            timerManager.stop()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "stop.circle.fill")
+                            Text("Stop")
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 40)
+                        .background(Color.red.opacity(0.1))
+                        .foregroundColor(.red)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.red.opacity(0.3), lineWidth: 1)
+                        )
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.red)
+                    .buttonStyle(.plain)
                     
-                    Button(action: timerManager.takeBreakNow) {
-                        Label("Break Now", systemImage: "eye.slash.fill")
-                            .frame(maxWidth: .infinity)
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            timerManager.takeBreakNow()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "eye.slash.circle.fill")
+                            Text("Break Now")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 40)
+                        .background(
+                            LinearGradient(
+                                colors: [.green, .green.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .shadow(color: .green.opacity(0.3), radius: 6, x: 0, y: 3)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.plain)
                 }
             } else if case .paused = timerManager.state {
                 Button(action: timerManager.resume) {

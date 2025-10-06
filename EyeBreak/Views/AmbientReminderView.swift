@@ -19,71 +19,172 @@ struct AmbientReminderView: View {
     @State private var progress: Double = 1.0  // Countdown progress (1.0 to 0.0)
     @State private var remainingSeconds: Int = 8  // Countdown number display
     @State private var countdownTimer: Timer?
+    @State private var glowPulse: Bool = false
+    @State private var shimmer: Bool = false
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Animated emoji with circular progress ring
+        HStack(spacing: 20) {
+            // Enhanced animated emoji with multi-ring progress
             ZStack {
-                // Progress ring background
+                // Outer glow ring
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [reminderType.color.opacity(0.3), Color.clear],
+                            center: .center,
+                            startRadius: 20,
+                            endRadius: 45
+                        )
+                    )
+                    .frame(width: 90, height: 90)
+                    .scaleEffect(glowPulse ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: glowPulse)
+                
+                // Background ring with gradient
                 Circle()
                     .stroke(
-                        reminderType.color.opacity(0.3),
-                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                        LinearGradient(
+                            colors: [reminderType.color.opacity(0.3), reminderType.color.opacity(0.15)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        style: StrokeStyle(lineWidth: 4, lineCap: .round)
                     )
-                    .frame(width: 64, height: 64)
+                    .frame(width: 68, height: 68)
                 
-                // Progress ring foreground (animated countdown)
+                // Animated progress ring with gradient
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
-                        reminderType.color,
-                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                        AngularGradient(
+                            colors: [
+                                reminderType.color.opacity(0.8),
+                                reminderType.color,
+                                reminderType.secondaryColor,
+                                reminderType.color.opacity(0.8)
+                            ],
+                            center: .center
+                        ),
+                        style: StrokeStyle(lineWidth: 4, lineCap: .round)
                     )
-                    .frame(width: 64, height: 64)
-                    .rotationEffect(.degrees(-90))  // Start from top
+                    .frame(width: 68, height: 68)
+                    .rotationEffect(.degrees(-90))
+                    .shadow(color: reminderType.color.opacity(0.5), radius: 4)
                     .animation(.linear(duration: 0.5), value: progress)
                 
-                // Emoji in center
+                // Inner circle background
+                Circle()
+                    .fill(reminderType.color.opacity(0.2))
+                    .frame(width: 56, height: 56)
+                
+                // Emoji in center with enhanced animation
                 Text(reminderType.emoji)
-                    .font(.system(size: 36))
+                    .font(.system(size: 40))
                     .scaleEffect(scale)
                     .rotationEffect(.degrees(rotation))
                     .offset(y: bounce)
+                    .shadow(color: .black.opacity(0.1), radius: 2)
             }
             
-            // Message
-            Text(reminderType.message)
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundColor(.white)
+            // Message section with better typography
+            VStack(alignment: .leading, spacing: 6) {
+                Text(reminderType.message)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.white, .white.opacity(0.95)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Text(reminderType.subtitle)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.9))
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
             
-            // Countdown seconds display
-            Text("\(remainingSeconds)s")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundColor(.white.opacity(0.9))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(
-                    Capsule()
-                        .fill(.white.opacity(0.2))
-                )
-            
-            // Close button (X)
-            Button(action: onDismiss) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.white.opacity(0.6))
+            VStack(spacing: 8) {
+                // Enhanced countdown display
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.25))
+                        .frame(width: 36, height: 36)
+                    
+                    Text("\(remainingSeconds)")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .contentTransition(.numericText())
+                }
+                
+                // Close button with better design
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        onDismiss()
+                    }
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.25))
+                            .frame(width: 28, height: 28)
+                        
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .buttonStyle(.plain)
+                .opacity(opacity)
             }
-            .buttonStyle(.plain)
-            .opacity(opacity)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 20)
         .background(
-            Capsule()
-                .fill(reminderType.color.gradient)
-                .shadow(color: reminderType.color.opacity(0.4), radius: 15, y: 5)
+            ZStack {
+                // Animated gradient background
+                RoundedRectangle(cornerRadius: 32)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                reminderType.color,
+                                reminderType.secondaryColor,
+                                reminderType.color.opacity(0.9)
+                            ],
+                            startPoint: shimmer ? .topLeading : .bottomLeading,
+                            endPoint: shimmer ? .bottomTrailing : .topTrailing
+                        )
+                    )
+                    .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: shimmer)
+                
+                // Glossy overlay
+                RoundedRectangle(cornerRadius: 32)
+                    .fill(
+                        LinearGradient(
+                            colors: [.white.opacity(0.2), .clear],
+                            startPoint: .topLeading,
+                            endPoint: .center
+                        )
+                    )
+                
+                // Border glow
+                RoundedRectangle(cornerRadius: 32)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.white.opacity(0.4), .white.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1.5
+                    )
+            }
+            .shadow(color: reminderType.color.opacity(0.4), radius: 20, y: 8)
+            .shadow(color: .black.opacity(0.15), radius: 5, y: 2)
         )
         .scaleEffect(scale)
         .opacity(opacity)
@@ -91,6 +192,8 @@ struct AmbientReminderView: View {
             playSound()
             startAnimations()
             startCountdown()
+            glowPulse = true
+            shimmer = true
         }
         .onDisappear {
             countdownTimer?.invalidate()

@@ -58,58 +58,138 @@ struct StatsView: View {
     
     private var todaySummarySection: some View {
         VStack(spacing: 16) {
-            Text("Today's Statistics")
-                .font(.title2)
-                .fontWeight(.bold)
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.title2)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                Text("Today's Statistics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Spacer()
+            }
             
             let todayStats = settings.getTodayStats()
             
-            HStack(spacing: 32) {
-                StatBox(
+            HStack(spacing: 20) {
+                EnhancedStatBox(
                     title: "Breaks Taken",
                     value: "\(todayStats.breaksCompleted)",
-                    icon: "checkmark.circle.fill",
-                    color: .green
+                    icon: "checkmark.seal.fill",
+                    color: .green,
+                    trend: .up
                 )
                 
-                StatBox(
+                EnhancedStatBox(
                     title: "Breaks Skipped",
                     value: "\(todayStats.breaksSkipped)",
-                    icon: "xmark.circle.fill",
-                    color: .red
+                    icon: "xmark.seal.fill",
+                    color: .red,
+                    trend: .down
                 )
                 
-                StatBox(
+                EnhancedStatBox(
                     title: "Total Break Time",
                     value: formatDuration(todayStats.totalBreakTime),
-                    icon: "clock.fill",
-                    color: .blue
+                    icon: "clock.badge.fill",
+                    color: .blue,
+                    trend: .neutral
                 )
             }
             
-            // Progress bar
+            // Enhanced progress bar with animation
             VStack(spacing: 8) {
                 HStack {
-                    Text("Daily Goal Progress")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 6) {
+                        Image(systemName: "target")
+                            .foregroundStyle(.blue)
+                        Text("Daily Goal Progress")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
                     
                     Spacer()
                     
-                    Text("\(todayStats.breaksCompleted) / \(settings.dailyBreakGoal)")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                    HStack(spacing: 4) {
+                        Text("\(todayStats.breaksCompleted)")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                        Text("/")
+                            .foregroundColor(.secondary)
+                        Text("\(settings.dailyBreakGoal)")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
-                ProgressView(
-                    value: Double(todayStats.breaksCompleted),
-                    total: Double(settings.dailyBreakGoal)
-                )
-                .tint(todayStats.breaksCompleted >= settings.dailyBreakGoal ? .green : .blue)
+                ZStack(alignment: .leading) {
+                    // Background
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.secondary.opacity(0.15))
+                        .frame(height: 12)
+                    
+                    // Progress with gradient
+                    GeometryReader { geometry in
+                        let progress = min(Double(todayStats.breaksCompleted) / Double(settings.dailyBreakGoal), 1.0)
+                        
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    colors: todayStats.breaksCompleted >= settings.dailyBreakGoal ? 
+                                        [Color.green, Color.mint] : [Color.blue, Color.cyan],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: geometry.size.width * progress)
+                            .shadow(color: (todayStats.breaksCompleted >= settings.dailyBreakGoal ? Color.green : Color.blue).opacity(0.3), radius: 4)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.7), value: progress)
+                    }
+                    .frame(height: 12)
+                    
+                    // Sparkle effect when goal reached
+                    if todayStats.breaksCompleted >= settings.dailyBreakGoal {
+                        HStack(spacing: 4) {
+                            Spacer()
+                            Image(systemName: "sparkles")
+                                .foregroundColor(.yellow)
+                                .font(.caption)
+                            Text("Goal Reached!")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.green)
+                            Spacer()
+                        }
+                        .offset(y: -20)
+                    }
+                }
+                .frame(height: 12)
             }
-            .padding()
-            .background(Color.secondary.opacity(0.1))
-            .cornerRadius(12)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.secondary.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [.blue.opacity(0.3), .cyan.opacity(0.2)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    )
+            )
         }
     }
     
@@ -347,24 +427,159 @@ struct InsightCard: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
-                .frame(width: 32)
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.15))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.7)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(title)
                     .font(.headline)
+                    .fontWeight(.semibold)
                     .foregroundColor(color)
                 
                 Text(description)
                     .font(.body)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding()
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.1))
-        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(color.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(color.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .shadow(color: color.opacity(0.1), radius: 8, x: 0, y: 4)
+    }
+}
+
+// MARK: - Enhanced Stat Box
+
+struct EnhancedStatBox: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    let trend: Trend
+    
+    enum Trend {
+        case up, down, neutral
+        
+        var icon: String {
+            switch self {
+            case .up: return "arrow.up.right"
+            case .down: return "arrow.down.right"
+            case .neutral: return "minus"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .up: return .green
+            case .down: return .red
+            case .neutral: return .gray
+            }
+        }
+    }
+    
+    @State private var animateValue = false
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Icon with gradient background
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.3), color.opacity(0.15)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 56, height: 56)
+                    .shadow(color: color.opacity(0.2), radius: 8)
+                
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .scaleEffect(animateValue ? 1.0 : 0.8)
+            .animation(.spring(response: 0.5, dampingFraction: 0.6), value: animateValue)
+            
+            VStack(spacing: 6) {
+                Text(value)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .contentTransition(.numericText())
+                
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Trend indicator
+            HStack(spacing: 4) {
+                Image(systemName: trend.icon)
+                    .font(.caption2)
+                Text("Trend")
+                    .font(.caption2)
+            }
+            .foregroundColor(trend.color.opacity(0.8))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(trend.color.opacity(0.1))
+            .cornerRadius(8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.secondary.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                colors: [color.opacity(0.3), color.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                )
+        )
+        .shadow(color: color.opacity(0.1), radius: 10, x: 0, y: 5)
+        .onAppear {
+            animateValue = true
+        }
     }
 }

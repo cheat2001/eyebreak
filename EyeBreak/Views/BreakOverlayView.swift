@@ -28,12 +28,21 @@ struct BreakOverlayView: View {
     
     var body: some View {
         ZStack {
+            // Animated gradient background
+            AnimatedGradientBackground()
+                .ignoresSafeArea()
+            
             // Background blur
             VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
                 .ignoresSafeArea()
+                .opacity(0.8)
             
-            // Dimming overlay
-            Color.black.opacity(0.6)
+            // Dimming overlay with subtle animation
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+            
+            // Floating particles effect
+            FloatingParticlesView()
                 .ignoresSafeArea()
             
             // Content
@@ -92,27 +101,91 @@ struct BreakOverlayView: View {
     
     private var standardBreakContent: some View {
         VStack(spacing: 32) {
-            // Icon
-            Image(systemName: "eye.slash.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.3), radius: 10)
+            // Animated icon with glow effect
+            ZStack {
+                // Outer glow rings
+                ForEach(0..<3) { index in
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [.cyan.opacity(0.3), .blue.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
+                        .frame(width: CGFloat(120 + index * 30), height: CGFloat(120 + index * 30))
+                        .scaleEffect(opacity > 0.5 ? 1.2 : 1.0)
+                        .opacity(0.4 - Double(index) * 0.1)
+                        .animation(
+                            .easeInOut(duration: 2.0 + Double(index) * 0.5)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(index) * 0.2),
+                            value: opacity
+                        )
+                }
+                
+                // Main icon with gradient
+                Image(systemName: "eye.slash.fill")
+                    .font(.system(size: 80))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.cyan, .blue, .purple],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: .cyan.opacity(0.5), radius: 20)
+                    .shadow(color: .blue.opacity(0.3), radius: 40)
+                    .scaleEffect(opacity > 0.5 ? 1.0 : 0.9)
+                    .animation(
+                        .easeInOut(duration: 2.0).repeatForever(autoreverses: true),
+                        value: opacity
+                    )
+            }
             
-            // Title
+            // Title with gradient
             Text("Time for a Break")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.white, .white.opacity(0.9), .cyan.opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .cyan.opacity(0.3), radius: 10)
                 .shadow(color: .black.opacity(0.3), radius: 10)
                 .accessibilityFocused($isMessageFocused)
             
-            // Instruction
-            Text("Look at something 20 feet away")
-                .font(.system(size: 24, weight: .medium, design: .rounded))
-                .foregroundColor(.white.opacity(0.9))
-                .multilineTextAlignment(.center)
-                .shadow(color: .black.opacity(0.3), radius: 5)
+            // Instruction with subtle animation
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    Image(systemName: "arrow.left.and.right")
+                        .font(.title2)
+                        .foregroundColor(.cyan)
+                    
+                    Text("Look at something 20 feet away")
+                        .font(.system(size: 24, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.95))
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.caption)
+                        .foregroundColor(.yellow)
+                    Text("Give your eyes a rest")
+                        .font(.callout)
+                        .foregroundColor(.white.opacity(0.7))
+                    Image(systemName: "sparkles")
+                        .font(.caption)
+                        .foregroundColor(.yellow)
+                }
+            }
+            .multilineTextAlignment(.center)
+            .shadow(color: .black.opacity(0.3), radius: 5)
             
-            // Timer display
+            // Enhanced timer display
             timerDisplay
         }
     }
@@ -127,28 +200,76 @@ struct BreakOverlayView: View {
     
     private var timerDisplay: some View {
         ZStack {
-            // Background circle
+            // Outer decorative ring
             Circle()
-                .stroke(Color.white.opacity(0.3), lineWidth: 8)
-                .frame(width: 120, height: 120)
+                .stroke(
+                    LinearGradient(
+                        colors: [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 2
+                )
+                .frame(width: 140, height: 140)
             
-            // Progress circle
+            // Background circle with glow
+            Circle()
+                .fill(Color.white.opacity(0.05))
+                .frame(width: 130, height: 130)
+                .overlay(
+                    Circle()
+                        .stroke(Color.white.opacity(0.2), lineWidth: 8)
+                )
+                .shadow(color: .cyan.opacity(0.3), radius: 20)
+            
+            // Progress circle with gradient
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
-                    Color.white,
+                    AngularGradient(
+                        colors: [.cyan, .blue, .purple, .pink, .cyan],
+                        center: .center
+                    ),
                     style: StrokeStyle(lineWidth: 8, lineCap: .round)
                 )
-                .frame(width: 120, height: 120)
+                .frame(width: 130, height: 130)
                 .rotationEffect(.degrees(-90))
+                .shadow(color: .cyan.opacity(0.5), radius: 10)
                 .animation(.linear(duration: 1), value: progress)
             
-            // Countdown text
-            Text("\(remainingSeconds)")
-                .font(.system(size: 48, weight: .bold, design: .monospaced))
-                .foregroundColor(.white)
+            // Countdown text with enhanced styling
+            VStack(spacing: 4) {
+                Text("\(remainingSeconds)")
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.white, .cyan.opacity(0.9)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .shadow(color: .cyan.opacity(0.5), radius: 10)
+                    .contentTransition(.numericText())
+                
+                Text("seconds")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
+                    .textCase(.uppercase)
+                    .tracking(2)
+            }
+            
+            // Rotating accent dots
+            ForEach(0..<8) { index in
+                Circle()
+                    .fill(Color.cyan.opacity(0.6))
+                    .frame(width: 4, height: 4)
+                    .offset(y: -70)
+                    .rotationEffect(.degrees(Double(index) * 45))
+                    .rotationEffect(.degrees(Double(remainingSeconds) * 6))
+                    .animation(.linear(duration: 2).repeatForever(autoreverses: false), value: remainingSeconds)
+            }
         }
-        .shadow(color: .black.opacity(0.3), radius: 10)
+        .frame(width: 140, height: 140)
     }
     
     // MARK: - Skip Hint
@@ -379,5 +500,76 @@ struct VisualEffectView: NSViewRepresentable {
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
         nsView.material = material
         nsView.blendingMode = blendingMode
+    }
+}
+
+// MARK: - Animated Gradient Background
+
+struct AnimatedGradientBackground: View {
+    @State private var animateGradient = false
+    
+    var body: some View {
+        LinearGradient(
+            colors: animateGradient ? 
+                [.blue.opacity(0.3), .purple.opacity(0.3), .cyan.opacity(0.3)] :
+                [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
+            startPoint: animateGradient ? .topLeading : .bottomLeading,
+            endPoint: animateGradient ? .bottomTrailing : .topTrailing
+        )
+        .onAppear {
+            withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
+                animateGradient = true
+            }
+        }
+    }
+}
+
+// MARK: - Floating Particles Effect
+
+struct FloatingParticlesView: View {
+    @State private var particles: [Particle] = []
+    
+    struct Particle: Identifiable {
+        let id = UUID()
+        var x: CGFloat
+        var y: CGFloat
+        var size: CGFloat
+        var opacity: Double
+        var delay: Double
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                ForEach(particles) { particle in
+                    Circle()
+                        .fill(Color.cyan.opacity(particle.opacity))
+                        .frame(width: particle.size, height: particle.size)
+                        .position(x: particle.x, y: particle.y)
+                        .blur(radius: 2)
+                        .animation(
+                            .easeInOut(duration: 3.0)
+                            .repeatForever(autoreverses: true)
+                            .delay(particle.delay),
+                            value: particle.y
+                        )
+                }
+            }
+            .onAppear {
+                createParticles(in: geometry.size)
+            }
+        }
+    }
+    
+    private func createParticles(in size: CGSize) {
+        particles = (0..<15).map { index in
+            Particle(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: 0...size.height),
+                size: CGFloat.random(in: 4...12),
+                opacity: Double.random(in: 0.1...0.3),
+                delay: Double(index) * 0.2
+            )
+        }
     }
 }

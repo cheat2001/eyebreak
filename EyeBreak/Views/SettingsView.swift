@@ -257,108 +257,213 @@ struct BreakSettingsView: View {
             }
             
             Section {
-                Toggle("Enable Ambient Reminders", isOn: Binding(
-                    get: { settings.ambientRemindersEnabled },
-                    set: { newValue in
-                        settings.ambientRemindersEnabled = newValue
-                        if newValue {
-                            AmbientReminderManager.shared.startAmbientReminders()
-                        } else {
-                            AmbientReminderManager.shared.stopAmbientReminders()
-                        }
-                    }
-                ))
-                .toggleStyle(.switch)
-                
-                if settings.ambientRemindersEnabled {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Reminder Interval: \(settings.ambientReminderIntervalMinutes) minutes")
-                            .font(.headline)
-                        
-                        Slider(
-                            value: Binding(
-                                get: { Double(settings.ambientReminderIntervalMinutes) },
-                                set: { settings.ambientReminderIntervalMinutes = Int($0) }
-                            ),
-                            in: 1...15,
-                            step: 1
-                        )
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Display Duration: \(settings.ambientReminderDurationSeconds) seconds")
-                            .font(.headline)
-                        
-                        Slider(
-                            value: Binding(
-                                get: { Double(settings.ambientReminderDurationSeconds) },
-                                set: { settings.ambientReminderDurationSeconds = Int($0) }
-                            ),
-                            in: 3...15,
-                            step: 1
-                        )
-                    }
-                    
-                    // Test button
-                    Button(action: {
-                        AmbientReminderManager.shared.showAmbientReminder()
-                    }) {
-                        HStack {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Enhanced toggle with icon
+                    HStack {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.orange.opacity(0.3), Color.yellow.opacity(0.2)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 36, height: 36)
+                            
                             Image(systemName: "sparkles")
-                            Text("Show Reminder Now")
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.orange, .yellow],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.blue)
-                    
-                    Text("Or press ⌘⇧R to test anytime")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Divider()
-                    
-                    // Custom reminder section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Toggle("Use Custom Reminder", isOn: $settings.useCustomReminder)
-                            .toggleStyle(.switch)
                         
-                        if settings.useCustomReminder {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Custom Emoji")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                HStack {
-                                    TextField("Enter emoji (e.g., 🌟 😊 🎯)", text: $settings.customReminderEmoji)
-                                        .textFieldStyle(.roundedBorder)
-                                        .font(.system(size: 24))
-                                    
-                                    if !settings.customReminderEmoji.isEmpty {
-                                        Text(settings.customReminderEmoji)
-                                            .font(.system(size: 40))
-                                    }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Enable Ambient Reminders")
+                                .font(.headline)
+                            Text("Cute periodic reminders while you work")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Toggle("", isOn: Binding(
+                            get: { settings.ambientRemindersEnabled },
+                            set: { newValue in
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    settings.ambientRemindersEnabled = newValue
+                                }
+                                if newValue {
+                                    AmbientReminderManager.shared.startAmbientReminders()
+                                } else {
+                                    AmbientReminderManager.shared.stopAmbientReminders()
                                 }
                             }
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Custom Message")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                TextField("Enter reminder message", text: $settings.customReminderMessage)
-                                    .textFieldStyle(.roundedBorder)
+                        ))
+                        .toggleStyle(.switch)
+                    }
+                    .padding(12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(settings.ambientRemindersEnabled ? Color.orange.opacity(0.08) : Color.secondary.opacity(0.05))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(
+                                        settings.ambientRemindersEnabled ? 
+                                            LinearGradient(
+                                                colors: [Color.orange.opacity(0.3), Color.yellow.opacity(0.2)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ) : 
+                                            LinearGradient(colors: [Color.clear], startPoint: .top, endPoint: .bottom),
+                                        lineWidth: 1
+                                    )
+                            )
+                    )
+                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: settings.ambientRemindersEnabled)
+                }
+                
+                if settings.ambientRemindersEnabled {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Enhanced interval slider
+                        EnhancedSliderCard(
+                            title: "Reminder Interval",
+                            value: settings.ambientReminderIntervalMinutes,
+                            unit: "min",
+                            icon: "clock.fill",
+                            color: .blue,
+                            range: 1...15
+                        ) { newValue in
+                            settings.ambientReminderIntervalMinutes = Int(newValue)
+                        }
+                        
+                        // Enhanced duration slider
+                        EnhancedSliderCard(
+                            title: "Display Duration",
+                            value: settings.ambientReminderDurationSeconds,
+                            unit: "sec",
+                            icon: "timer",
+                            color: .green,
+                            range: 3...15
+                        ) { newValue in
+                            settings.ambientReminderDurationSeconds = Int(newValue)
+                        }
+                        
+                        // Enhanced test button
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                AmbientReminderManager.shared.showAmbientReminder()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .symbolEffect(.pulse)
+                                Text("Show Reminder Now")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(
+                                    colors: [.blue, .blue.opacity(0.8)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        HStack {
+                            Image(systemName: "keyboard")
+                                .foregroundColor(.secondary)
+                            Text("Press ⌘⇧R to test anytime")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 4)
+                        
+                        Divider()
+                        
+                        // Enhanced custom reminder section
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack {
+                                Image(systemName: "paintbrush.fill")
+                                    .foregroundColor(.pink)
+                                Text("Customize Your Reminder")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
                             }
                             
-                            HStack(spacing: 8) {
-                                Image(systemName: "lightbulb.fill")
-                                    .foregroundColor(.yellow)
-                                Text("Try: 💧 \"Drink water\" or 🧘 \"Stretch your body\" or 🌳 \"Look far away\"")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                            Toggle("Use Custom Reminder", isOn: $settings.useCustomReminder)
+                                .toggleStyle(.switch)
+                                .padding(.horizontal, 4)
+                            
+                            if settings.useCustomReminder {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    // Custom emoji input with preview
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Label("Custom Emoji", systemImage: "face.smiling")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                        
+                                        HStack(spacing: 12) {
+                                            TextField("Enter emoji (e.g., 🌟 😊 🎯)", text: $settings.customReminderEmoji)
+                                                .textFieldStyle(.roundedBorder)
+                                                .font(.system(size: 20))
+                                            
+                                            if !settings.customReminderEmoji.isEmpty {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Color.pink.opacity(0.15))
+                                                        .frame(width: 56, height: 56)
+                                                    
+                                                    Text(settings.customReminderEmoji)
+                                                        .font(.system(size: 32))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(Color.pink.opacity(0.05))
+                                    )
+                                    
+                                    // Custom message input
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Label("Custom Message", systemImage: "text.bubble")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                        
+                                        TextField("Enter reminder message", text: $settings.customReminderMessage)
+                                            .textFieldStyle(.roundedBorder)
+                                    }
+                                    .padding(12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(Color.pink.opacity(0.05))
+                                    )
+                                    
+                                    // Tips
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "lightbulb.fill")
+                                            .foregroundColor(.yellow)
+                                        Text("Try: 💧 \"Drink water\" or 🧘 \"Stretch your body\"")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .padding(.horizontal, 12)
+                                }
                             }
-                            .padding(.top, 4)
                         }
                     }
                 }
@@ -452,7 +557,7 @@ struct AboutView: View {
                 
                 // Links
                 VStack(spacing: 12) {
-                    Link(destination: URL(string: "https://github.com")!) {
+                    Link(destination: URL(string: "https://github.com/cheat2001/eyebreak")!) {
                         Label("GitHub Repository", systemImage: "link")
                     }
                     
@@ -503,50 +608,169 @@ struct FeatureRow: View {
 struct TimerStatusBanner: View {
     @EnvironmentObject var timerManager: BreakTimerManager
     @EnvironmentObject var settings: AppSettings
+    @State private var pulseAnimation = false
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 20) {
-                // Status indicator
-                statusIndicator
+        VStack(spacing: 0) {
+            HStack(spacing: 24) {
+                // Enhanced status indicator with animation
+                ZStack {
+                    // Outer pulse
+                    Circle()
+                        .fill(statusColor.opacity(0.2))
+                        .frame(width: 40, height: 40)
+                        .scaleEffect(pulseAnimation && timerManager.state.isActive ? 1.3 : 1.0)
+                        .animation(
+                            timerManager.state.isActive ?
+                            .easeInOut(duration: 1.5).repeatForever(autoreverses: true) : .default,
+                            value: pulseAnimation
+                        )
+                    
+                    // Middle ring
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [statusColor, statusColor.opacity(0.6)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
+                        .frame(width: 24, height: 24)
+                    
+                    // Core indicator
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [statusColor, statusColor.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 12, height: 12)
+                        .shadow(color: statusColor.opacity(0.5), radius: 4)
+                }
+                .onAppear { pulseAnimation = true }
                 
-                // Timer display
-                timerDisplay
+                // Enhanced timer display
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(statusText)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(statusColor)
+                        
+                        if case .working(let seconds) = timerManager.state {
+                            Text("\(formatTime(seconds)) remaining")
+                                .font(.system(.subheadline, design: .monospaced))
+                                .foregroundColor(.secondary)
+                                .contentTransition(.numericText())
+                        } else if case .breaking(let seconds) = timerManager.state {
+                            Text("\(seconds) seconds")
+                                .font(.system(.subheadline, design: .monospaced))
+                                .foregroundColor(.secondary)
+                                .contentTransition(.numericText())
+                        } else if case .preBreak(let seconds) = timerManager.state {
+                            Text("Break in \(seconds)s")
+                                .font(.system(.subheadline, design: .monospaced))
+                                .foregroundColor(.orange)
+                                .contentTransition(.numericText())
+                        } else {
+                            Text("Start your healthy eye habit")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    // Visual icon based on state
+                    if timerManager.state.isActive {
+                        Image(systemName: statusIcon)
+                            .font(.title2)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [statusColor, statusColor.opacity(0.7)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .symbolEffect(.pulse.byLayer, options: .repeating)
+                    }
+                }
                 
                 Spacer()
                 
-                // Control buttons
+                // Enhanced control buttons
                 controlButtons
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 16)
+            .padding(.vertical, 20)
             
-            // Progress bar
+            // Enhanced progress bar
             if case .working(let remaining) = timerManager.state {
-                ProgressView(value: Double(remaining), total: Double(settings.workIntervalSeconds))
-                    .progressViewStyle(.linear)
-                    .tint(.blue)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 8)
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.blue.opacity(0.1))
+                        .frame(height: 4)
+                    
+                    GeometryReader { geometry in
+                        let progress = 1.0 - (Double(remaining) / Double(settings.workIntervalSeconds))
+                        
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.blue, Color.cyan],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: geometry.size.width * progress, height: 4)
+                            .shadow(color: Color.blue.opacity(0.3), radius: 2)
+                            .animation(.linear(duration: 1), value: progress)
+                    }
+                    .frame(height: 4)
+                }
+                .transition(.opacity)
+                
             } else if case .breaking(let remaining) = timerManager.state {
-                ProgressView(value: Double(remaining), total: Double(settings.breakDurationSeconds))
-                    .progressViewStyle(.linear)
-                    .tint(.green)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 8)
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.green.opacity(0.1))
+                        .frame(height: 4)
+                    
+                    GeometryReader { geometry in
+                        let progress = 1.0 - (Double(remaining) / Double(settings.breakDurationSeconds))
+                        
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.green, Color.mint],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: geometry.size.width * progress, height: 4)
+                            .shadow(color: Color.green.opacity(0.3), radius: 2)
+                            .animation(.linear(duration: 1), value: progress)
+                    }
+                    .frame(height: 4)
+                }
+                .transition(.opacity)
             }
         }
-        .background(Color(NSColor.controlBackgroundColor))
+        .background(
+            RoundedRectangle(cornerRadius: 0)
+                .fill(Color(NSColor.controlBackgroundColor))
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+        )
     }
     
-    private var statusIndicator: some View {
-        Circle()
-            .fill(statusColor)
-            .frame(width: 12, height: 12)
-            .overlay(
-                Circle()
-                    .stroke(statusColor.opacity(0.3), lineWidth: 4)
-            )
+    private var statusIcon: String {
+        switch timerManager.state {
+        case .working: return "desktopcomputer"
+        case .breaking: return "eye.slash.fill"
+        case .preBreak: return "bell.fill"
+        default: return "timer"
+        }
     }
     
     private var statusColor: Color {
@@ -651,5 +875,115 @@ struct TimerStatusBanner: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+    }
+    
+    private func formatTime(_ totalSeconds: Int) -> String {
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+// MARK: - Enhanced Slider Card Component
+
+struct EnhancedSliderCard: View {
+    let title: String
+    let value: Int
+    let unit: String
+    let icon: String
+    let color: Color
+    let range: ClosedRange<Double>
+    let onChange: (Double) -> Void
+    
+    @State private var animateValue = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                // Icon with gradient background
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [color.opacity(0.3), color.opacity(0.15)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 32, height: 32)
+                    
+                    Image(systemName: icon)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .font(.system(size: 14))
+                }
+                
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                // Value display with animation
+                HStack(spacing: 4) {
+                    Text("\(value)")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .contentTransition(.numericText())
+                    
+                    Text(unit)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
+                }
+                .scaleEffect(animateValue ? 1.1 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateValue)
+            }
+            
+            // Custom styled slider
+            Slider(
+                value: Binding(
+                    get: { Double(value) },
+                    set: { newValue in
+                        onChange(newValue)
+                        animateValue = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            animateValue = false
+                        }
+                    }
+                ),
+                in: range,
+                step: 1
+            )
+            .tint(color)
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(color.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            LinearGradient(
+                                colors: [color.opacity(0.2), color.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+        )
     }
 }

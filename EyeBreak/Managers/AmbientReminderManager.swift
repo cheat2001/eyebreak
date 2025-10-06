@@ -95,9 +95,9 @@ class AmbientReminderManager: ObservableObject {
         print("👁️ Mouse location: \(mouseLocation)")
         print("👁️ Active screen: \(activeScreen.frame)")
         
-        // Center horizontally, position at top (smaller size now)
-        let windowWidth: CGFloat = 280
-        let windowHeight: CGFloat = 80
+        // Center horizontally, position at top with larger size for full text
+        let windowWidth: CGFloat = 420
+        let windowHeight: CGFloat = 110
         let x = screenFrame.midX - (windowWidth / 2)
         let y = screenFrame.maxY - windowHeight - 60  // 60pt from top
         
@@ -200,15 +200,39 @@ enum ReminderType: String {
         }
     }
     
+    var subtitle: String {
+        switch self {
+        case .blink: return "Rest for a moment"
+        case .lookLeft: return "Shift your focus"
+        case .lookRight: return "Shift your focus"
+        case .lookUp: return "Change your view"
+        case .lookDown: return "Relax your gaze"
+        case .lookAround: return "Take a visual break"
+        case .custom: return "Eye care reminder"
+        }
+    }
+    
     var color: Color {
         switch self {
-        case .blink: return .blue
-        case .lookLeft: return .purple
-        case .lookRight: return .purple
-        case .lookUp: return .green
-        case .lookDown: return .green
-        case .lookAround: return .orange
-        case .custom: return .pink
+        case .blink: return Color(red: 0.2, green: 0.6, blue: 1.0) // Bright blue
+        case .lookLeft: return Color(red: 0.7, green: 0.3, blue: 1.0) // Purple
+        case .lookRight: return Color(red: 0.7, green: 0.3, blue: 1.0) // Purple
+        case .lookUp: return Color(red: 0.2, green: 0.8, blue: 0.5) // Green
+        case .lookDown: return Color(red: 0.2, green: 0.8, blue: 0.5) // Green
+        case .lookAround: return Color(red: 1.0, green: 0.6, blue: 0.2) // Orange
+        case .custom: return Color(red: 1.0, green: 0.4, blue: 0.7) // Pink
+        }
+    }
+    
+    var secondaryColor: Color {
+        switch self {
+        case .blink: return Color(red: 0.4, green: 0.8, blue: 1.0) // Light blue
+        case .lookLeft: return Color(red: 0.9, green: 0.5, blue: 1.0) // Light purple
+        case .lookRight: return Color(red: 0.9, green: 0.5, blue: 1.0) // Light purple
+        case .lookUp: return Color(red: 0.4, green: 1.0, blue: 0.7) // Light green
+        case .lookDown: return Color(red: 0.4, green: 1.0, blue: 0.7) // Light green
+        case .lookAround: return Color(red: 1.0, green: 0.8, blue: 0.4) // Light orange
+        case .custom: return Color(red: 1.0, green: 0.6, blue: 0.9) // Light pink
         }
     }
 }
