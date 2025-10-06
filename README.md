@@ -99,7 +99,7 @@ open EyeBreak.xcodeproj
 # Press ⌘R to build and run
 ```
 
-See [docs/QUICKSTART.md](docs/QUICKSTART.md) for detailed build instructions.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for detailed build instructions.
 
 ## 🎯 Usage
 
@@ -228,12 +228,13 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📚 Documentation
 
-- [Quick Start Guide](docs/QUICKSTART.md) - Get up and running in 5 minutes
+- [Development Guide](docs/DEVELOPMENT.md) - Build and run from source
 - [Architecture](docs/ARCHITECTURE.md) - Technical design and structure
-- [Build Instructions](docs/BUILD.md) - Detailed build and distribution guide
+- [Installation Guide](docs/INSTALLATION.md) - Detailed installation instructions
+- [Distribution Guide](docs/DISTRIBUTION.md) - Release and distribution process
+- [Publishing Guide](docs/PUBLISHING.md) - How to publish releases on GitHub
 - [Testing Guide](docs/TESTING.md) - How to test the app
 - [FAQ](docs/FAQ.md) - Frequently asked questions
-- [Icon Guide](docs/ICON_GUIDE.md) - Creating and customizing app icons
 
 ## 🐛 Troubleshooting
 
