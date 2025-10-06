@@ -63,7 +63,39 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ## 🚀 Installation
 
-### Option 1: Build from Source (Recommended)
+### Option 1: Download DMG (Easiest) ⭐️
+
+1. **Download** the latest `EyeBreak-vX.X.X.dmg` from [Releases](https://github.com/cheat2001/eyebreak/releases/latest)
+2. **Open** the downloaded DMG file
+3. **Drag** `EyeBreak.app` to your `Applications` folder
+4. **Right-click** the app and select "Open" (required for unsigned apps)
+5. Look for the **eye icon 👁️** in your menu bar!
+
+> **Note**: Since the app isn't signed, you'll need to right-click → Open on first launch.
+
+### Option 2: Quick Install Script
+
+Copy and paste this one-liner into Terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cheat2001/eyebreak/main/scripts/install.sh | bash
+```
+
+This will automatically:
+- Download the latest release
+- Install to Applications folder
+- Remove quarantine attributes
+- Launch the app
+
+### Option 3: Homebrew (Coming Soon)
+
+```bash
+brew install --cask eyebreak
+```
+
+### Option 4: Build from Source
+
+For developers who want to build from source:
 
 1. **Clone the repository**
    ```bash
@@ -76,21 +108,11 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
    open EyeBreak.xcodeproj
    ```
 
-3. **Configure signing**
-   - Select the **EyeBreak** target
-   - Go to **Signing & Capabilities**
-   - Select your development team
+3. **Configure signing** (in Xcode: Target → Signing & Capabilities → Select your team)
 
-4. **Build and run**
-   ```bash
-   ⌘R
-   ```
+4. **Build and run** (Press ⌘R)
 
-**Quick Start**: See [docs/QUICKSTART.md](docs/QUICKSTART.md) for detailed setup instructions.
-
-### Option 2: Download Release (Coming Soon)
-
-Pre-built releases will be available on the [Releases](https://github.com/cheat2001/eyebreak/releases) page.
+**Quick Start Guide**: See [docs/QUICKSTART.md](docs/QUICKSTART.md) for detailed setup instructions.
 
 ## 🎯 Usage
 
