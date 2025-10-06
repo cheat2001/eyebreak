@@ -12,7 +12,7 @@ struct EyeBreakApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
-        // Settings window - not shown by default, only via menu
+        // Settings window - shown by default on first launch
         Window("EyeBreak Settings", id: "settings") {
             SettingsView()
                 .environmentObject(BreakTimerManager.shared)
@@ -21,8 +21,6 @@ struct EyeBreakApp: App {
         }
         .defaultSize(width: 700, height: 600)
         .defaultPosition(.center)
-        // CRITICAL: Don't show window on launch - this prevents app from being tied to a specific Space
-        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("About EyeBreak") {
@@ -62,17 +60,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventMonitors: [Any] = []
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // CRITICAL: Use .accessory policy so app doesn't "own" any space
-        // This prevents the app from being tied to a specific desktop
-        NSApp.setActivationPolicy(.accessory)
+        print("🚀 App launching...")
         
-        // Hide all windows on launch - Settings can be opened via menu only
-        for window in NSApplication.shared.windows {
-            window.orderOut(nil)
-        }
+        // Prevent automatic termination
+        NSApp.disableRelaunchOnLogin()
         
-        // Initialize status bar
+        // CRITICAL: Create status bar FIRST, while still in default mode
+        print("📍 Creating status bar BEFORE changing activation policy...")
         statusBar = StatusBarController()
+        print("✅ StatusBar initialized")
+        
+        // Force a small delay to ensure status bar is fully registered
+        // THEN change to accessory mode
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            print("📍 Now switching to accessory mode...")
+            NSApp.setActivationPolicy(.accessory)
+            print("✅ Set to accessory mode (overlays appear on current workspace)")
+            
+            // Verify status bar is still visible after mode change
+            if let bar = self.statusBar, let item = bar.statusItem {
+                print("📍 After mode change - Status bar still exists: \(item.isVisible)")
+            }
+        }
         
         // Setup global keyboard shortcuts
         setupGlobalKeyboardShortcuts()
@@ -83,15 +92,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         print("✅ App launched successfully!")
-        print("👀 EyeBreak running in background (accessory mode)")
-        print("   - No Settings window shown by default")
-        print("   - Open Settings from menubar or Dock if needed")
+        print("👀 EyeBreak running in ACCESSORY mode")
+        print("   ✓ No Dock icon (prevents Space/desktop switching)")
+        print("   ✓ Overlays appear on YOUR CURRENT workspace")
+        print("   ✓ Menu bar icon should be visible (look for 👁️)")
         print("")
-        print("⌨️  Keyboard Shortcuts:")
+        print("⌨️  If menu bar icon not visible, use keyboard shortcuts:")
+        print("   ⌘⇧O - Open Settings")
         print("   ⌘⇧S - Start timer")
         print("   ⌘⇧B - Take break now")
         print("   ⌘⇧X - Stop timer")
-        print("   ⌘⇧R - Show ambient reminder")
+        print("   ⌘⇧R - Show ambient reminder (test overlay on current screen)")
     }
     
     func applicationWillTerminate(_ notification: Notification) {
@@ -126,6 +137,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
                 DispatchQueue.main.async {
                     AmbientReminderManager.shared.showAmbientReminder()
+                }
+            }
+            // Check for Command+Shift+O (Open Settings)
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "o" {
+                DispatchQueue.main.async {
+                    self.openSettings()
                 }
             }
         }
@@ -164,11 +181,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 return nil
             }
+            // Check for Command+Shift+O (Open Settings)
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "o" {
+                DispatchQueue.main.async {
+                    self.openSettings()
+                }
+                return nil
+            }
             return event
         }
         
         if let monitor = localMonitor {
             eventMonitors.append(monitor)
         }
+    }
+    
+    private func openSettings() {
+        print("🔧 Opening Settings via keyboard shortcut")
+        
+        // Create Settings window
+        let settingsView = SettingsView()
+            .environmentObject(BreakTimerManager.shared)
+            .environmentObject(AppSettings.shared)
+        
+        let hostingController = NSHostingController(rootView: settingsView)
+        let window = NSWindow(contentViewController: hostingController)
+        window.title = "EyeBreak Settings"
+        window.setContentSize(NSSize(width: 700, height: 600))
+        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        
+        NSApp.activate(ignoringOtherApps: true)
+        print("✅ Settings window opened")
     }
 }

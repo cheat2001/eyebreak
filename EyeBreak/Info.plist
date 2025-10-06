@@ -24,16 +24,14 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>LSUIElement</key>
-	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2025 EyeBreak. All rights reserved.</string>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>alert</string>
 	<key>NSSupportsAutomaticTermination</key>
-	<true/>
+	<false/>
 	<key>NSSupportsSuddenTermination</key>
-	<true/>
+	<false/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>EyeBreak needs to detect user activity to pause the timer when you're away.</string>
 	<key>NSSystemExtensionUsageDescription</key>
