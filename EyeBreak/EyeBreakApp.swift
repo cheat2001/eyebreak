@@ -58,6 +58,7 @@ struct EyeBreakApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBar: StatusBarController?
     var eventMonitors: [Any] = []
+    var settingsWindow: NSWindow?  // Reuse the same settings window
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("🚀 App launching...")
@@ -110,6 +111,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         for monitor in eventMonitors {
             NSEvent.removeMonitor(monitor)
         }
+    }
+    
+    // Prevent app from quitting when last window closes
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false
     }
     
     private func setupGlobalKeyboardShortcuts() {
@@ -199,6 +205,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func openSettings() {
         print("🔧 Opening Settings via keyboard shortcut")
         
+        // Check if settings window already exists
+        if let existingWindow = settingsWindow {
+            // Just bring it to front (works even if minimized or hidden)
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            print("✅ Brought existing settings window to front")
+            return
+        }
+        
         // Create Settings window
         let settingsView = SettingsView()
             .environmentObject(BreakTimerManager.shared)
@@ -210,9 +225,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.setContentSize(NSSize(width: 700, height: 600))
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
         window.center()
-        window.makeKeyAndOrderFront(nil)
         
+        // Prevent app from quitting when window closes
+        window.isReleasedWhenClosed = false
+        
+        // Set window delegate to clear reference when truly closed
+        window.delegate = self
+        
+        // Store reference to reuse later
+        settingsWindow = window
+        
+        window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        
         print("✅ Settings window opened")
+    }
+}
+
+// MARK: - NSWindowDelegate
+extension AppDelegate: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        // Clear the reference when window is actually closed (not just hidden)
+        if let window = notification.object as? NSWindow, window == settingsWindow {
+            // Only clear if user explicitly closed (not just minimized)
+            // We keep the reference to allow reopening
+            print("📝 Settings window closed (reference kept for reuse)")
+        }
     }
 }

@@ -8,10 +8,12 @@
 import AppKit
 import SwiftUI
 
-class StatusBarController: ObservableObject {
+class StatusBarController: NSObject, ObservableObject {
     private(set) var statusItem: NSStatusItem?  // Changed to private(set) to allow reading
+    private var settingsWindow: NSWindow?  // Reuse the same settings window
     
-    init() {
+    override init() {
+        super.init()
         print("🔵 StatusBarController init started")
         // Setup status bar synchronously on main thread
         if Thread.isMainThread {
@@ -115,6 +117,15 @@ class StatusBarController: ObservableObject {
     @objc private func openSettings() {
         print("🔧 Opening Settings")
         
+        // Check if settings window already exists
+        if let existingWindow = settingsWindow {
+            // Just bring it to front (works even if minimized or hidden)
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            print("✅ Brought existing settings window to front")
+            return
+        }
+        
         // Create a new settings window
         let settingsView = SettingsView()
             .environmentObject(BreakTimerManager.shared)
@@ -127,9 +138,20 @@ class StatusBarController: ObservableObject {
         window.setContentSize(NSSize(width: 700, height: 600))
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
         window.center()
-        window.makeKeyAndOrderFront(nil)
         
+        // Prevent app from quitting when window closes
+        window.isReleasedWhenClosed = false
+        
+        // Set window delegate to clear reference when truly closed
+        window.delegate = self
+        
+        // Store reference to reuse later
+        settingsWindow = window
+        
+        window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        
+        print("✅ Created new settings window")
     }
     
     @objc private func startTimer() {
@@ -164,6 +186,18 @@ class StatusBarController: ObservableObject {
         if let icon = NSImage(systemSymbolName: iconName, accessibilityDescription: "EyeBreak") {
             icon.isTemplate = true
             button.image = icon
+        }
+    }
+}
+
+// MARK: - NSWindowDelegate
+extension StatusBarController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        // Clear the reference when window is actually closed (not just hidden)
+        if let window = notification.object as? NSWindow, window == settingsWindow {
+            // Only clear if user explicitly closed (not just minimized)
+            // We keep the reference to allow reopening
+            print("📝 Settings window closed (reference kept for reuse)")
         }
     }
 }

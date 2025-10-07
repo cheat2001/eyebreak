@@ -173,6 +173,7 @@ enum ReminderType: String {
     case custom = "Custom"
     
     var emoji: String {
+        // Kept for backward compatibility but not used in new design
         switch self {
         case .blink: return "👁️"
         case .lookLeft: return "👈"
@@ -183,6 +184,19 @@ enum ReminderType: String {
         case .custom: 
             let emoji = AppSettings.shared.customReminderEmoji
             return emoji.isEmpty ? "💡" : emoji
+        }
+    }
+    
+    // Professional SF Symbol icons
+    var iconName: String {
+        switch self {
+        case .blink: return "eye"
+        case .lookLeft: return "arrow.left.circle"
+        case .lookRight: return "arrow.right.circle"
+        case .lookUp: return "arrow.up.circle"
+        case .lookDown: return "arrow.down.circle"
+        case .lookAround: return "arrow.clockwise.circle"
+        case .custom: return "sparkles"
         }
     }
     
@@ -212,27 +226,27 @@ enum ReminderType: String {
         }
     }
     
-    var color: Color {
+    // Professional muted color palette inspired by Apple design
+    var glassColor: Color {
         switch self {
-        case .blink: return Color(red: 0.2, green: 0.6, blue: 1.0) // Bright blue
-        case .lookLeft: return Color(red: 0.7, green: 0.3, blue: 1.0) // Purple
-        case .lookRight: return Color(red: 0.7, green: 0.3, blue: 1.0) // Purple
-        case .lookUp: return Color(red: 0.2, green: 0.8, blue: 0.5) // Green
-        case .lookDown: return Color(red: 0.2, green: 0.8, blue: 0.5) // Green
-        case .lookAround: return Color(red: 1.0, green: 0.6, blue: 0.2) // Orange
-        case .custom: return Color(red: 1.0, green: 0.4, blue: 0.7) // Pink
+        case .blink: return Color(red: 0.35, green: 0.5, blue: 0.75)        // Soft slate blue
+        case .lookLeft: return Color(red: 0.5, green: 0.4, blue: 0.7)       // Muted purple
+        case .lookRight: return Color(red: 0.5, green: 0.4, blue: 0.7)      // Muted purple
+        case .lookUp: return Color(red: 0.35, green: 0.65, blue: 0.55)      // Soft teal
+        case .lookDown: return Color(red: 0.4, green: 0.6, blue: 0.5)       // Sage green
+        case .lookAround: return Color(red: 0.7, green: 0.5, blue: 0.4)     // Warm terracotta
+        case .custom: return Color(red: 0.6, green: 0.45, blue: 0.65)       // Soft mauve
         }
     }
     
+    // Legacy color properties (kept for compatibility)
+    var color: Color {
+        return glassColor
+    }
+    
     var secondaryColor: Color {
-        switch self {
-        case .blink: return Color(red: 0.4, green: 0.8, blue: 1.0) // Light blue
-        case .lookLeft: return Color(red: 0.9, green: 0.5, blue: 1.0) // Light purple
-        case .lookRight: return Color(red: 0.9, green: 0.5, blue: 1.0) // Light purple
-        case .lookUp: return Color(red: 0.4, green: 1.0, blue: 0.7) // Light green
-        case .lookDown: return Color(red: 0.4, green: 1.0, blue: 0.7) // Light green
-        case .lookAround: return Color(red: 1.0, green: 0.8, blue: 0.4) // Light orange
-        case .custom: return Color(red: 1.0, green: 0.6, blue: 0.9) // Light pink
-        }
+        // Lighter variant of the glass color
+        let glassColorValue = glassColor
+        return glassColorValue.opacity(0.7)
     }
 }
