@@ -10,7 +10,6 @@ import SwiftUI
 
 class StatusBarController: NSObject, ObservableObject {
     private(set) var statusItem: NSStatusItem?  // Changed to private(set) to allow reading
-    private var settingsWindow: NSWindow?  // Reuse the same settings window
     
     override init() {
         super.init()
@@ -114,44 +113,44 @@ class StatusBarController: NSObject, ObservableObject {
         print("📋 Menu created with \(menu.items.count) items")
     }
     
-    @objc private func openSettings() {
-        print("🔧 Opening Settings")
+    @objc func openSettings() {
+        print("🔧 Opening Settings from menu bar")
         
         // Check if settings window already exists
-        if let existingWindow = settingsWindow {
-            // Just bring it to front (works even if minimized or hidden)
-            existingWindow.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            print("✅ Brought existing settings window to front")
-            return
+        var settingsWindowExists = false
+        for window in NSApp.windows {
+            if window.title == "EyeBreak Settings" {
+                // Window exists, just bring it to front
+                window.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+                settingsWindowExists = true
+                print("✅ Brought existing settings window to front")
+                break
+            }
         }
         
-        // Create a new settings window
-        let settingsView = SettingsView()
-            .environmentObject(BreakTimerManager.shared)
-            .environmentObject(AppSettings.shared)
-        
-        let hostingController = NSHostingController(rootView: settingsView)
-        
-        let window = NSWindow(contentViewController: hostingController)
-        window.title = "EyeBreak Settings"
-        window.setContentSize(NSSize(width: 700, height: 600))
-        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.center()
-        
-        // Prevent app from quitting when window closes
-        window.isReleasedWhenClosed = false
-        
-        // Set window delegate to clear reference when truly closed
-        window.delegate = self
-        
-        // Store reference to reuse later
-        settingsWindow = window
-        
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-        
-        print("✅ Created new settings window")
+        // If no settings window exists, open a new one using the SwiftUI Window API
+        if !settingsWindowExists {
+            // Use NSWorkspace to open the window via the app's URL scheme or environment
+            // This will trigger the SwiftUI Window("settings") to open
+            NSApp.activate(ignoringOtherApps: true)
+            
+            // Create the settings window through SwiftUI Window scene
+            let settingsView = SettingsView()
+                .environmentObject(BreakTimerManager.shared)
+                .environmentObject(AppSettings.shared)
+            
+            let hostingController = NSHostingController(rootView: settingsView)
+            let window = NSWindow(contentViewController: hostingController)
+            window.title = "EyeBreak Settings"
+            window.setContentSize(NSSize(width: 700, height: 600))
+            window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+            window.center()
+            window.isReleasedWhenClosed = false
+            
+            window.makeKeyAndOrderFront(nil)
+            print("✅ Created new settings window")
+        }
     }
     
     @objc private func startTimer() {
@@ -186,18 +185,6 @@ class StatusBarController: NSObject, ObservableObject {
         if let icon = NSImage(systemSymbolName: iconName, accessibilityDescription: "EyeBreak") {
             icon.isTemplate = true
             button.image = icon
-        }
-    }
-}
-
-// MARK: - NSWindowDelegate
-extension StatusBarController: NSWindowDelegate {
-    func windowWillClose(_ notification: Notification) {
-        // Clear the reference when window is actually closed (not just hidden)
-        if let window = notification.object as? NSWindow, window == settingsWindow {
-            // Only clear if user explicitly closed (not just minimized)
-            // We keep the reference to allow reopening
-            print("📝 Settings window closed (reference kept for reuse)")
         }
     }
 }

@@ -12,7 +12,7 @@ struct EyeBreakApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
-        // Settings window - shown by default on first launch
+        // Settings window - shown on first launch
         Window("EyeBreak Settings", id: "settings") {
             SettingsView()
                 .environmentObject(BreakTimerManager.shared)
@@ -58,7 +58,6 @@ struct EyeBreakApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBar: StatusBarController?
     var eventMonitors: [Any] = []
-    var settingsWindow: NSWindow?  // Reuse the same settings window
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("🚀 App launching...")
@@ -73,7 +72,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Force a small delay to ensure status bar is fully registered
         // THEN change to accessory mode
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             print("📍 Now switching to accessory mode...")
             NSApp.setActivationPolicy(.accessory)
             print("✅ Set to accessory mode (overlays appear on current workspace)")
@@ -148,7 +147,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Check for Command+Shift+O (Open Settings)
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "o" {
                 DispatchQueue.main.async {
-                    self.openSettings()
+                    NSApp.sendAction(#selector(StatusBarController.openSettings), to: nil, from: nil)
                 }
             }
         }
@@ -190,7 +189,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Check for Command+Shift+O (Open Settings)
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "o" {
                 DispatchQueue.main.async {
-                    self.openSettings()
+                    NSApp.sendAction(#selector(StatusBarController.openSettings), to: nil, from: nil)
                 }
                 return nil
             }
@@ -199,57 +198,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if let monitor = localMonitor {
             eventMonitors.append(monitor)
-        }
-    }
-    
-    private func openSettings() {
-        print("🔧 Opening Settings via keyboard shortcut")
-        
-        // Check if settings window already exists
-        if let existingWindow = settingsWindow {
-            // Just bring it to front (works even if minimized or hidden)
-            existingWindow.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            print("✅ Brought existing settings window to front")
-            return
-        }
-        
-        // Create Settings window
-        let settingsView = SettingsView()
-            .environmentObject(BreakTimerManager.shared)
-            .environmentObject(AppSettings.shared)
-        
-        let hostingController = NSHostingController(rootView: settingsView)
-        let window = NSWindow(contentViewController: hostingController)
-        window.title = "EyeBreak Settings"
-        window.setContentSize(NSSize(width: 700, height: 600))
-        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.center()
-        
-        // Prevent app from quitting when window closes
-        window.isReleasedWhenClosed = false
-        
-        // Set window delegate to clear reference when truly closed
-        window.delegate = self
-        
-        // Store reference to reuse later
-        settingsWindow = window
-        
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-        
-        print("✅ Settings window opened")
-    }
-}
-
-// MARK: - NSWindowDelegate
-extension AppDelegate: NSWindowDelegate {
-    func windowWillClose(_ notification: Notification) {
-        // Clear the reference when window is actually closed (not just hidden)
-        if let window = notification.object as? NSWindow, window == settingsWindow {
-            // Only clear if user explicitly closed (not just minimized)
-            // We keep the reference to allow reopening
-            print("📝 Settings window closed (reference kept for reuse)")
         }
     }
 }
