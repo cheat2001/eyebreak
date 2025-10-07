@@ -48,7 +48,7 @@ struct MenuBarView: View {
     private var headerSection: some View {
         HStack {
             ZStack {
-                // Animated background circle
+                // Optimized: Simplified background circle without animation
                 Circle()
                     .fill(
                         LinearGradient(
@@ -58,10 +58,8 @@ struct MenuBarView: View {
                         )
                     )
                     .frame(width: 44, height: 44)
-                    .scaleEffect(timerManager.state.isActive ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: timerManager.state.isActive)
                 
-                // Eye icon with animation
+                // Eye icon - removed heavy animation
                 Image(systemName: timerManager.state.isActive ? "eye.fill" : "eye")
                     .font(.title2)
                     .foregroundStyle(
@@ -71,7 +69,6 @@ struct MenuBarView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .symbolEffect(.pulse.byLayer, options: .repeating, value: timerManager.state.isActive)
             }
             
             VStack(alignment: .leading, spacing: 2) {
@@ -104,27 +101,10 @@ struct MenuBarView: View {
     
     private var statusIndicator: some View {
         ZStack {
-            // Outer pulse ring
+            // Optimized: Simplified pulse rings - reduced animation complexity
             Circle()
-                .fill(timerManager.state.isActive ? Color.green.opacity(0.2) : Color.clear)
-                .frame(width: 20, height: 20)
-                .scaleEffect(timerManager.state.isActive ? 1.8 : 1.0)
-                .animation(
-                    timerManager.state.isActive ?
-                    .easeInOut(duration: 1.5).repeatForever(autoreverses: true) : .default,
-                    value: timerManager.state.isActive
-                )
-            
-            // Inner pulse ring
-            Circle()
-                .fill(timerManager.state.isActive ? Color.green.opacity(0.4) : Color.clear)
-                .frame(width: 14, height: 14)
-                .scaleEffect(timerManager.state.isActive ? 1.3 : 1.0)
-                .animation(
-                    timerManager.state.isActive ?
-                    .easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default,
-                    value: timerManager.state.isActive
-                )
+                .fill(timerManager.state.isActive ? Color.green.opacity(0.3) : Color.clear)
+                .frame(width: 16, height: 16)
             
             // Core indicator with gradient
             Circle()
@@ -140,7 +120,7 @@ struct MenuBarView: View {
                 .frame(width: 8, height: 8)
                 .shadow(color: timerManager.state.isActive ? .green.opacity(0.5) : .clear, radius: 4)
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: timerManager.state.isActive)
+        .animation(.easeInOut(duration: 0.3), value: timerManager.state.isActive)
     }
     
     // MARK: - Status Section

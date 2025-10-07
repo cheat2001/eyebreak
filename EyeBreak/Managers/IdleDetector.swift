@@ -35,7 +35,8 @@ class IdleDetector {
     func start() {
         stop()
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        // Optimize: Check idle time every 5 seconds instead of every second to reduce CPU usage
+        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.checkIdleTime()
         }
     }

@@ -144,7 +144,11 @@ class BreakTimerManager: ObservableObject {
             self?.tick()
         }
         
-        RunLoop.main.add(timer!, forMode: .common)
+        // Optimize: Use default run loop mode instead of common to reduce CPU usage
+        // This prevents timer from firing during UI interactions
+        if let timer = timer {
+            RunLoop.main.add(timer, forMode: .default)
+        }
         
         print("⏰ Timer created and scheduled")
         

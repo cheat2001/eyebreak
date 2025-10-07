@@ -26,25 +26,9 @@ struct AmbientReminderView: View {
     
     var body: some View {
         HStack(spacing: 18) {
-            // Professional SF Symbol icon with liquid glass effect
+            // Optimized: Simplified icon with minimal animation
             ZStack {
-                // Outer ethereal glow
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                reminderType.glassColor.opacity(0.15),
-                                reminderType.glassColor.opacity(0.05),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 15,
-                            endRadius: 50
-                        )
-                    )
-                    .frame(width: 100, height: 100)
-                    .scaleEffect(glowPulse ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: glowPulse)
+                // Optimized: Removed outer ethereal glow to reduce CPU usage
                 
                 // Liquid glass background circle
                 ZStack {
@@ -79,21 +63,7 @@ struct AmbientReminderView: View {
                         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 4)
                         .shadow(color: reminderType.glassColor.opacity(0.2), radius: 15, x: 0, y: 0)
                     
-                    // Animated shimmer overlay
-                    Circle()
-                        .fill(
-                            AngularGradient(
-                                colors: [
-                                    Color.clear,
-                                    Color.white.opacity(0.3),
-                                    Color.clear
-                                ],
-                                center: .center,
-                                angle: .degrees(glassShimmer)
-                            )
-                        )
-                        .frame(width: 72, height: 72)
-                        .mask(Circle().frame(width: 72, height: 72))
+                    // Optimized: Removed animated shimmer overlay to reduce CPU usage
                     
                     // Progress ring with refined styling
                     Circle()
@@ -125,7 +95,7 @@ struct AmbientReminderView: View {
                     .rotationEffect(.degrees(rotation))
                     .offset(y: bounce)
                     .shadow(color: Color.black.opacity(0.15), radius: 2, x: 0, y: 1)
-                    .symbolEffect(.bounce, value: glowPulse)
+                    // Optimized: Removed symbolEffect to reduce CPU usage
             }
             
             // Content section with refined typography
@@ -251,12 +221,8 @@ struct AmbientReminderView: View {
             playSound()
             startAnimations()
             startCountdown()
-            glowPulse = true
-            
-            // Start glass shimmer animation
-            withAnimation(.linear(duration: 4.0).repeatForever(autoreverses: false)) {
-                glassShimmer = 360
-            }
+            // Optimized: Removed glowPulse animation
+            // Optimized: Removed glassShimmer animation to reduce CPU usage
         }
         .onDisappear {
             countdownTimer?.invalidate()
@@ -299,48 +265,25 @@ struct AmbientReminderView: View {
             progress = 0.0
         }
         
-        // Subtle floating animation for icon
-        withAnimation(
-            .easeInOut(duration: 2.5)
-            .repeatForever(autoreverses: true)
-        ) {
-            bounce = -5
-        }
+        // Optimized: Removed floating animation to reduce CPU usage
         
-        // Type-specific animations
+        // Type-specific animations - simplified
         switch reminderType {
         case .lookAround:
             withAnimation(
-                .linear(duration: 3.0)
+                .linear(duration: 4.0)
                 .repeatForever(autoreverses: false)
             ) {
                 rotation = 360
             }
         case .lookLeft:
-            withAnimation(
-                .easeInOut(duration: 1.5)
-                .repeatForever(autoreverses: true)
-            ) {
-                rotation = -20
-            }
+            rotation = -15
         case .lookRight:
-            withAnimation(
-                .easeInOut(duration: 1.5)
-                .repeatForever(autoreverses: true)
-            ) {
-                rotation = 20
-            }
+            rotation = 15
         case .blink:
-            // Subtle pulse for blink
-            Timer.scheduledTimer(withTimeInterval: 1.2, repeats: true) { _ in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    scale = 0.92
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        scale = 1.0
-                    }
-                }
+            // Optimized: Simplified blink animation
+            withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                scale = 0.95
             }
         default:
             break

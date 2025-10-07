@@ -28,9 +28,13 @@ struct BreakOverlayView: View {
     
     var body: some View {
         ZStack {
-            // Animated gradient background
-            AnimatedGradientBackground()
-                .ignoresSafeArea()
+            // Optimized: Use static gradient instead of animated one to reduce CPU
+            LinearGradient(
+                colors: [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
             
             // Background blur
             VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
@@ -41,9 +45,7 @@ struct BreakOverlayView: View {
             Color.black.opacity(0.5)
                 .ignoresSafeArea()
             
-            // Floating particles effect
-            FloatingParticlesView()
-                .ignoresSafeArea()
+            // Optimized: Remove floating particles to reduce CPU usage
             
             // Content
             VStack(spacing: 40) {
@@ -101,31 +103,22 @@ struct BreakOverlayView: View {
     
     private var standardBreakContent: some View {
         VStack(spacing: 32) {
-            // Animated icon with glow effect
+            // Optimized: Simplified icon with minimal animation
             ZStack {
-                // Outer glow rings
-                ForEach(0..<3) { index in
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                colors: [.cyan.opacity(0.3), .blue.opacity(0.2)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 2
-                        )
-                        .frame(width: CGFloat(120 + index * 30), height: CGFloat(120 + index * 30))
-                        .scaleEffect(opacity > 0.5 ? 1.2 : 1.0)
-                        .opacity(0.4 - Double(index) * 0.1)
-                        .animation(
-                            .easeInOut(duration: 2.0 + Double(index) * 0.5)
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(index) * 0.2),
-                            value: opacity
-                        )
-                }
+                // Single outer glow ring
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [.cyan.opacity(0.3), .blue.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 2
+                    )
+                    .frame(width: 140, height: 140)
+                    .opacity(0.4)
                 
-                // Main icon with gradient
+                // Main icon with gradient (no animation)
                 Image(systemName: "eye.slash.fill")
                     .font(.system(size: 80))
                     .foregroundStyle(
@@ -136,12 +129,6 @@ struct BreakOverlayView: View {
                         )
                     )
                     .shadow(color: .cyan.opacity(0.5), radius: 20)
-                    .shadow(color: .blue.opacity(0.3), radius: 40)
-                    .scaleEffect(opacity > 0.5 ? 1.0 : 0.9)
-                    .animation(
-                        .easeInOut(duration: 2.0).repeatForever(autoreverses: true),
-                        value: opacity
-                    )
             }
             
             // Title with gradient
@@ -222,7 +209,7 @@ struct BreakOverlayView: View {
                 )
                 .shadow(color: .cyan.opacity(0.3), radius: 20)
             
-            // Progress circle with gradient
+            // Progress circle with beautiful animated gradient (restored!)
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -258,7 +245,7 @@ struct BreakOverlayView: View {
                     .tracking(2)
             }
             
-            // Rotating accent dots
+            // Rotating accent dots (restored for beautiful effect!)
             ForEach(0..<8) { index in
                 Circle()
                     .fill(Color.cyan.opacity(0.6))
@@ -394,51 +381,45 @@ struct AnimatedEyeExerciseView: View {
                 .foregroundColor(.white)
                 .shadow(color: .black.opacity(0.3), radius: 10)
             
-            // Exercise area with moving indicator
+            // Optimized: Reduced exercise area size to reduce rendering load
             ZStack {
                 // Background guide
                 Circle()
                     .strokeBorder(Color.white.opacity(0.2), lineWidth: 2)
-                    .frame(width: 600, height: 600)
+                    .frame(width: 400, height: 400)
                 
                 // Horizontal guide line
                 Rectangle()
                     .fill(Color.white.opacity(0.1))
-                    .frame(width: 600, height: 2)
+                    .frame(width: 400, height: 2)
                 
                 // Vertical guide line
                 Rectangle()
                     .fill(Color.white.opacity(0.1))
-                    .frame(width: 2, height: 600)
+                    .frame(width: 2, height: 400)
                 
                 // Center reference point
                 Circle()
                     .fill(Color.white.opacity(0.3))
                     .frame(width: 20, height: 20)
                 
-                // Animated moving dot
+                // Optimized: Simplified animated moving dot
                 ZStack {
-                    // Glow effect
-                    Circle()
-                        .fill(currentDirection.color.opacity(0.3))
-                        .frame(width: 80, height: 80)
-                        .blur(radius: 20)
-                    
-                    // Main dot
+                    // Main dot (removed glow effect to improve performance)
                     Circle()
                         .fill(currentDirection.color)
                         .frame(width: 50, height: 50)
-                        .shadow(color: currentDirection.color.opacity(0.5), radius: 20)
+                        .shadow(color: currentDirection.color.opacity(0.5), radius: 10)
                     
                     // Icon indicator
                     Image(systemName: currentDirection.iconName)
                         .font(.system(size: 24))
                         .foregroundColor(.white)
                 }
-                .offset(x: currentDirection.offset.x, y: currentDirection.offset.y)
+                .offset(x: currentDirection.offset.x * 0.65, y: currentDirection.offset.y * 0.65)
                 .animation(.spring(response: 0.6, dampingFraction: 0.7), value: currentDirection)
             }
-            .frame(height: 600)
+            .frame(height: 400)
             
             // Direction instruction
             VStack(spacing: 12) {
@@ -503,73 +484,5 @@ struct VisualEffectView: NSViewRepresentable {
     }
 }
 
-// MARK: - Animated Gradient Background
-
-struct AnimatedGradientBackground: View {
-    @State private var animateGradient = false
-    
-    var body: some View {
-        LinearGradient(
-            colors: animateGradient ? 
-                [.blue.opacity(0.3), .purple.opacity(0.3), .cyan.opacity(0.3)] :
-                [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
-            startPoint: animateGradient ? .topLeading : .bottomLeading,
-            endPoint: animateGradient ? .bottomTrailing : .topTrailing
-        )
-        .onAppear {
-            withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
-                animateGradient = true
-            }
-        }
-    }
-}
-
-// MARK: - Floating Particles Effect
-
-struct FloatingParticlesView: View {
-    @State private var particles: [Particle] = []
-    
-    struct Particle: Identifiable {
-        let id = UUID()
-        var x: CGFloat
-        var y: CGFloat
-        var size: CGFloat
-        var opacity: Double
-        var delay: Double
-    }
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                ForEach(particles) { particle in
-                    Circle()
-                        .fill(Color.cyan.opacity(particle.opacity))
-                        .frame(width: particle.size, height: particle.size)
-                        .position(x: particle.x, y: particle.y)
-                        .blur(radius: 2)
-                        .animation(
-                            .easeInOut(duration: 3.0)
-                            .repeatForever(autoreverses: true)
-                            .delay(particle.delay),
-                            value: particle.y
-                        )
-                }
-            }
-            .onAppear {
-                createParticles(in: geometry.size)
-            }
-        }
-    }
-    
-    private func createParticles(in size: CGSize) {
-        particles = (0..<15).map { index in
-            Particle(
-                x: CGFloat.random(in: 0...size.width),
-                y: CGFloat.random(in: 0...size.height),
-                size: CGFloat.random(in: 4...12),
-                opacity: Double.random(in: 0.1...0.3),
-                delay: Double(index) * 0.2
-            )
-        }
-    }
-}
+// MARK: - Optimized: Removed AnimatedGradientBackground and FloatingParticlesView to reduce CPU usage
+// These heavy animation effects were causing performance issues
