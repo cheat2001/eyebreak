@@ -19,6 +19,13 @@ struct BreakOverlayView: View {
     @State private var eventMonitor: Any?
     @AccessibilityFocusState private var isMessageFocused: Bool
     
+    // Get the color theme from settings
+    @ObservedObject private var settings = AppSettings.shared
+    
+    private var currentTheme: ColorTheme {
+        settings.breakOverlayTheme
+    }
+    
     init(duration: Int, style: ScreenBlurManager.OverlayStyle, onSkip: @escaping () -> Void) {
         self.duration = duration
         self.style = style
@@ -28,21 +35,40 @@ struct BreakOverlayView: View {
     
     var body: some View {
         ZStack {
-            // Optimized: Use static gradient instead of animated one to reduce CPU
-            LinearGradient(
-                colors: [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Theme-based background gradient
+            if currentTheme.themeType == .liquidGlass {
+                // Light, airy gradient for liquid glass
+                LinearGradient(
+                    colors: [
+                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity),
+                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.8),
+                        Color.white.opacity(0.15)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            } else {
+                // Vibrant gradient for default and custom themes
+                LinearGradient(
+                    colors: [
+                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.4),
+                        currentTheme.accentColor.opacity(currentTheme.accentOpacity * 0.4),
+                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.3)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            }
             
             // Background blur
             VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
                 .ignoresSafeArea()
                 .opacity(0.8)
             
-            // Dimming overlay with subtle animation
-            Color.black.opacity(0.5)
+            // Dimming overlay with theme color
+            currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.3)
                 .ignoresSafeArea()
             
             // Optimized: Remove floating particles to reduce CPU usage
@@ -109,7 +135,10 @@ struct BreakOverlayView: View {
                 Circle()
                     .stroke(
                         LinearGradient(
-                            colors: [.cyan.opacity(0.3), .blue.opacity(0.2)],
+                            colors: [
+                                currentTheme.accentColor.opacity(0.3),
+                                currentTheme.accentColor.opacity(0.2)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -123,26 +152,24 @@ struct BreakOverlayView: View {
                     .font(.system(size: 80))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.cyan, .blue, .purple],
+                            colors: [
+                                currentTheme.accentColor,
+                                currentTheme.accentColor.opacity(0.8),
+                                currentTheme.backgroundColor
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: .cyan.opacity(0.5), radius: 20)
+                    .shadow(color: currentTheme.accentColor.opacity(0.5), radius: 20)
             }
             
             // Title with gradient
             Text("Time for a Break")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, .white.opacity(0.9), .cyan.opacity(0.8)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: .cyan.opacity(0.3), radius: 10)
-                .shadow(color: .black.opacity(0.3), radius: 10)
+                .foregroundStyle(currentTheme.textGradient())
+                .shadow(color: currentTheme.accentColor.opacity(0.3), radius: 10)
+                .shadow(color: Color.black.opacity(0.3), radius: 10)
                 .accessibilityFocused($isMessageFocused)
             
             // Instruction with subtle animation
@@ -150,27 +177,27 @@ struct BreakOverlayView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "arrow.left.and.right")
                         .font(.title2)
-                        .foregroundColor(.cyan)
+                        .foregroundColor(currentTheme.accentColor)
                     
                     Text("Look at something 20 feet away")
                         .font(.system(size: 24, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.95))
+                        .foregroundColor(currentTheme.textColor.opacity(currentTheme.textOpacity))
                 }
                 
                 HStack(spacing: 8) {
                     Image(systemName: "sparkles")
                         .font(.caption)
-                        .foregroundColor(.yellow)
+                        .foregroundColor(currentTheme.accentColor.opacity(0.8))
                     Text("Give your eyes a rest")
                         .font(.callout)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(currentTheme.secondaryTextColor.opacity(currentTheme.secondaryTextOpacity))
                     Image(systemName: "sparkles")
                         .font(.caption)
-                        .foregroundColor(.yellow)
+                        .foregroundColor(currentTheme.accentColor.opacity(0.8))
                 }
             }
             .multilineTextAlignment(.center)
-            .shadow(color: .black.opacity(0.3), radius: 5)
+            .shadow(color: Color.black.opacity(0.3), radius: 5)
             
             // Enhanced timer display
             timerDisplay
@@ -191,7 +218,11 @@ struct BreakOverlayView: View {
             Circle()
                 .stroke(
                     LinearGradient(
-                        colors: [.cyan.opacity(0.3), .blue.opacity(0.3), .purple.opacity(0.3)],
+                        colors: [
+                            currentTheme.accentColor.opacity(0.3),
+                            currentTheme.backgroundColor.opacity(0.3),
+                            currentTheme.accentColor.opacity(0.3)
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
@@ -201,54 +232,54 @@ struct BreakOverlayView: View {
             
             // Background circle with glow
             Circle()
-                .fill(Color.white.opacity(0.05))
+                .fill(currentTheme.backgroundColor.opacity(0.1))
                 .frame(width: 130, height: 130)
                 .overlay(
                     Circle()
-                        .stroke(Color.white.opacity(0.2), lineWidth: 8)
+                        .stroke(currentTheme.textColor.opacity(0.2), lineWidth: 8)
                 )
-                .shadow(color: .cyan.opacity(0.3), radius: 20)
+                .shadow(color: currentTheme.accentColor.opacity(0.3), radius: 20)
             
-            // Progress circle with beautiful animated gradient (restored!)
+            // Progress circle with beautiful animated gradient
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
                     AngularGradient(
-                        colors: [.cyan, .blue, .purple, .pink, .cyan],
+                        colors: [
+                            currentTheme.accentColor,
+                            currentTheme.backgroundColor,
+                            currentTheme.accentColor.opacity(0.8),
+                            currentTheme.backgroundColor.opacity(0.8),
+                            currentTheme.accentColor
+                        ],
                         center: .center
                     ),
                     style: StrokeStyle(lineWidth: 8, lineCap: .round)
                 )
                 .frame(width: 130, height: 130)
                 .rotationEffect(.degrees(-90))
-                .shadow(color: .cyan.opacity(0.5), radius: 10)
+                .shadow(color: currentTheme.accentColor.opacity(0.5), radius: 10)
                 .animation(.linear(duration: 1), value: progress)
             
             // Countdown text with enhanced styling
             VStack(spacing: 4) {
                 Text("\(remainingSeconds)")
                     .font(.system(size: 52, weight: .bold, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.white, .cyan.opacity(0.9)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .shadow(color: .cyan.opacity(0.5), radius: 10)
+                    .foregroundStyle(currentTheme.textGradient())
+                    .shadow(color: currentTheme.accentColor.opacity(0.5), radius: 10)
                     .contentTransition(.numericText())
                 
                 Text("seconds")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(currentTheme.secondaryTextColor.opacity(currentTheme.secondaryTextOpacity))
                     .textCase(.uppercase)
                     .tracking(2)
             }
             
-            // Rotating accent dots (restored for beautiful effect!)
+            // Rotating accent dots
             ForEach(0..<8) { index in
                 Circle()
-                    .fill(Color.cyan.opacity(0.6))
+                    .fill(currentTheme.accentColor.opacity(0.6))
                     .frame(width: 4, height: 4)
                     .offset(y: -70)
                     .rotationEffect(.degrees(Double(index) * 45))
@@ -265,11 +296,11 @@ struct BreakOverlayView: View {
         VStack(spacing: 12) {
             Text("Press ESC or click anywhere to skip")
                 .font(.system(size: 14, design: .rounded))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(currentTheme.secondaryTextColor.opacity(currentTheme.secondaryTextOpacity * 0.8))
             
             Text("(Not recommended—your eyes need this!)")
                 .font(.system(size: 12, design: .rounded))
-                .foregroundColor(.white.opacity(0.4))
+                .foregroundColor(currentTheme.secondaryTextColor.opacity(currentTheme.secondaryTextOpacity * 0.6))
         }
     }
     
@@ -316,6 +347,10 @@ struct AnimatedEyeExerciseView: View {
     @State private var dotOffset: CGFloat = 0
     @State private var exerciseTimer: Timer?
     @ObservedObject private var settings = AppSettings.shared
+    
+    private var currentTheme: ColorTheme {
+        settings.breakOverlayTheme
+    }
     
     enum ExerciseDirection: String {
         case center = "Look at Center"
@@ -378,29 +413,29 @@ struct AnimatedEyeExerciseView: View {
             // Title
             Text("Eye Exercise")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
-                .shadow(color: .black.opacity(0.3), radius: 10)
+                .foregroundStyle(currentTheme.textGradient())
+                .shadow(color: Color.black.opacity(0.3), radius: 10)
             
             // Optimized: Reduced exercise area size to reduce rendering load
             ZStack {
                 // Background guide
                 Circle()
-                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 2)
+                    .strokeBorder(currentTheme.textColor.opacity(0.2), lineWidth: 2)
                     .frame(width: 400, height: 400)
                 
                 // Horizontal guide line
                 Rectangle()
-                    .fill(Color.white.opacity(0.1))
+                    .fill(currentTheme.textColor.opacity(0.1))
                     .frame(width: 400, height: 2)
                 
                 // Vertical guide line
                 Rectangle()
-                    .fill(Color.white.opacity(0.1))
+                    .fill(currentTheme.textColor.opacity(0.1))
                     .frame(width: 2, height: 400)
                 
                 // Center reference point
                 Circle()
-                    .fill(Color.white.opacity(0.3))
+                    .fill(currentTheme.textColor.opacity(0.3))
                     .frame(width: 20, height: 20)
                 
                 // Optimized: Simplified animated moving dot
@@ -414,7 +449,7 @@ struct AnimatedEyeExerciseView: View {
                     // Icon indicator
                     Image(systemName: currentDirection.iconName)
                         .font(.system(size: 24))
-                        .foregroundColor(.white)
+                        .foregroundColor(currentTheme.textColor)
                 }
                 .offset(x: currentDirection.offset.x * 0.65, y: currentDirection.offset.y * 0.65)
                 .animation(.spring(response: 0.6, dampingFraction: 0.7), value: currentDirection)
@@ -426,24 +461,24 @@ struct AnimatedEyeExerciseView: View {
                 Text(currentDirection.rawValue)
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(currentDirection.color)
-                    .shadow(color: .black.opacity(0.3), radius: 10)
+                    .shadow(color: Color.black.opacity(0.3), radius: 10)
                     .animation(.easeInOut(duration: 0.3), value: currentDirection)
                 
                 Text("Follow the moving dot with your eyes")
                     .font(.system(size: 20, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(currentTheme.textColor.opacity(currentTheme.textOpacity * 0.9))
             }
             .padding(20)
-            .background(Color.white.opacity(0.1))
+            .background(currentTheme.backgroundColor.opacity(0.2))
             .cornerRadius(16)
             
             // Timer countdown
             Text("Break ends in: \(remainingSeconds)s")
                 .font(.system(size: 24, weight: .semibold, design: .rounded))
-                .foregroundColor(.white.opacity(0.9))
+                .foregroundColor(currentTheme.textColor.opacity(currentTheme.textOpacity))
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
-                .background(Color.white.opacity(0.15))
+                .background(currentTheme.backgroundColor.opacity(0.25))
                 .cornerRadius(12)
         }
         .onAppear {

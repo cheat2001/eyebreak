@@ -480,6 +480,80 @@ struct BreakSettingsView: View {
                     .font(.caption)
             }
             
+            // Color Theme Settings Section
+            Section {
+                VStack(spacing: 20) {
+                    // Ambient Reminder Theme
+                    ThemeSettingsCard(
+                        title: "Ambient Reminder Theme",
+                        icon: "sparkles",
+                        selectedThemeType: Binding(
+                            get: { settings.ambientReminderThemeType },
+                            set: { settings.ambientReminderThemeType = $0 }
+                        ),
+                        customTheme: Binding(
+                            get: { settings.ambientReminderTheme },
+                            set: { settings.ambientReminderTheme = $0 }
+                        ),
+                        onThemeChange: {
+                            settings.objectWillChange.send()
+                        }
+                    )
+                    
+                    Divider()
+                    
+                    // Break Overlay Theme
+                    ThemeSettingsCard(
+                        title: "Break Overlay Theme",
+                        icon: "moon.stars.fill",
+                        selectedThemeType: Binding(
+                            get: { settings.breakOverlayThemeType },
+                            set: { settings.breakOverlayThemeType = $0 }
+                        ),
+                        customTheme: Binding(
+                            get: { settings.breakOverlayTheme },
+                            set: { settings.breakOverlayTheme = $0 }
+                        ),
+                        onThemeChange: {
+                            settings.objectWillChange.send()
+                        }
+                    )
+                    
+                    // Quick presets for custom themes
+                    if settings.ambientReminderThemeType == .custom || settings.breakOverlayThemeType == .custom {
+                        QuickPresetsView(
+                            customTheme: Binding(
+                                get: {
+                                    // Use whichever is custom, or ambient reminder if both
+                                    if settings.ambientReminderThemeType == .custom {
+                                        return settings.ambientReminderTheme
+                                    } else {
+                                        return settings.breakOverlayTheme
+                                    }
+                                },
+                                set: { newTheme in
+                                    // Apply to whichever is custom
+                                    if settings.ambientReminderThemeType == .custom {
+                                        settings.ambientReminderTheme = newTheme
+                                    }
+                                    if settings.breakOverlayThemeType == .custom {
+                                        settings.breakOverlayTheme = newTheme
+                                    }
+                                }
+                            ),
+                            onThemeChange: {
+                                settings.objectWillChange.send()
+                            }
+                        )
+                    }
+                }
+            } header: {
+                Text("🎨 Color Themes")
+            } footer: {
+                Text("Customize the appearance of ambient reminders and break overlays. Choose from preset themes or create your own custom color scheme.")
+                    .font(.caption)
+            }
+            
             Section {
                 Stepper(
                     "Daily Break Goal: \(settings.dailyBreakGoal)",

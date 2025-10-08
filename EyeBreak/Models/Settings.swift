@@ -38,6 +38,12 @@ class AppSettings: ObservableObject {
     @AppStorage("customReminderMessage") var customReminderMessage: String = "" // Custom message
     @AppStorage("useCustomReminder") var useCustomReminder: Bool = false // Use custom instead of random
     
+    // Color Theme Settings
+    @AppStorage("ambientReminderThemeType") private var ambientReminderThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
+    @AppStorage("ambientReminderCustomTheme") private var ambientReminderCustomThemeData: Data?
+    @AppStorage("breakOverlayThemeType") private var breakOverlayThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
+    @AppStorage("breakOverlayCustomTheme") private var breakOverlayCustomThemeData: Data?
+    
     // MARK: - Computed Properties
     
     var breakStyle: BreakStyle {
@@ -63,6 +69,68 @@ class AppSettings: ObservableObject {
     
     var idleThresholdSeconds: Int {
         idleThresholdMinutes * 60
+    }
+    
+    // MARK: - Color Theme Computed Properties
+    
+    /// Theme type for ambient reminders
+    var ambientReminderThemeType: ColorThemeType {
+        get { ColorThemeType(rawValue: ambientReminderThemeTypeRaw) ?? .defaultTheme }
+        set { ambientReminderThemeTypeRaw = newValue.rawValue }
+    }
+    
+    /// Get the active theme for ambient reminders
+    var ambientReminderTheme: ColorTheme {
+        get {
+            switch ambientReminderThemeType {
+            case .defaultTheme:
+                return .defaultTheme
+            case .liquidGlass:
+                return .liquidGlassTheme
+            case .custom:
+                if let data = ambientReminderCustomThemeData,
+                   let theme = try? JSONDecoder().decode(ColorTheme.self, from: data) {
+                    return theme
+                }
+                return .customTheme
+            }
+        }
+        set {
+            if newValue.themeType == .custom,
+               let data = try? JSONEncoder().encode(newValue) {
+                ambientReminderCustomThemeData = data
+            }
+        }
+    }
+    
+    /// Theme type for break overlay
+    var breakOverlayThemeType: ColorThemeType {
+        get { ColorThemeType(rawValue: breakOverlayThemeTypeRaw) ?? .defaultTheme }
+        set { breakOverlayThemeTypeRaw = newValue.rawValue }
+    }
+    
+    /// Get the active theme for break overlay
+    var breakOverlayTheme: ColorTheme {
+        get {
+            switch breakOverlayThemeType {
+            case .defaultTheme:
+                return .defaultTheme
+            case .liquidGlass:
+                return .liquidGlassTheme
+            case .custom:
+                if let data = breakOverlayCustomThemeData,
+                   let theme = try? JSONDecoder().decode(ColorTheme.self, from: data) {
+                    return theme
+                }
+                return .customTheme
+            }
+        }
+        set {
+            if newValue.themeType == .custom,
+               let data = try? JSONEncoder().encode(newValue) {
+                breakOverlayCustomThemeData = data
+            }
+        }
     }
     
     // MARK: - Statistics Management

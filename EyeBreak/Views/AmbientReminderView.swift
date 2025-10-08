@@ -24,6 +24,13 @@ struct AmbientReminderView: View {
     @State private var shimmer: Bool = false
     @State private var glassShimmer: Double = 0
     
+    // Get the color theme from settings
+    @ObservedObject private var settings = AppSettings.shared
+    
+    private var currentTheme: ColorTheme {
+        settings.ambientReminderTheme
+    }
+    
     var body: some View {
         HStack(spacing: 18) {
             // Optimized: Simplified icon with minimal animation
@@ -34,34 +41,17 @@ struct AmbientReminderView: View {
                 ZStack {
                     // Base glass layer
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.25),
-                                    Color.white.opacity(0.15),
-                                    Color.white.opacity(0.1)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(currentTheme.backgroundGradient())
                         .frame(width: 72, height: 72)
                         .overlay(
                             Circle()
                                 .stroke(
-                                    LinearGradient(
-                                        colors: [
-                                            Color.white.opacity(0.5),
-                                            Color.white.opacity(0.1)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
+                                    currentTheme.borderGradient(),
                                     lineWidth: 1
                                 )
                         )
                         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 4)
-                        .shadow(color: reminderType.glassColor.opacity(0.2), radius: 15, x: 0, y: 0)
+                        .shadow(color: currentTheme.accentColor.opacity(0.2), radius: 15, x: 0, y: 0)
                     
                     // Optimized: Removed animated shimmer overlay to reduce CPU usage
                     
@@ -69,28 +59,19 @@ struct AmbientReminderView: View {
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
-                            reminderType.glassColor.opacity(0.6),
+                            currentTheme.accentColor.opacity(currentTheme.accentOpacity),
                             style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
                         )
                         .frame(width: 76, height: 76)
                         .rotationEffect(.degrees(-90))
-                        .shadow(color: reminderType.glassColor.opacity(0.3), radius: 4)
+                        .shadow(color: currentTheme.accentColor.opacity(0.3), radius: 4)
                         .animation(.linear(duration: 0.5), value: progress)
                 }
                 
                 // SF Symbol icon with professional styling
                 Image(systemName: reminderType.iconName)
                     .font(.system(size: 32, weight: .light, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.95),
-                                Color.white.opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundStyle(currentTheme.textGradient())
                     .scaleEffect(scale)
                     .rotationEffect(.degrees(rotation))
                     .offset(y: bounce)
@@ -102,14 +83,14 @@ struct AmbientReminderView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text(reminderType.message)
                     .font(.system(size: 17, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.95))
+                    .foregroundColor(currentTheme.textColor.opacity(currentTheme.textOpacity))
                     .tracking(0.2)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text(reminderType.subtitle)
                     .font(.system(size: 13, weight: .regular, design: .rounded))
-                    .foregroundColor(.white.opacity(0.75))
+                    .foregroundColor(currentTheme.secondaryTextColor.opacity(currentTheme.secondaryTextOpacity))
                     .tracking(0.3)
                     .lineLimit(1)
             }
@@ -122,16 +103,16 @@ struct AmbientReminderView: View {
                 // Minimalist countdown
                 ZStack {
                     Circle()
-                        .fill(Color.white.opacity(0.2))
+                        .fill(currentTheme.backgroundColor.opacity(0.2))
                         .frame(width: 34, height: 34)
                         .overlay(
                             Circle()
-                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                .stroke(currentTheme.textColor.opacity(0.3), lineWidth: 1)
                         )
                     
                     Text("\(remainingSeconds)")
                         .font(.system(size: 15, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.95))
+                        .foregroundColor(currentTheme.textColor.opacity(currentTheme.textOpacity))
                         .contentTransition(.numericText())
                 }
                 
@@ -143,16 +124,16 @@ struct AmbientReminderView: View {
                 }) {
                     ZStack {
                         Circle()
-                            .fill(Color.white.opacity(0.2))
+                            .fill(currentTheme.backgroundColor.opacity(0.2))
                             .frame(width: 30, height: 30)
                             .overlay(
                                 Circle()
-                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                    .stroke(currentTheme.textColor.opacity(0.3), lineWidth: 1)
                             )
                         
                         Image(systemName: "xmark")
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.9))
+                            .foregroundColor(currentTheme.textColor.opacity(0.9))
                     }
                 }
                 .buttonStyle(.plain)
@@ -167,29 +148,19 @@ struct AmbientReminderView: View {
             ZStack {
                 // Professional frosted glass background
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                reminderType.glassColor.opacity(0.75),
-                                reminderType.glassColor.opacity(0.65),
-                                reminderType.glassColor.opacity(0.7)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .blur(radius: 0.5)
+                    .fill(currentTheme.backgroundGradient())
+                    .blur(radius: currentTheme.glassBlurRadius)
                 
                 // Subtle noise texture overlay for depth
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(Color.white.opacity(0.03))
+                    .fill(currentTheme.backgroundColor.opacity(0.03))
                 
                 // Top highlight for liquid glass effect
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.25),
+                                Color.white.opacity(currentTheme.glassHighlightOpacity),
                                 Color.clear
                             ],
                             startPoint: .top,
@@ -200,20 +171,12 @@ struct AmbientReminderView: View {
                 // Border with subtle gradient
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.35),
-                                Color.white.opacity(0.1),
-                                Color.white.opacity(0.2)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
+                        currentTheme.borderGradient(),
                         lineWidth: 1.5
                     )
             }
             .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 5)
-            .shadow(color: reminderType.glassColor.opacity(0.25), radius: 25, x: 0, y: 8)
+            .shadow(color: currentTheme.accentColor.opacity(0.25), radius: 25, x: 0, y: 8)
         )
         .scaleEffect(scale)
         .opacity(opacity)
