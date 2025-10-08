@@ -5,6 +5,102 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-10-08
+
+### 🎨 Major Feature: Complete Theme Customization System
+
+This release introduces a comprehensive theme customization system, allowing users to personalize their eye break experience with colors that match their preferences and workflow.
+
+**[Full Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md)** | **[Quick Start Guide](QUICK_START.md)**
+
+### Added
+
+#### Theme System
+- **Three Theme Options:**
+  - Default Theme - Classic vibrant style with rich colors
+  - Random Color Theme - 20 curated color palettes that generate fresh colors each session
+  - Custom Theme - Complete control over all color aspects
+  
+- **Theme Customization UI:**
+  - Live preview of theme changes
+  - Color pickers for background, accent, text, and secondary text
+  - Opacity sliders for all color elements
+  - Glass blur and highlight effect controls
+  - Quick preset palettes (Ocean Blue, Forest Green, Sunset Orange, Royal Purple)
+  
+- **Random Color Palettes:**
+  - 20 professionally curated color combinations
+  - Ocean, Sunset, Forest, Berry, Coral, Lavender, Mint, Rose, Sky, Amber
+  - Teal, Crimson, Sage, Indigo, Peach, Turquoise, Plum, Lime, Burgundy, Slate
+  - Smart caching ensures colors stay consistent during display
+  - New colors generated for each new reminder/overlay session
+  
+- **Professional Icon Picker:**
+  - Replaced emoji input with curated SF Symbols
+  - 16 beautiful icons for ambient reminders
+  - Clear visual selection with purple highlights
+  - Icons: eye, sparkles, star, heart, drop, leaf, moon, sun, clock, bell, hand, figure, lungs, headphones, cup
+  
+- **Independent Theme Settings:**
+  - Separate theme customization for Ambient Reminders
+  - Separate theme customization for Break Overlays
+  - Each can use different theme types
+  
+- **Theme Persistence:**
+  - All theme settings saved to UserDefaults
+  - Custom themes preserved across app restarts
+  - Theme preferences survive app updates
+
+#### ColorTheme Model
+- Codable struct with hex color support
+- Opacity controls for all elements
+- Glass effect parameters (blur radius, highlight opacity)
+- Theme type enum (defaultTheme, randomColor, custom)
+- Factory methods for built-in themes
+- Gradient generators for backgrounds and borders
+
+#### ColorThemeSettingsView
+- ThemeSettingsCard component for each customizable area
+- ThemePreviewCard showing live preview
+- CustomThemeEditor with color pickers and sliders
+- ColorPickerRow component for consistent UI
+- QuickPresetsView with 4 preset palettes
+- ThemeTypeButton for clear theme selection
+- CustomIconPickerView with SF Symbol grid
+- IconOptionButton with selection highlighting
+
+### Changed
+
+- **Settings UI:** Reorganized with dedicated Color Themes section
+- **Ambient Reminder UI:** Now supports dynamic theming with all three options
+- **Break Overlay UI:** Simplified rendering with theme-based gradients
+- **Icon Selection:** Replaced text emoji field with visual SF Symbol picker
+- **Theme Rendering:** Unified approach removes complex conditional logic
+- **Color Generation:** Random colors now cached per session for consistency
+
+### Fixed
+
+- Theme flickering during active reminder/overlay display
+- Color inconsistency when SwiftUI re-renders views
+- Complex conditional rendering causing maintenance issues
+- Theme switching performance and stability
+- Multi-screen support for themed overlays
+
+### Removed
+
+- Liquid Glass theme option (replaced with Random Color)
+- Emoji text input field (replaced with SF Symbol picker)
+- Multi-layer glass effect conditionals (simplified rendering)
+- Theme-specific rendering branches (unified approach)
+
+### Technical Improvements
+
+- **Code Quality:** Cleaner architecture with simplified theme logic
+- **Maintainability:** Removed complex theme-specific conditionals
+- **Type Safety:** Full Swift enum support for theme types
+- **Performance:** Smart caching reduces unnecessary color generation
+- **Architecture:** Centralized theme generation and management
+
 ## [1.0.0] - 2025-10-05
 
 ### 🎉 Initial Release

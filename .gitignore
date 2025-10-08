@@ -105,10 +105,19 @@ iOSInjectionProject/
 *.log
 build.log
 *.xcarchive
+build_output.log
+build_optimizations.log
 
 # Distribution files  
 dist/
 release/
+Build/
+
+# Internal documentation (not for public release)
+REFACTORING_SUMMARY.md
+RANDOM_COLOR_CACHING_UPDATE.md
+RELEASE_CHECKLIST_*.md
+RELEASE_SUMMARY_*.md
 
 # Temporary files
 *.tmp

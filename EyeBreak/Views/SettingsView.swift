@@ -391,11 +391,11 @@ struct BreakSettingsView: View {
                         
                         Divider()
                         
-                        // Enhanced custom reminder section
+                        // Professional custom reminder section
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
-                                Image(systemName: "paintbrush.fill")
-                                    .foregroundColor(.pink)
+                                Image(systemName: "wand.and.stars")
+                                    .foregroundColor(.purple)
                                 Text("Customize Your Reminder")
                                     .font(.headline)
                                     .fontWeight(.semibold)
@@ -407,61 +407,86 @@ struct BreakSettingsView: View {
                             
                             if settings.useCustomReminder {
                                 VStack(alignment: .leading, spacing: 16) {
-                                    // Custom emoji input with preview
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Label("Custom Emoji", systemImage: "face.smiling")
+                                    // Professional SF Symbol picker
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        Label("Choose Icon", systemImage: "star.circle")
                                             .font(.subheadline)
                                             .fontWeight(.medium)
                                             .foregroundColor(.secondary)
                                         
-                                        HStack(spacing: 12) {
-                                            TextField("Enter emoji (e.g., 🌟 😊 🎯)", text: $settings.customReminderEmoji)
-                                                .textFieldStyle(.roundedBorder)
-                                                .font(.system(size: 20))
-                                            
-                                            if !settings.customReminderEmoji.isEmpty {
+                                        // Icon grid selector
+                                        CustomIconPickerView(selectedIcon: $settings.customReminderEmoji)
+                                    }
+                                    .padding(16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.purple.opacity(0.06))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                                            )
+                                    )
+                                    
+                                    // Custom message input - refined
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        Label("Reminder Message", systemImage: "text.bubble")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                        
+                                        TextField("e.g., \"Take a deep breath\" or \"Look away\"", text: $settings.customReminderMessage)
+                                            .textFieldStyle(.roundedBorder)
+                                            .font(.system(size: 14))
+                                        
+                                        // Preview
+                                        if !settings.customReminderMessage.isEmpty {
+                                            HStack(spacing: 12) {
                                                 ZStack {
                                                     Circle()
-                                                        .fill(Color.pink.opacity(0.15))
-                                                        .frame(width: 56, height: 56)
+                                                        .fill(Color.purple.opacity(0.15))
+                                                        .frame(width: 40, height: 40)
                                                     
-                                                    Text(settings.customReminderEmoji)
-                                                        .font(.system(size: 32))
+                                                    Image(systemName: settings.customReminderEmoji.isEmpty ? "eye" : settings.customReminderEmoji)
+                                                        .font(.system(size: 20))
+                                                        .foregroundColor(.purple)
                                                 }
+                                                
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Text(settings.customReminderMessage)
+                                                        .font(.system(size: 13, weight: .semibold))
+                                                        .foregroundColor(.primary)
+                                                    Text("Preview")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.secondary)
+                                                }
+                                                
+                                                Spacer()
                                             }
+                                            .padding(12)
+                                            .background(Color.purple.opacity(0.08))
+                                            .cornerRadius(10)
                                         }
                                     }
-                                    .padding(12)
+                                    .padding(16)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.pink.opacity(0.05))
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.purple.opacity(0.06))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                                            )
                                     )
                                     
-                                    // Custom message input
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Label("Custom Message", systemImage: "text.bubble")
-                                            .font(.subheadline)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.secondary)
-                                        
-                                        TextField("Enter reminder message", text: $settings.customReminderMessage)
-                                            .textFieldStyle(.roundedBorder)
-                                    }
-                                    .padding(12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.pink.opacity(0.05))
-                                    )
-                                    
-                                    // Tips
+                                    // Helpful examples
                                     HStack(spacing: 8) {
                                         Image(systemName: "lightbulb.fill")
-                                            .foregroundColor(.yellow)
-                                        Text("Try: 💧 \"Drink water\" or 🧘 \"Stretch your body\"")
+                                            .foregroundColor(.orange)
+                                            .font(.caption)
+                                        Text("Suggestions: \"Stretch your neck\" • \"Blink slowly\" • \"Hydrate yourself\"")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
-                                    .padding(.horizontal, 12)
+                                    .padding(.horizontal, 8)
                                 }
                             }
                         }
@@ -1059,5 +1084,87 @@ struct EnhancedSliderCard: View {
                         )
                 )
         )
+    }
+}
+
+// MARK: - Custom Icon Picker View
+
+struct CustomIconPickerView: View {
+    @Binding var selectedIcon: String
+    
+    // Curated professional SF Symbols for eye care reminders
+    let iconOptions: [(name: String, symbol: String)] = [
+        ("Eye", "eye"),
+        ("Eye Fill", "eye.fill"),
+        ("Sparkle", "sparkles"),
+        ("Star", "star.fill"),
+        ("Heart", "heart.fill"),
+        ("Drop", "drop.fill"),
+        ("Leaf", "leaf.fill"),
+        ("Moon", "moon.stars.fill"),
+        ("Sun", "sun.max.fill"),
+        ("Clock", "clock.fill"),
+        ("Bell", "bell.fill"),
+        ("Hand Raised", "hand.raised.fill"),
+        ("Figure Walk", "figure.walk"),
+        ("Lungs", "lungs.fill"),
+        ("Headphones", "headphones"),
+        ("Cup", "cup.and.saucer.fill")
+    ]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            LazyVGrid(columns: [
+                GridItem(.adaptive(minimum: 60, maximum: 70), spacing: 12)
+            ], spacing: 12) {
+                ForEach(iconOptions, id: \.symbol) { option in
+                    IconOptionButton(
+                        symbol: option.symbol,
+                        isSelected: selectedIcon == option.symbol,
+                        onSelect: {
+                            selectedIcon = option.symbol
+                        }
+                    )
+                }
+            }
+            
+            if selectedIcon.isEmpty {
+                Text("Select an icon for your custom reminder")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 4)
+            }
+        }
+    }
+}
+
+// MARK: - Icon Option Button
+
+struct IconOptionButton: View {
+    let symbol: String
+    let isSelected: Bool
+    let onSelect: () -> Void
+    
+    var body: some View {
+        Button(action: onSelect) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? 
+                          LinearGradient(colors: [.purple, .purple.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing) :
+                          LinearGradient(colors: [Color(NSColor.controlBackgroundColor)], startPoint: .top, endPoint: .bottom))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? Color.purple : Color.gray.opacity(0.3), lineWidth: isSelected ? 2 : 1)
+                    )
+                    .shadow(color: isSelected ? Color.purple.opacity(0.3) : Color.clear, radius: 8, x: 0, y: 2)
+                
+                Image(systemName: symbol)
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(isSelected ? .white : .secondary)
+            }
+            .frame(height: 60)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        }
+        .buttonStyle(.plain)
     }
 }

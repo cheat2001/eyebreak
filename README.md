@@ -3,15 +3,19 @@
 # 👁️ EyeBreak
 
 ### Your Eyes Deserve a Break
+### Independent Settings** - Different themes for reminders and overlays
 
-*A minimalistic, distraction-free macOS app that helps reduce digital eye strain by following the scientifically-backed 20-20-20 rule.*
+👉 **[See Quick Start Guide](QUICK_START.md) for step-by-step theme customization**
+
+[Full v2.0.0 Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md) minimalistic, distraction-free macOS app that helps reduce digital eye strain by following the scientifically-backed 20-20-20 rule.*
 
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
+[![Version](https://img.shields.io/badge/version-2.0.0-brightgreen.svg)](https://github.com/cheat2001/eyebreak/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing) • [License](#-license)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](QUICK_START.md) • [Contributing](#-contributing) • [License](#-license)
 
 <img src="EyeBreak/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-256.png" width="128" height="128" alt="EyeBreak Icon">
 
@@ -44,6 +48,8 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - 🎵 **Sound Effects** - Optional audio cues for breaks
 - 🎭 **Multiple Break Styles** - Blur screen, notification only, or guided eye exercises
 - ⚙️ **Flexible Settings** - Adjust intervals from 10-60 minutes
+- 🎨 **Theme Customization** (v2.0) - Personalize colors with Default, Random, or Custom themes
+- 🎯 **Custom Icons** (v2.0) - Choose from 16 professional SF Symbols for reminders
 
 ### Insights & Analytics
 - 📊 **Daily Statistics** - Track your break history with beautiful charts
@@ -55,6 +61,18 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - ♿️ **Accessibility Support** - Full VoiceOver, Dynamic Type, and Reduced Motion support
 - 🌐 **No Internet Required** - Works completely offline
 
+## 🎨 What's New in v2.0.0
+
+### Complete Theme Customization System
+- **Default Theme** - Classic vibrant style
+- **Random Color** - 20 curated palettes, fresh colors each session
+- **Custom Theme** - Full control over all colors and effects
+- **Professional Icons** - SF Symbol picker replaces emoji input
+- **Smart Caching** - Colors stay consistent during each reminder/overlay
+- **Independent Settings** - Different themes for reminders and overlays
+
+[See Full Release Notes](RELEASE_NOTES_v2.0.0.md)
+
 ## 📋 Requirements
 
 - **macOS**: 14.0 (Sonoma) or later
@@ -65,11 +83,11 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ### Download the App (Recommended) ⭐️
 
-1. **[Download EyeBreak-v1.0.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
+1. **[Download EyeBreak-v2.0.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
 2. **Remove quarantine** (required for unsigned apps):
    ```bash
    cd ~/Downloads
-   xattr -cr EyeBreak-v1.0.0.dmg
+   xattr -cr EyeBreak-v2.0.0.dmg
    ```
 3. **Open** the DMG file
 4. **Drag** `EyeBreak.app` to your `Applications` folder
@@ -85,7 +103,7 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 ### Quick One-Line Install
 
 ```bash
-curl -L https://github.com/cheat2001/eyebreak/releases/download/v1.0.0/EyeBreak-v1.0.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
+curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.0.0/EyeBreak-v2.0.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
 ```
 
 Then just drag to Applications!

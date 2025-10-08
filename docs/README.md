@@ -1,82 +1,66 @@
-# 📚 EyeBreak Documentation# EyeBreak Documentation
+# 📚 EyeBreak Documentation
 
+Complete documentation for EyeBreak - a macOS menu bar app for reducing eye strain.
 
+## 🎯 Start Here
 
-Welcome to the EyeBreak documentation! This folder contains comprehensive guides for users, developers, and contributors.Welcome to the EyeBreak documentation! 📚
+**New to EyeBreak?**  
+→ Read the [Quick Start Guide](../QUICK_START.md)
 
+**Want to customize?**  
+→ Open the app, go to Settings, explore Color Themes
 
+**Having issues?**  
+→ Check the [FAQ](FAQ.md)
 
-## 📖 Table of Contents## Table of Contents
+## 📖 Documentation
 
+### For Users
 
-
-### For Users### Getting Started
-
-- **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation instructions- [Quick Start Guide](QUICKSTART.md) - Get up and running in 5 minutes ⚡️
-
-- **[FAQ.md](FAQ.md)** - Frequently asked questions and troubleshooting- [Installation](INSTALLATION.md) - Detailed installation instructions
-
-- [FAQ](FAQ.md) - Frequently asked questions
+| Document | Description |
+|----------|-------------|
+| [Quick Start Guide](../QUICK_START.md) | Get started in 5 minutes |
+| [Installation Guide](INSTALLATION.md) | Detailed installation help |
+| [FAQ](FAQ.md) | Common questions & troubleshooting |
 
 ### For Developers
 
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Build from source, run locally### Development
+| Document | Description |
+|----------|-------------|
+| [Development Guide](DEVELOPMENT.md) | Setup & build from source |
+| [Architecture](ARCHITECTURE.md) | Code structure & design |
+| [Testing Guide](TESTING.md) | How to test the app |
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical design and code structure- [Architecture](ARCHITECTURE.md) - Technical design and architecture
+### For Maintainers
 
-- **[TESTING.md](TESTING.md)** - How to test the app thoroughly- [Build Guide](BUILD.md) - Building from source and distribution
+| Document | Description |
+|----------|-------------|
+| [Distribution Guide](DISTRIBUTION.md) | Building releases |
+| [Publishing Guide](PUBLISHING.md) | Creating GitHub releases |
 
-- [Testing Guide](TESTING.md) - How to test the app
+### Release History
 
-### For Contributors- [Contributing](../CONTRIBUTING.md) - How to contribute to the project
+| Document | Description |
+|----------|-------------|
+| [v2.0.0 Release Notes](releases/RELEASE_NOTES_v2.0.0.md) | Theme customization release |
+| [v1.0.0 Release Notes](releases/RELEASE_NOTES_v1.0.0.md) | Initial release |
 
-- **[DISTRIBUTION.md](DISTRIBUTION.md)** - Package and distribute the app
+## 🔗 Quick Links
 
-- **[PUBLISHING.md](PUBLISHING.md)** - Create GitHub releases### Customization
+- **Main README**: [../README.md](../README.md)
+- **Contributing**: [../CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Changelog**: [../CHANGELOG.md](../CHANGELOG.md)
+- **License**: [../LICENSE](../LICENSE)
 
-- [Icon Guide](ICON_GUIDE.md) - Creating and customizing app icons
+## 🤝 Contributing
 
-## 🚀 Quick Links- [Menu Bar Icon Guide](MENU_BAR_ICON_GUIDE.md) - Customizing menu bar icons
+Want to improve the docs?
 
+1. Fork the repository
+2. Edit the documentation
+3. Submit a pull request
 
-
-**Just want to use EyeBreak?** Go back to the [main README](../README.md) for download links.### Project Information
-
-- [Changelog](../CHANGELOG.md) - Version history and changes
-
-**Want to contribute?** Read [CONTRIBUTING.md](../CONTRIBUTING.md) first.- [License](../LICENSE) - MIT License details
-
-
-
-**Found a bug?** [Open an issue](https://github.com/cheat2001/eyebreak/issues/new) or check the [FAQ](FAQ.md).## Quick Links
-
-
-
-## 📂 Repository Structure### For Users
-
-- **Just want to use the app?** → [Quick Start Guide](QUICKSTART.md)
-
-```- **Having issues?** → [FAQ](FAQ.md)
-
-eyebreak/- **Need help installing?** → [Installation](INSTALLATION.md)
-
-├── README.md              # Main documentation (start here!)
-
-├── CHANGELOG.md           # Version history### For Developers
-
-├── CONTRIBUTING.md        # Contribution guidelines- **Want to understand the code?** → [Architecture](ARCHITECTURE.md)
-
-├── SECURITY.md            # Security policy- **Want to contribute?** → [Contributing Guide](../CONTRIBUTING.md)
-
-├── LICENSE                # MIT License- **Want to build from source?** → [Build Guide](BUILD.md)
-
-│- **Want to run tests?** → [Testing Guide](TESTING.md)
-
-├── docs/                  # 📚 You are here!
-
-│   ├── INSTALLATION.md    # Install guide### For Designers
-
-│   ├── DEVELOPMENT.md     # Build from source- **Want to customize the icon?** → [Icon Guide](ICON_GUIDE.md)
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 │   ├── ARCHITECTURE.md    # Technical design- **Want to modify the menu bar icon?** → [Menu Bar Icon Guide](MENU_BAR_ICON_GUIDE.md)
 

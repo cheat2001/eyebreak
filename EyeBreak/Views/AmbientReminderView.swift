@@ -146,16 +146,12 @@ struct AmbientReminderView: View {
         .padding(.vertical, 18)
         .background(
             ZStack {
-                // Professional frosted glass background
+                // Professional frosted glass background with enhanced depth
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(currentTheme.backgroundGradient())
                     .blur(radius: currentTheme.glassBlurRadius)
                 
-                // Subtle noise texture overlay for depth
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(currentTheme.backgroundColor.opacity(0.03))
-                
-                // Top highlight for liquid glass effect
+                // Top highlight for glass effect
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(
                         LinearGradient(

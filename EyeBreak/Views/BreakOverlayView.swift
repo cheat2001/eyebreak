@@ -36,36 +36,16 @@ struct BreakOverlayView: View {
     var body: some View {
         ZStack {
             // Theme-based background gradient
-            if currentTheme.themeType == .liquidGlass {
-                // Light, airy gradient for liquid glass
-                LinearGradient(
-                    colors: [
-                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity),
-                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.8),
-                        Color.white.opacity(0.15)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+            currentTheme.backgroundGradient()
                 .ignoresSafeArea()
-            } else {
-                // Vibrant gradient for default and custom themes
-                LinearGradient(
-                    colors: [
-                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.4),
-                        currentTheme.accentColor.opacity(currentTheme.accentOpacity * 0.4),
-                        currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.3)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-            }
             
             // Background blur
-            VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
-                .ignoresSafeArea()
-                .opacity(0.8)
+            VisualEffectView(
+                material: .hudWindow,
+                blendingMode: .behindWindow
+            )
+            .ignoresSafeArea()
+            .opacity(0.8)
             
             // Dimming overlay with theme color
             currentTheme.backgroundColor.opacity(currentTheme.backgroundOpacity * 0.3)

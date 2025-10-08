@@ -40,6 +40,9 @@ class ScreenBlurManager {
     }
     
     private func showOverlayOnMainThread(duration: Int, style: OverlayStyle, onSkip: @escaping () -> Void) {
+        // Generate a new random color theme for this break overlay (if using random color theme)
+        AppSettings.shared.regenerateBreakOverlayRandomTheme()
+        
         // Close existing windows
         for window in self.overlayWindows {
             window.orderOut(nil)

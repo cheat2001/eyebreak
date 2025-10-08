@@ -44,6 +44,10 @@ class AppSettings: ObservableObject {
     @AppStorage("breakOverlayThemeType") private var breakOverlayThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
     @AppStorage("breakOverlayCustomTheme") private var breakOverlayCustomThemeData: Data?
     
+    // Cached random themes (regenerated each time a new overlay/reminder appears)
+    private var cachedAmbientReminderRandomTheme: ColorTheme?
+    private var cachedBreakOverlayRandomTheme: ColorTheme?
+    
     // MARK: - Computed Properties
     
     var breakStyle: BreakStyle {
@@ -85,8 +89,14 @@ class AppSettings: ObservableObject {
             switch ambientReminderThemeType {
             case .defaultTheme:
                 return .defaultTheme
-            case .liquidGlass:
-                return .liquidGlassTheme
+            case .randomColor:
+                // Return cached theme if available, otherwise generate new one
+                if let cached = cachedAmbientReminderRandomTheme {
+                    return cached
+                }
+                let newTheme = ColorTheme.randomColorTheme()
+                cachedAmbientReminderRandomTheme = newTheme
+                return newTheme
             case .custom:
                 if let data = ambientReminderCustomThemeData,
                    let theme = try? JSONDecoder().decode(ColorTheme.self, from: data) {
@@ -103,6 +113,14 @@ class AppSettings: ObservableObject {
         }
     }
     
+    /// Generate a new random theme for ambient reminders
+    func regenerateAmbientReminderRandomTheme() {
+        if ambientReminderThemeType == .randomColor {
+            cachedAmbientReminderRandomTheme = ColorTheme.randomColorTheme()
+            objectWillChange.send()
+        }
+    }
+    
     /// Theme type for break overlay
     var breakOverlayThemeType: ColorThemeType {
         get { ColorThemeType(rawValue: breakOverlayThemeTypeRaw) ?? .defaultTheme }
@@ -115,8 +133,14 @@ class AppSettings: ObservableObject {
             switch breakOverlayThemeType {
             case .defaultTheme:
                 return .defaultTheme
-            case .liquidGlass:
-                return .liquidGlassTheme
+            case .randomColor:
+                // Return cached theme if available, otherwise generate new one
+                if let cached = cachedBreakOverlayRandomTheme {
+                    return cached
+                }
+                let newTheme = ColorTheme.randomColorTheme()
+                cachedBreakOverlayRandomTheme = newTheme
+                return newTheme
             case .custom:
                 if let data = breakOverlayCustomThemeData,
                    let theme = try? JSONDecoder().decode(ColorTheme.self, from: data) {
@@ -130,6 +154,14 @@ class AppSettings: ObservableObject {
                let data = try? JSONEncoder().encode(newValue) {
                 breakOverlayCustomThemeData = data
             }
+        }
+    }
+    
+    /// Generate a new random theme for break overlay
+    func regenerateBreakOverlayRandomTheme() {
+        if breakOverlayThemeType == .randomColor {
+            cachedBreakOverlayRandomTheme = ColorTheme.randomColorTheme()
+            objectWillChange.send()
         }
     }
     

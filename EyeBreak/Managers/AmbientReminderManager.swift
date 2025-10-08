@@ -77,6 +77,9 @@ class AmbientReminderManager: ObservableObject {
         
         let settings = AppSettings.shared
         
+        // Generate a new random color theme for this reminder (if using random color theme)
+        settings.regenerateAmbientReminderRandomTheme()
+        
         // Check if using custom reminder
         let reminderType: ReminderType
         if settings.useCustomReminder && !settings.customReminderEmoji.isEmpty {
@@ -196,7 +199,9 @@ enum ReminderType: String {
         case .lookUp: return "arrow.up.circle"
         case .lookDown: return "arrow.down.circle"
         case .lookAround: return "arrow.clockwise.circle"
-        case .custom: return "sparkles"
+        case .custom:
+            let customIcon = AppSettings.shared.customReminderEmoji
+            return customIcon.isEmpty ? "sparkles" : customIcon
         }
     }
     

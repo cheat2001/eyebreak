@@ -13,7 +13,7 @@ import SwiftUI
 /// Defines the available color theme options
 enum ColorThemeType: String, Codable, CaseIterable, Identifiable {
     case defaultTheme = "Default"
-    case liquidGlass = "Liquid Glass"
+    case randomColor = "Random Color"
     case custom = "Custom"
     
     var id: String { rawValue }
@@ -22,8 +22,8 @@ enum ColorThemeType: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .defaultTheme:
             return "Classic vibrant style with rich colors"
-        case .liquidGlass:
-            return "Elegant frosted glass with soft tones"
+        case .randomColor:
+            return "Surprise! A fresh color every time"
         case .custom:
             return "Create your own personalized theme"
         }
@@ -33,8 +33,8 @@ enum ColorThemeType: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .defaultTheme:
             return "paintpalette.fill"
-        case .liquidGlass:
-            return "drop.fill"
+        case .randomColor:
+            return "shuffle"
         case .custom:
             return "slider.horizontal.3"
         }
@@ -101,20 +101,23 @@ struct ColorTheme: Codable, Equatable {
         glassHighlightOpacity: 0.25
     )
     
-    /// Liquid glass theme with elegant frosted appearance
-    static let liquidGlassTheme = ColorTheme(
-        themeType: .liquidGlass,
-        backgroundColorHex: "#E8F4F8",  // Very light blue/white
-        backgroundOpacity: 0.25,
-        textColorHex: "#2C3E50",  // Dark blue-gray
-        textOpacity: 0.9,
-        secondaryTextColorHex: "#34495E",  // Medium gray
-        secondaryTextOpacity: 0.7,
-        accentColorHex: "#3498DB",  // Bright blue
-        accentOpacity: 0.6,
-        glassBlurRadius: 12.0,
-        glassHighlightOpacity: 0.4
-    )
+    /// Random color theme - generates a fresh beautiful color scheme each time
+    static func randomColorTheme() -> ColorTheme {
+        let palette = RandomColorPalette.generate()
+        return ColorTheme(
+            themeType: .randomColor,
+            backgroundColorHex: palette.primary,
+            backgroundOpacity: 0.75,
+            textColorHex: "#FFFFFF",
+            textOpacity: 0.95,
+            secondaryTextColorHex: "#FFFFFF",
+            secondaryTextOpacity: 0.75,
+            accentColorHex: palette.accent,
+            accentOpacity: 0.85,
+            glassBlurRadius: 1.5,
+            glassHighlightOpacity: 0.3
+        )
+    }
     
     /// Default custom theme (user can modify)
     static let customTheme = ColorTheme(
@@ -137,11 +140,57 @@ struct ColorTheme: Codable, Equatable {
         switch type {
         case .defaultTheme:
             return defaultTheme
-        case .liquidGlass:
-            return liquidGlassTheme
+        case .randomColor:
+            return randomColorTheme()
         case .custom:
             return customTheme ?? ColorTheme.customTheme
         }
+    }
+}
+
+// MARK: - Random Color Palette Generator
+
+struct RandomColorPalette {
+    let primary: String
+    let accent: String
+    
+    /// Curated beautiful color palettes that always look good
+    private static let beautifulPalettes: [(primary: String, accent: String)] = [
+        // Vibrant & Energetic
+        ("#FF6B6B", "#4ECDC4"),  // Coral Red & Turquoise
+        ("#6C5CE7", "#FD79A8"),  // Purple & Pink
+        ("#00B894", "#FDCB6E"),  // Emerald & Gold
+        ("#0984E3", "#00CEC9"),  // Blue & Cyan
+        ("#E17055", "#74B9FF"),  // Terracotta & Sky Blue
+        
+        // Warm & Inviting
+        ("#FD7272", "#FFA502"),  // Warm Red & Orange
+        ("#FF7979", "#FDCB6E"),  // Salmon & Yellow
+        ("#FF6348", "#FF9FF3"),  // Tomato & Pink
+        ("#FF6B9D", "#FFC312"),  // Rose & Amber
+        
+        // Cool & Calm
+        ("#5F27CD", "#00D2D3"),  // Deep Purple & Aqua
+        ("#341F97", "#54A0FF"),  // Dark Purple & Light Blue
+        ("#2C3E50", "#3498DB"),  // Dark Blue & Bright Blue
+        ("#1B9CFC", "#55E6C1"),  // Ocean Blue & Mint
+        
+        // Modern & Professional
+        ("#6C5CE7", "#A29BFE"),  // Purple Gradient
+        ("#00B894", "#55EFC4"),  // Green Gradient
+        ("#0984E3", "#74B9FF"),  // Blue Gradient
+        ("#FF7675", "#FD79A8"),  // Pink Gradient
+        
+        // Nature Inspired
+        ("#27AE60", "#F39C12"),  // Forest Green & Sunflower
+        ("#16A085", "#E67E22"),  // Teal & Carrot
+        ("#2ECC71", "#F1C40F"),  // Spring Green & Daffodil
+        ("#1ABC9C", "#E74C3C"),  // Turquoise & Alizarin
+    ]
+    
+    static func generate() -> RandomColorPalette {
+        let palette = beautifulPalettes.randomElement() ?? beautifulPalettes[0]
+        return RandomColorPalette(primary: palette.primary, accent: palette.accent)
     }
 }
 
@@ -197,7 +246,7 @@ extension ColorTheme {
     /// Apply background gradient based on theme
     func backgroundGradient() -> LinearGradient {
         switch themeType {
-        case .defaultTheme:
+        case .defaultTheme, .custom:
             return LinearGradient(
                 colors: [
                     backgroundColor.opacity(backgroundOpacity),
@@ -207,22 +256,13 @@ extension ColorTheme {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-        case .liquidGlass:
+        case .randomColor:
+            // Dynamic gradient for random colors
             return LinearGradient(
                 colors: [
                     backgroundColor.opacity(backgroundOpacity),
-                    backgroundColor.opacity(backgroundOpacity * 0.6),
-                    backgroundColor.opacity(backgroundOpacity * 0.4)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .custom:
-            return LinearGradient(
-                colors: [
-                    backgroundColor.opacity(backgroundOpacity),
-                    backgroundColor.opacity(backgroundOpacity * 0.85),
-                    backgroundColor.opacity(backgroundOpacity * 0.9)
+                    backgroundColor.opacity(backgroundOpacity * 0.8),
+                    accentColor.opacity(accentOpacity * 0.3)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -244,27 +284,15 @@ extension ColorTheme {
     
     /// Apply border gradient based on theme
     func borderGradient() -> LinearGradient {
-        switch themeType {
-        case .liquidGlass:
-            return LinearGradient(
-                colors: [
-                    Color.white.opacity(0.5),
-                    Color.white.opacity(0.2),
-                    Color.white.opacity(0.3)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        default:
-            return LinearGradient(
-                colors: [
-                    Color.white.opacity(0.35),
-                    Color.white.opacity(0.1),
-                    Color.white.opacity(0.2)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
+        // Consistent border for all themes
+        return LinearGradient(
+            colors: [
+                Color.white.opacity(0.35),
+                Color.white.opacity(0.1),
+                Color.white.opacity(0.2)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
 }
