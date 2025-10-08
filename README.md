@@ -71,7 +71,7 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - **Smart Caching** - Colors stay consistent during each reminder/overlay
 - **Independent Settings** - Different themes for reminders and overlays
 
-[See Full Release Notes](RELEASE_NOTES_v2.0.0.md)
+[See Full Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md)
 
 ## 📋 Requirements
 
