@@ -243,8 +243,17 @@ class BreakTimerManager: ObservableObject {
                 self?.skipBreak()
             }
         case .notificationOnly:
-            // Just notification, no overlay
-            break
+            // Show floating window instead of notification only
+            let window = FloatingBreakWindow()
+            window.show(
+                duration: settings.breakDurationSeconds,
+                onSkip: { [weak self] in
+                    self?.skipBreak()
+                },
+                onComplete: { [weak self] in
+                    self?.endBreak()
+                }
+            )
         }
     }
     

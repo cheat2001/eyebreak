@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		99A7D5142E9EA7AB00466080 /* FloatingBreakWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */; };
 		99BD678B2E92516200D6FF8C /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99BD678A2E92516200D6FF8C /* StatusBarController.swift */; };
 		A10000001 /* EyeBreakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000 /* EyeBreakApp.swift */; };
 		A10000003 /* TimerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002 /* TimerState.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBreakWindow.swift; sourceTree = "<group>"; };
 		99BD678A2E92516200D6FF8C /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		A10000000 /* EyeBreakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeBreakApp.swift; sourceTree = "<group>"; };
 		A10000002 /* TimerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerState.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		A10000040 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */,
 				A1000000E /* MenuBarView.swift */,
 				A10000010 /* SettingsView.swift */,
 				A10000012 /* BreakOverlayView.swift */,
@@ -217,6 +220,7 @@
 				A1000000D /* ScreenBlurManager.swift in Sources */,
 				A1000000F /* MenuBarView.swift in Sources */,
 				A10000011 /* SettingsView.swift in Sources */,
+				99A7D5142E9EA7AB00466080 /* FloatingBreakWindow.swift in Sources */,
 				A10000013 /* BreakOverlayView.swift in Sources */,
 				A10000015 /* OnboardingView.swift in Sources */,
 				A10000017 /* StatsView.swift in Sources */,

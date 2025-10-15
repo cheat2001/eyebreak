@@ -25,11 +25,22 @@ class NotificationManager: NSObject {
     func requestAuthorization() {
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error = error {
-                print("Notification authorization error: \(error)")
+                print("❌ Notification authorization error: \(error)")
             }
             
             if granted {
-                print("Notification permission granted")
+                print("✅ Notification permission granted")
+            } else {
+                print("⚠️ Notification permission denied - floating window will be used instead")
+            }
+        }
+    }
+    
+    /// Check if notifications are authorized
+    func checkAuthorizationStatus(completion: @escaping (Bool) -> Void) {
+        center.getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                completion(settings.authorizationStatus == .authorized)
             }
         }
     }

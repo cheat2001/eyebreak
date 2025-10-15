@@ -49,7 +49,7 @@ enum TimerState: Equatable {
 /// Break style options
 enum BreakStyle: String, CaseIterable, Identifiable {
     case blurScreen = "Blur Screen"
-    case notificationOnly = "Notification Only"
+    case notificationOnly = "Floating Window"
     case eyeExercise = "Eye Exercise"
     
     var id: String { rawValue }
@@ -59,7 +59,7 @@ enum BreakStyle: String, CaseIterable, Identifiable {
         case .blurScreen:
             return "Blur your screen during breaks"
         case .notificationOnly:
-            return "Show notification without screen blur"
+            return "Show a small floating reminder window"
         case .eyeExercise:
             return "Guided eye exercise instructions"
         }
@@ -70,7 +70,7 @@ enum BreakStyle: String, CaseIterable, Identifiable {
         case .blurScreen:
             return "eye.slash.fill"
         case .notificationOnly:
-            return "bell.fill"
+            return "rectangle.inset.filled.and.person.filled"
         case .eyeExercise:
             return "figure.walk"
         }

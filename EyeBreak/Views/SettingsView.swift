@@ -212,6 +212,14 @@ struct BreakSettingsView: View {
                 Text(settings.breakStyle.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                
+                // Preview button for testing break styles
+                Button(action: previewBreakStyle) {
+                    Label("Preview Break Style", systemImage: "eye.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .help("Test how your selected break style will look")
             } header: {
                 Text("Break Style")
             }
@@ -595,6 +603,55 @@ struct BreakSettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+    }
+    
+    // MARK: - Preview Function
+    
+    private func previewBreakStyle() {
+        switch settings.breakStyle {
+        case .blurScreen:
+            // Show 5-second preview of blur with proper cleanup
+            ScreenBlurManager.shared.showBreakOverlay(
+                duration: 5,
+                style: .blur
+            ) {
+                // When user clicks skip, hide the overlay
+                ScreenBlurManager.shared.hideOverlay()
+            }
+            
+            // Auto-hide after 5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                ScreenBlurManager.shared.hideOverlay()
+            }
+            
+        case .notificationOnly:
+            // Show 5-second preview of floating window
+            let window = FloatingBreakWindow()
+            window.show(
+                duration: 5,
+                onSkip: { 
+                    window.hide()
+                },
+                onComplete: { 
+                    window.hide()
+                }
+            )
+            
+        case .eyeExercise:
+            // Show 5-second preview of exercise with proper cleanup
+            ScreenBlurManager.shared.showBreakOverlay(
+                duration: 5,
+                style: .exercise
+            ) {
+                // When user clicks skip, hide the overlay
+                ScreenBlurManager.shared.hideOverlay()
+            }
+            
+            // Auto-hide after 5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                ScreenBlurManager.shared.hideOverlay()
+            }
+        }
     }
 }
 
