@@ -125,20 +125,17 @@ enum SessionType: String, CaseIterable, Identifiable {
 
 /// Water reminder style options
 enum WaterReminderStyle: String, CaseIterable, Identifiable {
-    case notification = "Notification"
+    case blurScreen = "Blur Screen"
     case ambient = "Ambient Pop-up"
-    case both = "Both"
     
     var id: String { rawValue }
     
     var description: String {
         switch self {
-        case .notification:
-            return "Show notification banner"
+        case .blurScreen:
+            return "Full screen blur overlay with water reminder"
         case .ambient:
-            return "Show floating reminder window"
-        case .both:
-            return "Show both notification and pop-up"
+            return "Gentle floating reminder window at top of screen"
         }
     }
 }

@@ -849,7 +849,7 @@ struct BreakSettingsView: View {
                     
                     Divider()
                     
-                    // Water Reminder Theme
+                    // Water Reminder Theme - always show now since all styles support themes
                     ThemeSettingsCard(
                         title: "Water Reminder Theme",
                         icon: "drop.fill",

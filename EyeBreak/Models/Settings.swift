@@ -41,7 +41,7 @@ class AppSettings: ObservableObject {
     // Water reminders
     @AppStorage("waterReminderEnabled") var waterReminderEnabled: Bool = false
     @AppStorage("waterReminderInterval") var waterReminderInterval: TimeInterval = 3600 // 1 hour default (in seconds)
-    @AppStorage("waterReminderStyle") private var waterReminderStyleRaw: String = WaterReminderStyle.notification.rawValue
+    @AppStorage("waterReminderStyle") private var waterReminderStyleRaw: String = WaterReminderStyle.blurScreen.rawValue
     @AppStorage("customWaterReminderIcon") var customWaterReminderIcon: String = "" // Custom SF Symbol icon
     @AppStorage("customWaterReminderMessage") var customWaterReminderMessage: String = "" // Custom message
     @AppStorage("useCustomWaterReminder") var useCustomWaterReminder: Bool = false // Use custom instead of random
@@ -79,7 +79,7 @@ class AppSettings: ObservableObject {
     }
     
     var waterReminderStyle: WaterReminderStyle {
-        get { WaterReminderStyle(rawValue: waterReminderStyleRaw) ?? .notification }
+        get { WaterReminderStyle(rawValue: waterReminderStyleRaw) ?? .blurScreen }
         set { waterReminderStyleRaw = newValue.rawValue }
     }
     

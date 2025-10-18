@@ -109,32 +109,55 @@ class WaterReminderManager: ObservableObject {
         print("💧 Showing water reminder: \(message.title)")
         
         switch settings.waterReminderStyle {
-        case .notification:
-            showNotificationReminder(message: message)
+        case .blurScreen:
+            showBlurScreenReminder(message: message)
         case .ambient:
-            showAmbientReminder(message: message)
-        case .both:
-            showNotificationReminder(message: message)
             showAmbientReminder(message: message)
         }
     }
     
-    private func showNotificationReminder(message: WaterMessage) {
-        let content = UNMutableNotificationContent()
-        content.title = message.title
-        content.body = message.message
-        content.sound = AppSettings.shared.soundEnabled ? .default : nil
+    private func showBlurScreenReminder(message: WaterMessage) {
+        // Play sound if enabled
+        if AppSettings.shared.soundEnabled {
+            NSSound(named: "Glass")?.play()
+        }
         
-        let request = UNNotificationRequest(
-            identifier: "waterReminder-\(Date().timeIntervalSince1970)",
-            content: content,
-            trigger: nil
-        )
-        
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("❌ Error sending water reminder notification: \(error)")
+        // Create blur screen overlay similar to break overlay
+        DispatchQueue.main.async {
+            // Create overlay windows for all screens
+            let screens = NSScreen.screens
+            var overlayWindows: [NSWindow] = []
+            
+            for screen in screens {
+                let screenFrame = screen.frame
+                
+                let window = NSWindow(
+                    contentRect: screenFrame,
+                    styleMask: [.borderless, .fullSizeContentView],
+                    backing: .buffered,
+                    defer: false,
+                    screen: screen
+                )
+                
+                window.isOpaque = false
+                window.backgroundColor = .clear
+                window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
+                window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+                
+                // Create the content view with water reminder
+                let contentView = WaterBlurOverlayView(
+                    message: message,
+                    onDismiss: {
+                        overlayWindows.forEach { $0.orderOut(nil) }
+                    }
+                )
+                
+                window.contentView = NSHostingView(rootView: contentView)
+                window.makeKeyAndOrderFront(nil)
+                
+                overlayWindows.append(window)
             }
+            // No auto-dismiss - user must click the button to acknowledge
         }
     }
     
@@ -220,27 +243,22 @@ struct WaterReminderView: View {
     
     var body: some View {
         ZStack {
-            // Glass morphism background with theme colors
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    message.glassColor.opacity(message.theme.backgroundOpacity)
-                )
+            // Glass morphism background with theme colors - using backgroundGradient() for proper opacity
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(message.theme.backgroundGradient())
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(.ultraThinMaterial)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .stroke(
-                            LinearGradient(
-                                colors: [message.glassColor.opacity(0.6), message.accentColor.opacity(0.5)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
+                            message.theme.borderGradient(),
                             lineWidth: 1.5
                         )
                 )
-                .shadow(color: message.glassColor.opacity(0.3), radius: 20, x: 0, y: 10)
+                .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 5)
+                .shadow(color: message.theme.accentColor.opacity(0.25), radius: 20, x: 0, y: 8)
             
             HStack(spacing: 16) {
                 // Water icon - using SF Symbol with theme colors
@@ -248,7 +266,10 @@ struct WaterReminderView: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [message.glassColor.opacity(0.25), message.accentColor.opacity(0.15)],
+                                colors: [
+                                    message.theme.backgroundColor.opacity(message.theme.backgroundOpacity * 0.4),
+                                    message.theme.accentColor.opacity(message.theme.accentOpacity * 0.3)
+                                ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -259,7 +280,10 @@ struct WaterReminderView: View {
                         .font(.system(size: 24))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [message.glassColor, message.accentColor],
+                                colors: [
+                                    message.theme.backgroundColor,
+                                    message.theme.accentColor
+                                ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -302,6 +326,170 @@ struct WaterReminderView: View {
             }
         }
     }
+}
+
+// MARK: - Water Blur Overlay View
+
+/// Full screen blur overlay for water reminder (similar to break overlay)
+struct WaterBlurOverlayView: View {
+    let message: WaterMessage
+    let onDismiss: () -> Void
+    
+    @State private var scale: CGFloat = 0.5
+    @State private var opacity: Double = 0
+    
+    var body: some View {
+        ZStack {
+            // Blur background
+            VisualEffectBlur()
+                .ignoresSafeArea()
+            
+            // Gradient overlay with theme colors
+            LinearGradient(
+                colors: [
+                    message.theme.backgroundColor.opacity(message.theme.backgroundOpacity * 0.6),
+                    message.theme.backgroundColor.opacity(message.theme.backgroundOpacity * 0.4),
+                    message.theme.accentColor.opacity(message.theme.accentOpacity * 0.3)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 32) {
+                // Water icon with animation
+                ZStack {
+                    // Outer glow
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    message.theme.accentColor.opacity(message.theme.accentOpacity * 0.4),
+                                    message.theme.accentColor.opacity(0)
+                                ],
+                                center: .center,
+                                startRadius: 40,
+                                endRadius: 100
+                            )
+                        )
+                        .frame(width: 200, height: 200)
+                    
+                    // Icon background circle
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    message.theme.backgroundColor.opacity(message.theme.backgroundOpacity * 0.8),
+                                    message.theme.accentColor.opacity(message.theme.accentOpacity * 0.6)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 120, height: 120)
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    message.theme.borderGradient(),
+                                    lineWidth: 2
+                                )
+                        )
+                        .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
+                    
+                    // Water icon
+                    Image(systemName: message.icon)
+                        .font(.system(size: 56, weight: .light, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color.white,
+                                    message.theme.textColor.opacity(message.theme.textOpacity)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .symbolRenderingMode(.hierarchical)
+                }
+                .scaleEffect(scale)
+                
+                // Message content
+                VStack(spacing: 16) {
+                    Text(message.title)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(message.theme.textColor.opacity(message.theme.textOpacity))
+                        .multilineTextAlignment(.center)
+                    
+                    Text(message.message)
+                        .font(.system(size: 20, weight: .regular, design: .rounded))
+                        .foregroundColor(message.theme.secondaryTextColor.opacity(message.theme.secondaryTextOpacity))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 60)
+                
+                // Gentle dismiss button - no countdown, user chooses when to dismiss
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        scale = 0.5
+                        opacity = 0
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        onDismiss()
+                    }
+                }) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "hand.tap.fill")
+                            .font(.system(size: 18))
+                        Text("Thanks, I'll drink water now")
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 16)
+                    .background(
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        message.theme.backgroundColor,
+                                        message.theme.accentColor
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                    )
+                    .shadow(color: message.theme.accentColor.opacity(0.4), radius: 15, x: 0, y: 8)
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 16)
+            }
+        }
+        .opacity(opacity)
+        .onAppear {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+                scale = 1.0
+                opacity = 1.0
+            }
+        }
+    }
+}
+
+// MARK: - Visual Effect Blur Helper
+
+/// Helper view for creating blur effect background
+struct VisualEffectBlur: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.blendingMode = .behindWindow
+        view.state = .active
+        view.material = .hudWindow
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
 }
 
 // MARK: - Preview
