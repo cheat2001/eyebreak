@@ -101,7 +101,12 @@ class StatusBarController: NSObject, ObservableObject {
         menu.addItem(reminderItem)
         
         menu.addItem(NSMenuItem.separator())
-        
+
+        // Water Reminder
+        let waterReminderItem = NSMenuItem(title: "Show Water Reminder", action: #selector(showWaterReminder), keyEquivalent: "")
+        waterReminderItem.target = self
+        menu.addItem(waterReminderItem)
+
         // Quit
         let quitItem = NSMenuItem(title: "Quit EyeBreak", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self
@@ -171,6 +176,11 @@ class StatusBarController: NSObject, ObservableObject {
     @objc private func showReminder() {
         print("💡 Show Reminder")
         AmbientReminderManager.shared.showAmbientReminder()
+    }
+    
+    @objc private func showWaterReminder() {
+        print("💧 Show Water Reminder")
+        WaterReminderManager.shared.showWaterReminderNow()
     }
     
     @objc private func quit() {

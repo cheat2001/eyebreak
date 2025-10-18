@@ -50,6 +50,11 @@ struct EyeBreakApp: App {
                     AmbientReminderManager.shared.showAmbientReminder()
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
+                
+                Button("Show Water Reminder") {
+                    WaterReminderManager.shared.showWaterReminderNow()
+                }
+                .keyboardShortcut("w", modifiers: [.command, .shift])
             }
         }
     }
@@ -91,6 +96,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             AmbientReminderManager.shared.startAmbientReminders()
         }
         
+        // Start water reminders if enabled
+        if AppSettings.shared.waterReminderEnabled {
+            WaterReminderManager.shared.startWaterReminders()
+        }
+        
         print("✅ App launched successfully!")
         print("👀 EyeBreak running in ACCESSORY mode")
         print("   ✓ No Dock icon (prevents Space/desktop switching)")
@@ -103,6 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("   ⌘⇧B - Take break now")
         print("   ⌘⇧X - Stop timer")
         print("   ⌘⇧R - Show ambient reminder (test overlay on current screen)")
+        print("   ⌘⇧W - Show water reminder")
     }
     
     func applicationWillTerminate(_ notification: Notification) {
@@ -144,6 +155,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     AmbientReminderManager.shared.showAmbientReminder()
                 }
             }
+            // Check for Command+Shift+W (Show Water Reminder)
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "w" {
+                DispatchQueue.main.async {
+                    WaterReminderManager.shared.showWaterReminderNow()
+                }
+            }
             // Check for Command+Shift+O (Open Settings)
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "o" {
                 DispatchQueue.main.async {
@@ -183,6 +200,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "r" {
                 DispatchQueue.main.async {
                     AmbientReminderManager.shared.showAmbientReminder()
+                }
+                return nil
+            }
+            // Check for Command+Shift+W (Water Reminder)
+            else if event.modifierFlags.contains([.command, .shift]) && event.charactersIgnoringModifiers == "w" {
+                DispatchQueue.main.async {
+                    WaterReminderManager.shared.showWaterReminderNow()
                 }
                 return nil
             }

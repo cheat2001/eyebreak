@@ -38,15 +38,26 @@ class AppSettings: ObservableObject {
     @AppStorage("customReminderMessage") var customReminderMessage: String = "" // Custom message
     @AppStorage("useCustomReminder") var useCustomReminder: Bool = false // Use custom instead of random
     
+    // Water reminders
+    @AppStorage("waterReminderEnabled") var waterReminderEnabled: Bool = false
+    @AppStorage("waterReminderInterval") var waterReminderInterval: TimeInterval = 3600 // 1 hour default (in seconds)
+    @AppStorage("waterReminderStyle") private var waterReminderStyleRaw: String = WaterReminderStyle.notification.rawValue
+    @AppStorage("customWaterReminderIcon") var customWaterReminderIcon: String = "" // Custom SF Symbol icon
+    @AppStorage("customWaterReminderMessage") var customWaterReminderMessage: String = "" // Custom message
+    @AppStorage("useCustomWaterReminder") var useCustomWaterReminder: Bool = false // Use custom instead of random
+    
     // Color Theme Settings
     @AppStorage("ambientReminderThemeType") private var ambientReminderThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
     @AppStorage("ambientReminderCustomTheme") private var ambientReminderCustomThemeData: Data?
     @AppStorage("breakOverlayThemeType") private var breakOverlayThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
     @AppStorage("breakOverlayCustomTheme") private var breakOverlayCustomThemeData: Data?
+    @AppStorage("waterReminderThemeType") private var waterReminderThemeTypeRaw: String = ColorThemeType.defaultTheme.rawValue
+    @AppStorage("waterReminderCustomTheme") private var waterReminderCustomThemeData: Data?
     
     // Cached random themes (regenerated each time a new overlay/reminder appears)
     private var cachedAmbientReminderRandomTheme: ColorTheme?
     private var cachedBreakOverlayRandomTheme: ColorTheme?
+    private var cachedWaterReminderRandomTheme: ColorTheme?
     
     // MARK: - Computed Properties
     
@@ -65,6 +76,11 @@ class AppSettings: ObservableObject {
                 breakDurationSeconds = newValue.breakSeconds
             }
         }
+    }
+    
+    var waterReminderStyle: WaterReminderStyle {
+        get { WaterReminderStyle(rawValue: waterReminderStyleRaw) ?? .notification }
+        set { waterReminderStyleRaw = newValue.rawValue }
     }
     
     var workIntervalSeconds: Int {
@@ -161,6 +177,65 @@ class AppSettings: ObservableObject {
     func regenerateBreakOverlayRandomTheme() {
         if breakOverlayThemeType == .randomColor {
             cachedBreakOverlayRandomTheme = ColorTheme.randomColorTheme()
+            objectWillChange.send()
+        }
+    }
+    
+    // MARK: - Water Reminder Theme Properties
+    
+    /// Theme type for water reminders
+    var waterReminderThemeType: ColorThemeType {
+        get { ColorThemeType(rawValue: waterReminderThemeTypeRaw) ?? .defaultTheme }
+        set { waterReminderThemeTypeRaw = newValue.rawValue }
+    }
+    
+    /// Get the active theme for water reminders
+    var waterReminderTheme: ColorTheme {
+        get {
+            switch waterReminderThemeType {
+            case .defaultTheme:
+                // Water-themed blue/cyan gradient
+                return ColorTheme(
+                    themeType: .defaultTheme,
+                    backgroundColorHex: "#4D99CC",  // Ocean blue
+                    backgroundOpacity: 0.75,
+                    textColorHex: "#FFFFFF",
+                    textOpacity: 0.95,
+                    secondaryTextColorHex: "#FFFFFF",
+                    secondaryTextOpacity: 0.75,
+                    accentColorHex: "#66CCFF",  // Light cyan
+                    accentOpacity: 0.85,
+                    glassBlurRadius: 1.0,
+                    glassHighlightOpacity: 0.25
+                )
+            case .randomColor:
+                // Return cached theme if available, otherwise generate new one
+                if let cached = cachedWaterReminderRandomTheme {
+                    return cached
+                }
+                let newTheme = ColorTheme.randomColorTheme()
+                cachedWaterReminderRandomTheme = newTheme
+                return newTheme
+            case .custom:
+                if let data = waterReminderCustomThemeData,
+                   let theme = try? JSONDecoder().decode(ColorTheme.self, from: data) {
+                    return theme
+                }
+                return .customTheme
+            }
+        }
+        set {
+            if newValue.themeType == .custom,
+               let data = try? JSONEncoder().encode(newValue) {
+                waterReminderCustomThemeData = data
+            }
+        }
+    }
+    
+    /// Generate a new random theme for water reminders
+    func regenerateWaterReminderRandomTheme() {
+        if waterReminderThemeType == .randomColor {
+            cachedWaterReminderRandomTheme = ColorTheme.randomColorTheme()
             objectWillChange.send()
         }
     }
