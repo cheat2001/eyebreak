@@ -122,41 +122,38 @@ class WaterReminderManager: ObservableObject {
             NSSound(named: "Glass")?.play()
         }
         
-        // Create blur screen overlay similar to break overlay
+        // Create blur screen overlay on active screen only
         DispatchQueue.main.async {
-            // Create overlay windows for all screens
-            let screens = NSScreen.screens
-            var overlayWindows: [NSWindow] = []
+            // Get the screen with mouse cursor (the active screen user is on)
+            let mouseLocation = NSEvent.mouseLocation
+            let activeScreen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
+            let screenFrame = activeScreen.frame
             
-            for screen in screens {
-                let screenFrame = screen.frame
-                
-                let window = NSWindow(
-                    contentRect: screenFrame,
-                    styleMask: [.borderless, .fullSizeContentView],
-                    backing: .buffered,
-                    defer: false,
-                    screen: screen
-                )
-                
-                window.isOpaque = false
-                window.backgroundColor = .clear
-                window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
-                window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
-                
-                // Create the content view with water reminder
-                let contentView = WaterBlurOverlayView(
-                    message: message,
-                    onDismiss: {
-                        overlayWindows.forEach { $0.orderOut(nil) }
-                    }
-                )
-                
-                window.contentView = NSHostingView(rootView: contentView)
-                window.makeKeyAndOrderFront(nil)
-                
-                overlayWindows.append(window)
-            }
+            // Create overlay window for the active screen only
+            let window = NSWindow(
+                contentRect: screenFrame,
+                styleMask: [.borderless, .fullSizeContentView],
+                backing: .buffered,
+                defer: false,
+                screen: activeScreen
+            )
+            
+            window.isOpaque = false
+            window.backgroundColor = .clear
+            window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
+            window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+            
+            // Create the content view with water reminder
+            let contentView = WaterBlurOverlayView(
+                message: message,
+                onDismiss: { [weak window] in
+                    window?.orderOut(nil)
+                }
+            )
+            
+            window.contentView = NSHostingView(rootView: contentView)
+            window.makeKeyAndOrderFront(nil)
+            
             // No auto-dismiss - user must click the button to acknowledge
         }
     }
