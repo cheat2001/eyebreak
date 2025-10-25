@@ -3,11 +3,8 @@
 # 👁️ EyeBreak
 
 ### Your Eyes Deserve a Break
-### Independent Settings** - Different themes for reminders and overlays
 
-👉 **[See Quick Start Guide](QUICK_START.md) for step-by-step theme customization**
-
-[Full v2.0.0 Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md) minimalistic, distraction-free macOS app that helps reduce digital eye strain by following the scientifically-backed 20-20-20 rule.*
+*A simple, minimalistic, distraction-free macOS app that helps reduce digital eye strain by following the scientifically-backed 20-20-20 rule.*
 
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
@@ -18,6 +15,8 @@
 [Features](#-features) • [Installation](#-installation) • [Quick Start](QUICK_START.md) • [Contributing](#-contributing) • [License](#-license)
 
 <img src="EyeBreak/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-256.png" width="128" height="128" alt="EyeBreak Icon">
+
+</div>
 
 </div>
 
@@ -50,6 +49,8 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - ⚙️ **Flexible Settings** - Adjust intervals from 10-60 minutes
 - 🎨 **Theme Customization** (v2.0) - Personalize colors with Default, Random, or Custom themes
 - 🎯 **Custom Icons** (v2.0) - Choose from 16 professional SF Symbols for reminders
+- ⏰ **Smart Schedule** (v2.1) - Set work hours and active days for intelligent reminder management
+- 🚀 **Auto-Start Timer** (v2.1) - Automatically begin timer when app launches
 - 💧 **Water Reminders** (v2.1) - Smart hydration reminders with blur screen or ambient pop-up styles
 - 🚀 **Launch at Login** (v2.1) - Automatic startup when you log into your Mac
 
@@ -65,12 +66,26 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ## 🎨 What's New in v2.1.0
 
-### � Launch at Login (NEW!)
+### ⏰ Smart Schedule System (NEW!)
+- **Work Hours Management** - Set custom work hours (e.g., 9 AM - 5 PM)
+- **Active Days Selection** - Choose which days to receive reminders (Mon-Fri, weekends, custom)
+- **5 Quick Presets** - Standard Work, Flexible, Early Bird, Night Owl, 24/7
+- **Manual Override** - "Show Anyway" option for breaks outside work hours
+- **Real-Time Status** - See if schedule is "Active" or "Paused"
+- **Work-Life Balance** - All reminders (breaks, ambient, water) respect your schedule
+
+### 🚀 Auto-Start Timer (NEW!)
+- **Automatic Start** - Timer begins automatically when app launches
+- **One-Click Toggle** - Enable/disable in General Settings
+- **Smart Integration** - Works perfectly with Launch at Login
+- **No Setup Required** - Just enable and forget!
+
+### 🚀 Launch at Login (NEW!)
 - **One-Click Setup** - Toggle in Settings to start automatically on login
 - **SMAppService** - Modern macOS 13+ technology for reliable startup
 - **Easy Control** - Enable or disable anytime from General Settings
 
-### �💧 Water Reminder System
+### 💧 Water Reminder System (NEW!)
 - **Blur Screen** - Full-screen immersive hydration reminders with beautiful animations
 - **Ambient Pop-up** - Gentle floating reminders at top of screen
 - **Smart Timing** - Choose from 30min to 2 hour intervals
@@ -79,6 +94,13 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - **Custom Messages** - Personalize your hydration reminders
 - **Full Theme Support** - Customize colors, opacity, and effects
 - **Keyboard Shortcut** - ⌘⇧W to trigger reminder manually
+
+### ⌨️ Enhanced Keyboard Shortcuts
+- **⌘⇧S** - Start timer
+- **⌘⇧X** - Stop timer  
+- **⌘⇧B** - Take break now (with Smart Schedule override)
+- **⌘⇧R** - Show ambient reminder (with Smart Schedule override)
+- **⌘⇧W** - Show water reminder (with Smart Schedule override)
 
 [See Full v2.1.0 Release Notes](docs/releases/RELEASE_NOTES_v2.1.0.md) | [Water Reminder Guide](docs/WATER_REMINDER_FEATURE.md)
 
@@ -171,6 +193,11 @@ Access **Settings** to customize:
 | Pre-Break Warning | 0-60 sec | 30 sec | Warning before break starts |
 | Break Style | 3 options | Blur | Blur, notification, or exercise |
 | Session Type | 3 presets | 20-20-20 | Choose 20-20-20, Pomodoro, or Custom |
+| Smart Schedule | ON/OFF | OFF | Enable work hours management |
+| Work Hours | Custom | 9AM-5PM | Set your working schedule |
+| Auto-Start Timer | ON/OFF | ON | Start timer on app launch |
+| Launch at Login | ON/OFF | OFF | Start app when you log in |
+| Water Reminders | 30min-2hr | 1 hour | Hydration reminder interval |
 
 ## 🔐 Permissions
 
@@ -291,20 +318,29 @@ See [docs/FAQ.md](docs/FAQ.md) for more troubleshooting help.
 
 ## 🗺️ Roadmap
 
+### Recently Completed ✅
+- [x] Smart Schedule with work hours management (v2.1.0)
+- [x] Auto-start timer (v2.1.0)
+- [x] Launch at login (v2.1.0)
+- [x] Water reminder system (v2.1.0)
+- [x] Keyboard shortcuts (v2.1.0)
+- [x] Custom break messages (v2.0.0)
+- [x] Theme customization (v2.0.0)
+
 ### Upcoming Features
 - [ ] Multiple language support
-- [ ] Custom break messages
-- [ ] Break exercise animations
-- [ ] Weekly/monthly reports
-- [ ] Export statistics
-- [ ] Keyboard shortcuts
-- [ ] Focus mode integration
+- [ ] Break exercise animations with guided movements
+- [ ] Weekly/monthly detailed reports
+- [ ] Export statistics to CSV
+- [ ] Focus mode integration with Do Not Disturb
+- [ ] Customizable ambient reminder messages
 
-### v2.0 Ideas
-- [ ] Team sync (optional)
-- [ ] Break reminders for meetings
+### Future Ideas
+- [ ] Team sync (optional, privacy-first)
+- [ ] Break reminders for calendar meetings
 - [ ] Integration with calendar apps
-- [ ] Ambient reminder sounds
+- [ ] Stretching exercise videos
+- [ ] Dark mode theme variants
 
 See [issues](https://github.com/cheat2001/eyebreak/issues) for planned features and vote on what you'd like to see!
 
