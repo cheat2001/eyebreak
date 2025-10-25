@@ -11,7 +11,7 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
-[![Version](https://img.shields.io/badge/version-2.0.0-brightgreen.svg)](https://github.com/cheat2001/eyebreak/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0-brightgreen.svg)](https://github.com/cheat2001/eyebreak/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -50,6 +50,8 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - ⚙️ **Flexible Settings** - Adjust intervals from 10-60 minutes
 - 🎨 **Theme Customization** (v2.0) - Personalize colors with Default, Random, or Custom themes
 - 🎯 **Custom Icons** (v2.0) - Choose from 16 professional SF Symbols for reminders
+- 💧 **Water Reminders** (v2.1) - Smart hydration reminders with blur screen or ambient pop-up styles
+- 🚀 **Launch at Login** (v2.1) - Automatic startup when you log into your Mac
 
 ### Insights & Analytics
 - 📊 **Daily Statistics** - Track your break history with beautiful charts
@@ -61,17 +63,32 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - ♿️ **Accessibility Support** - Full VoiceOver, Dynamic Type, and Reduced Motion support
 - 🌐 **No Internet Required** - Works completely offline
 
-## 🎨 What's New in v2.0.0
+## 🎨 What's New in v2.1.0
 
-### Complete Theme Customization System
+### � Launch at Login (NEW!)
+- **One-Click Setup** - Toggle in Settings to start automatically on login
+- **SMAppService** - Modern macOS 13+ technology for reliable startup
+- **Easy Control** - Enable or disable anytime from General Settings
+
+### �💧 Water Reminder System
+- **Blur Screen** - Full-screen immersive hydration reminders with beautiful animations
+- **Ambient Pop-up** - Gentle floating reminders at top of screen
+- **Smart Timing** - Choose from 30min to 2 hour intervals
+- **8 Preset Messages** - Encouraging hydration prompts
+- **16 Water Icons** - Beautiful SF Symbol icons (drops, bottles, nature)
+- **Custom Messages** - Personalize your hydration reminders
+- **Full Theme Support** - Customize colors, opacity, and effects
+- **Keyboard Shortcut** - ⌘⇧W to trigger reminder manually
+
+[See Full v2.1.0 Release Notes](docs/releases/RELEASE_NOTES_v2.1.0.md) | [Water Reminder Guide](docs/WATER_REMINDER_FEATURE.md)
+
+### Previous: v2.0.0 Theme Customization
 - **Default Theme** - Classic vibrant style
 - **Random Color** - 20 curated palettes, fresh colors each session
 - **Custom Theme** - Full control over all colors and effects
 - **Professional Icons** - SF Symbol picker replaces emoji input
-- **Smart Caching** - Colors stay consistent during each reminder/overlay
-- **Independent Settings** - Different themes for reminders and overlays
 
-[See Full Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md)
+[See v2.0.0 Release Notes](docs/releases/RELEASE_NOTES_v2.0.0.md)
 
 ## 📋 Requirements
 
@@ -83,11 +100,11 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ### Download the App (Recommended) ⭐️
 
-1. **[Download EyeBreak-v2.0.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
+1. **[Download EyeBreak-v2.1.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
 2. **Remove quarantine** (required for unsigned apps):
    ```bash
    cd ~/Downloads
-   xattr -cr EyeBreak-v2.0.0.dmg
+   xattr -cr EyeBreak-v2.1.0.dmg
    ```
 3. **Open** the DMG file
 4. **Drag** `EyeBreak.app` to your `Applications` folder

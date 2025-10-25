@@ -10,6 +10,7 @@
 		997554F82EA3776C00D0AEE1 /* WaterReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 997554F72EA3776C00D0AEE1 /* WaterReminderManager.swift */; };
 		99A7D5142E9EA7AB00466080 /* FloatingBreakWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */; };
 		99BD678B2E92516200D6FF8C /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99BD678A2E92516200D6FF8C /* StatusBarController.swift */; };
+		99EB42272EACA748003A7CDA /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EB42262EACA748003A7CDA /* LaunchAtLoginManager.swift */; };
 		A10000001 /* EyeBreakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000 /* EyeBreakApp.swift */; };
 		A10000003 /* TimerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002 /* TimerState.swift */; };
 		A10000005 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000004 /* Settings.swift */; };
@@ -33,6 +34,7 @@
 		997554F72EA3776C00D0AEE1 /* WaterReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterReminderManager.swift; sourceTree = "<group>"; };
 		99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBreakWindow.swift; sourceTree = "<group>"; };
 		99BD678A2E92516200D6FF8C /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+		99EB42262EACA748003A7CDA /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		A10000000 /* EyeBreakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeBreakApp.swift; sourceTree = "<group>"; };
 		A10000002 /* TimerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerState.swift; sourceTree = "<group>"; };
 		A10000004 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 		A10000030 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				99EB42262EACA748003A7CDA /* LaunchAtLoginManager.swift */,
 				997554F72EA3776C00D0AEE1 /* WaterReminderManager.swift */,
 				99BD678A2E92516200D6FF8C /* StatusBarController.swift */,
 				A10000006 /* BreakTimerManager.swift */,
@@ -217,6 +220,7 @@
 				A10000005 /* Settings.swift in Sources */,
 				A10000023 /* ColorTheme.swift in Sources */,
 				99BD678B2E92516200D6FF8C /* StatusBarController.swift in Sources */,
+				99EB42272EACA748003A7CDA /* LaunchAtLoginManager.swift in Sources */,
 				A10000007 /* BreakTimerManager.swift in Sources */,
 				997554F82EA3776C00D0AEE1 /* WaterReminderManager.swift in Sources */,
 				A10000009 /* IdleDetector.swift in Sources */,

@@ -25,6 +25,7 @@ class AppSettings: ObservableObject {
     @AppStorage("sessionType") private var sessionTypeRaw: String = SessionType.standard.rawValue
     @AppStorage("idleDetectionEnabled") var idleDetectionEnabled: Bool = true
     @AppStorage("idleThresholdMinutes") var idleThresholdMinutes: Int = 5
+    @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
     @AppStorage("hasLaunchedBefore") var hasLaunchedBefore: Bool = false
     @AppStorage("dailyBreakGoal") var dailyBreakGoal: Int = 24 // Roughly every 20 min for 8 hours
     @AppStorage("eyeExerciseDurationSeconds") var eyeExerciseDurationSeconds: Int = 300 // 5 minutes default

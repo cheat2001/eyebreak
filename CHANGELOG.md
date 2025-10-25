@@ -5,6 +5,131 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-10-25
+
+### � Major Features: Launch at Login & Water Reminder System
+
+This release introduces automatic startup functionality and a comprehensive hydration reminder system to promote convenience and holistic health during computer work.
+
+**[Full Release Notes](docs/releases/RELEASE_NOTES_v2.1.0.md)** | **[Water Reminder Guide](docs/WATER_REMINDER_FEATURE.md)**
+
+### Added
+
+#### Launch at Login (NEW!)
+- **SMAppService Integration:**
+  - Modern macOS 13+ launch at login support
+  - One-click toggle in General Settings
+  - LaunchAtLoginManager singleton for state management
+  - Automatic synchronization with system preferences
+  - Easy enable/disable control anytime
+
+#### Water Reminder System
+- **Complete Hydration Reminder Feature:**
+  - Smart timer-based water reminders with configurable intervals
+  - Two display styles: Blur Screen (immersive) and Ambient Pop-up (gentle)
+  - 8 preset encouraging hydration messages
+  - 16 professional water-themed SF Symbol icons
+  - Custom message and icon support
+  - Full theme integration (Default, Random, Custom)
+  
+- **Display Styles:**
+  - **Blur Screen Overlay:** Full-screen immersive experience with large animated icon
+  - **Ambient Pop-up:** Gentle floating window at top of screen with auto-dismiss
+  - Multi-monitor support for blur screen across all displays
+  - Beautiful glass morphism effects matching theme colors
+  
+- **Timing Options:**
+  - 30 minutes - Frequent hydration (intense work)
+  - 45 minutes - Balanced frequency
+  - 1 hour - Standard (recommended)
+  - 90 minutes - Moderate reminders
+  - 2 hours - Gentle long-session reminders
+  
+- **Water-Themed Icons (SF Symbols):**
+  - Water drops: drop.fill, drop.triangle.fill, drop.circle.fill, drop.keypad.rectangle.fill
+  - Weather: humidity.fill, cloud.rain.fill, wind, snowflake.circle.fill
+  - Containers: mug.fill, waterbottle.fill
+  - Nature: leaf.fill, sun.max.fill, moon.fill
+  - Effects: sparkles, hands.sparkles.fill, heart.circle.fill
+  
+- **Preset Messages:**
+  - "Time to hydrate!" 💧
+  - "Stay refreshed!" 🌊
+  - "Water break!" 💙
+  - "Keep flowing!" 🌀
+  - "Hydration time!" ⚡
+  - "Drink up!" ✨
+  - "Stay healthy!" 💚
+  - "Refresh yourself!" 🌟
+
+#### User Experience
+- **Mindful Interaction Design:**
+  - No countdown timer pressure for blur screen
+  - Manual acknowledgment with encouraging "Thanks, I'll drink water now" button
+  - Auto-dismiss for ambient style (8 seconds)
+  - Smooth entrance/exit animations
+  
+- **Keyboard Shortcuts:**
+  - ⌘⇧W - Show water reminder immediately (manual trigger)
+  - Quick access for testing settings or on-demand reminders
+  
+- **Menu Bar Integration:**
+  - "Show Water Reminder" option in menu bar
+  - Instant access to trigger reminders manually
+
+#### Technical Implementation
+- **WaterReminderManager:**
+  - Singleton manager for water reminder state and logic
+  - Timer management with NSTimer for reliable scheduling
+  - Multi-window support for blur overlays
+  - Proper lifecycle management for timers and windows
+  
+- **SwiftUI Components:**
+  - WaterBlurOverlayView - Full-screen blur overlay component
+  - WaterReminderView - Ambient floating window component
+  - VisualEffectBlur - Reusable blur effect helper
+  
+- **Theme Integration:**
+  - Full ColorTheme support for all water reminder displays
+  - Ocean blue/cyan default theme for water
+  - Proper opacity handling for backgrounds and text
+  - Theme-aware gradients and borders
+  
+- **State Persistence:**
+  - @AppStorage for all water reminder settings
+  - Saved preferences: enabled, interval, style, theme, custom icon/message
+  - Settings persist across app restarts
+
+### Changed
+
+- **Settings UI:** Added comprehensive Water Reminder section in Breaks settings
+- **Theme System:** Water reminders now have independent theme customization
+- **Display Options:** Simplified to two clear choices (removed redundant "Both" option)
+- **Menu Bar:** Added water reminder menu item for manual triggering
+- **Keyboard Shortcuts:** Expanded with water reminder shortcut (⌘⇧W)
+
+### Improved
+
+- **Theme Opacity Handling:** Better transparency rendering for blur effects
+- **Multi-Screen Support:** Enhanced window management for blur overlays
+- **Icon Rendering:** Improved hierarchical symbol rendering with theme colors
+- **Gradient Effects:** Better blending of background and accent colors
+- **Animation Performance:** Smoother entrance/exit transitions
+
+### Documentation
+
+- Created WATER_REMINDER_FEATURE.md comprehensive guide
+- Updated README.md with water reminder overview
+- Added v2.1.0 release notes
+- Enhanced settings descriptions for clarity
+
+### Technical Improvements
+
+- **Code Quality:** Clean separation between manager and view components
+- **Type Safety:** WaterReminderStyle enum with proper descriptions
+- **Memory Management:** Proper cleanup of timers and windows on dismiss
+- **Performance:** Efficient window creation and reuse for blur overlays
+
 ## [2.0.0] - 2025-10-08
 
 ### 🎨 Major Feature: Complete Theme Customization System

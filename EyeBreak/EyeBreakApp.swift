@@ -91,6 +91,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup global keyboard shortcuts
         setupGlobalKeyboardShortcuts()
         
+        // Sync launch at login status with settings
+        LaunchAtLoginManager.shared.syncWithSettings(AppSettings.shared)
+        
         // Start ambient reminders if enabled
         if AppSettings.shared.ambientRemindersEnabled {
             AmbientReminderManager.shared.startAmbientReminders()

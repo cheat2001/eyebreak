@@ -74,9 +74,14 @@ struct GeneralSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Launch at Login", isOn: .constant(false))
-                    .disabled(true)
-                    .help("Coming soon")
+                Toggle("Launch at Login", isOn: Binding(
+                    get: { settings.launchAtLogin },
+                    set: { newValue in
+                        settings.launchAtLogin = newValue
+                        LaunchAtLoginManager.shared.setEnabled(newValue)
+                    }
+                ))
+                .help("Automatically start EyeBreak when you log in to your Mac")
                 
                 Toggle("Enable Sound Effects", isOn: $settings.soundEnabled)
                 
