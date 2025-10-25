@@ -42,13 +42,11 @@ class WaterReminderManager: ObservableObject {
         guard !isEnabled else { return }
         isEnabled = true
         
-        print("💧 Starting water reminders")
         scheduleNextReminder()
     }
     
     /// Stop water reminders
     func stopWaterReminders() {
-        print("🛑 Stopping water reminders")
         isEnabled = false
         reminderTimer?.invalidate()
         reminderTimer = nil
@@ -56,13 +54,10 @@ class WaterReminderManager: ObservableObject {
     
     /// Show a water reminder immediately (manual trigger)
     func showWaterReminderNow() {
-        print("💧 Showing water reminder on demand")
-        
         let settings = AppSettings.shared
         
         // Check if Smart Schedule allows reminders now
         if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Manual water reminder blocked (outside work hours)")
             showOutsideWorkHoursAlert()
             return
         }
@@ -72,7 +67,6 @@ class WaterReminderManager: ObservableObject {
     
     /// Force show water reminder bypassing Smart Schedule (private, called from alert)
     private func forceShowWaterReminder() {
-        print("💧 Force showing water reminder (bypassing schedule)")
         _showWaterReminderInternal(bypassSchedule: true)
     }
     
@@ -89,8 +83,6 @@ class WaterReminderManager: ObservableObject {
             self?.showWaterReminder()
             self?.scheduleNextReminder()
         }
-        
-        print("💧 Next water reminder scheduled in \(Int(interval / 60)) minutes")
     }
     
     private func showWaterReminder() {
@@ -104,7 +96,6 @@ class WaterReminderManager: ObservableObject {
         
         // Check Smart Schedule (unless bypassed)
         if !bypassSchedule && settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Water reminder skipped (outside work hours)")
             return
         }
         
@@ -131,8 +122,6 @@ class WaterReminderManager: ObservableObject {
                 theme: theme
             )
         }
-        
-        print("💧 Showing water reminder: \(message.title)")
         
         switch settings.waterReminderStyle {
         case .blurScreen:
@@ -162,9 +151,6 @@ class WaterReminderManager: ObservableObject {
         // Get the screen with mouse cursor (the active screen user is on)
         let mouseLocation = NSEvent.mouseLocation
         let activeScreen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
-        
-        print("💧 Water Reminder - Mouse location: \(mouseLocation)")
-        print("💧 Water Reminder - Active screen: \(activeScreen.frame)")
         
         // Create overlay window using custom class (like BreakOverlayWindow)
         let window = WaterReminderWindow(
@@ -204,15 +190,9 @@ class WaterReminderManager: ObservableObject {
         hostingController.view.frame = activeScreen.frame
         window.contentView = hostingController.view
         
-        print("💧 Before showing window - window visible: \(window.isVisible)")
-        print("💧 Window frame: \(window.frame), Screen frame: \(activeScreen.frame)")
-        
         // CRITICAL: Use orderFrontRegardless() instead of makeKeyAndOrderFront()
         // This prevents desktop switching but still shows the overlay
         window.orderFrontRegardless()
-        
-        print("💧 After orderFrontRegardless - window level=\(window.level.rawValue), visible=\(window.isVisible)")
-        print("💧 Window on screen: \(window.screen != nil)")
         
         // No auto-dismiss - user must click the button to acknowledge
     }

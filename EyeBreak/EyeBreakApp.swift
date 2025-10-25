@@ -65,26 +65,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventMonitors: [Any] = []
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("🚀 App launching...")
         
         // Prevent automatic termination
         NSApp.disableRelaunchOnLogin()
         
         // CRITICAL: Create status bar FIRST, while still in default mode
-        print("📍 Creating status bar BEFORE changing activation policy...")
         statusBar = StatusBarController()
-        print("✅ StatusBar initialized")
         
         // Force a small delay to ensure status bar is fully registered
         // THEN change to accessory mode
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            print("📍 Now switching to accessory mode...")
             NSApp.setActivationPolicy(.accessory)
-            print("✅ Set to accessory mode (overlays appear on current workspace)")
             
             // Verify status bar is still visible after mode change
             if let bar = self.statusBar, let item = bar.statusItem {
-                print("📍 After mode change - Status bar still exists: \(item.isVisible)")
             }
         }
         
@@ -106,28 +100,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Auto-start timer if enabled
         if AppSettings.shared.autoStartTimer {
-            print("🎯 Auto-start timer is enabled, starting timer...")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 BreakTimerManager.shared.start()
-                print("✅ Timer auto-started!")
             }
         } else {
-            print("⏸️ Auto-start timer is disabled")
         }
         
-        print("✅ App launched successfully!")
-        print("👀 EyeBreak running in ACCESSORY mode")
-        print("   ✓ No Dock icon (prevents Space/desktop switching)")
-        print("   ✓ Overlays appear on YOUR CURRENT workspace")
-        print("   ✓ Menu bar icon should be visible (look for 👁️)")
-        print("")
-        print("⌨️  If menu bar icon not visible, use keyboard shortcuts:")
-        print("   ⌘⇧O - Open Settings")
-        print("   ⌘⇧S - Start timer")
-        print("   ⌘⇧B - Take break now")
-        print("   ⌘⇧X - Stop timer")
-        print("   ⌘⇧R - Show ambient reminder (test overlay on current screen)")
-        print("   ⌘⇧W - Show water reminder")
     }
     
     func applicationWillTerminate(_ notification: Notification) {

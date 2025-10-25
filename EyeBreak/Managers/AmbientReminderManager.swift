@@ -40,12 +40,10 @@ class AmbientReminderManager: ObservableObject {
         guard !isEnabled else { return }
         isEnabled = true
         
-        print("🟢 Starting ambient reminders")
         scheduleNextReminder()
     }
     
     func stopAmbientReminders() {
-        print("🔴 Stopping ambient reminders")
         isEnabled = false
         reminderTimer?.invalidate()
         reminderTimer = nil
@@ -53,13 +51,10 @@ class AmbientReminderManager: ObservableObject {
     }
     
     func showAmbientReminder() {
-        print("👁️ Showing ambient reminder on demand")
-        
         let settings = AppSettings.shared
         
         // Check if Smart Schedule allows reminders now
         if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Manual ambient reminder blocked (outside work hours)")
             showOutsideWorkHoursAlert()
             return
         }
@@ -69,7 +64,6 @@ class AmbientReminderManager: ObservableObject {
     
     /// Force show reminder bypassing Smart Schedule (private, called from alert)
     private func forceShowReminder() {
-        print("👁️ Force showing ambient reminder (bypassing schedule)")
         _showRandomReminderInternal(bypassSchedule: true)
     }
     
@@ -99,7 +93,6 @@ class AmbientReminderManager: ObservableObject {
         
         // Check Smart Schedule (unless bypassed)
         if !bypassSchedule && settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Ambient reminder skipped (outside work hours)")
             return
         }
         
@@ -114,15 +107,10 @@ class AmbientReminderManager: ObservableObject {
             reminderType = reminderTypes.randomElement() ?? .blink
         }
         
-        print("👁️ Showing ambient reminder: \(reminderType.rawValue)")
-        
         // Get the screen with mouse cursor (the active screen user is on)
         let mouseLocation = NSEvent.mouseLocation
         let activeScreen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
         let screenFrame = activeScreen.visibleFrame
-        
-        print("👁️ Mouse location: \(mouseLocation)")
-        print("👁️ Active screen: \(activeScreen.frame)")
         
         // Center horizontally, position at top with larger size for full text
         let windowWidth: CGFloat = 420
@@ -160,8 +148,6 @@ class AmbientReminderManager: ObservableObject {
         
         // CRITICAL: Force window to the calculated position on the active screen
         window.setFrame(windowRect, display: true, animate: false)
-        
-        print("👁️ Window frame: \(window.frame), Calculated rect: \(windowRect)")
         
         // CRITICAL: Show window WITHOUT activating the app
         // This prevents desktop switching but still shows the reminder

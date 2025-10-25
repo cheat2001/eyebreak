@@ -68,17 +68,13 @@ class BreakTimerManager: ObservableObject {
     
     /// Trigger an immediate break
     func takeBreakNow() {
-        print("🔵 takeBreakNow() called")
-        
         // Don't start a new break if already breaking
         if case .breaking = state {
-            print("⚠️ Already breaking, skipping")
             return
         }
         
         // Check if Smart Schedule allows breaks now
         if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Break requested outside work hours")
             showOutsideWorkHoursAlert()
             return
         }
@@ -86,10 +82,8 @@ class BreakTimerManager: ObservableObject {
         stop()
         remainingSeconds = settings.breakDurationSeconds
         state = .breaking(remainingSeconds: remainingSeconds)
-        print("✅ State changed to breaking, duration: \(remainingSeconds)s")
         startTimer()
         showBreakOverlay()
-        print("✅ Break overlay shown")
         
         if settings.soundEnabled {
             SoundManager.shared.playSound(.breakStart)
@@ -98,11 +92,8 @@ class BreakTimerManager: ObservableObject {
     
     /// Force a break even if outside work hours (from alert "Take Break Anyway")
     func forceBreakNow() {
-        print("🔵 forceBreakNow() called - bypassing Smart Schedule")
-        
         // Don't start a new break if already breaking
         if case .breaking = state {
-            print("⚠️ Already breaking, skipping")
             return
         }
         
@@ -112,10 +103,8 @@ class BreakTimerManager: ObservableObject {
         stop()
         remainingSeconds = settings.breakDurationSeconds
         state = .breaking(remainingSeconds: remainingSeconds)
-        print("✅ State changed to breaking (forced), duration: \(remainingSeconds)s")
         startTimer()
         showBreakOverlay()
-        print("✅ Break overlay shown (forced)")
         
         if settings.soundEnabled {
             SoundManager.shared.playSound(.breakStart)
@@ -172,8 +161,6 @@ class BreakTimerManager: ObservableObject {
     private func startTimer() {
         timer?.invalidate()
         
-        print("⏰ Starting timer - current remainingSeconds: \(remainingSeconds)")
-        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.tick()
         }
@@ -184,8 +171,6 @@ class BreakTimerManager: ObservableObject {
             RunLoop.main.add(timer, forMode: .default)
         }
         
-        print("⏰ Timer created and scheduled")
-        
         // Start idle detection if enabled
         if settings.idleDetectionEnabled {
             idleDetector?.start()
@@ -194,12 +179,10 @@ class BreakTimerManager: ObservableObject {
     
     private func tick() {
         remainingSeconds -= 1
-        print("⏱️ Timer tick - remainingSeconds: \(remainingSeconds), state: \(state)")
         
         // Check smart schedule - pause if outside work hours (UNLESS it's a forced break)
         if !isForcedBreak && !settings.shouldShowBreaksNow {
             if state.isActive && state != .paused(wasWorking: wasWorkingBeforePause, remainingSeconds: remainingSeconds) {
-                print("⏰ Smart Schedule: Outside work hours, pausing timer")
                 pause()
                 return
             }
@@ -226,9 +209,7 @@ class BreakTimerManager: ObservableObject {
             }
             
         case .breaking:
-            print("⏱️ Breaking state - remainingSeconds: \(remainingSeconds)")
             if remainingSeconds <= 0 {
-                print("🛑 Ending break - remainingSeconds reached 0")
                 endBreak()
             } else {
                 state = .breaking(remainingSeconds: remainingSeconds)
@@ -242,7 +223,6 @@ class BreakTimerManager: ObservableObject {
     private func startBreak() {
         // Check if Smart Schedule allows breaks now
         if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
-            print("⏰ Smart Schedule: Automatic break skipped (outside work hours)")
             // Skip to next work session instead of showing break
             remainingSeconds = settings.workIntervalSeconds
             state = .working(remainingSeconds: remainingSeconds)

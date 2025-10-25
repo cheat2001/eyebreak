@@ -25,13 +25,10 @@ class NotificationManager: NSObject {
     func requestAuthorization() {
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error = error {
-                print("❌ Notification authorization error: \(error)")
             }
             
             if granted {
-                print("✅ Notification permission granted")
             } else {
-                print("⚠️ Notification permission denied - floating window will be used instead")
             }
         }
     }
@@ -61,7 +58,6 @@ class NotificationManager: NSObject {
         
         center.add(request) { error in
             if let error = error {
-                print("Error sending pre-break notification: \(error)")
             }
         }
     }
@@ -80,7 +76,6 @@ class NotificationManager: NSObject {
         
         center.add(request) { error in
             if let error = error {
-                print("Error sending break start notification: \(error)")
             }
         }
     }
@@ -99,7 +94,6 @@ class NotificationManager: NSObject {
         
         center.add(request) { error in
             if let error = error {
-                print("Error sending break complete notification: \(error)")
             }
         }
     }
@@ -118,7 +112,6 @@ class NotificationManager: NSObject {
         
         center.add(request) { error in
             if let error = error {
-                print("Error sending idle paused notification: \(error)")
             }
         }
     }

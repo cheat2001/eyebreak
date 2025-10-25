@@ -14,6 +14,12 @@ const features: Feature[] = [
     color: 'from-blue-400 to-blue-600'
   },
   {
+    iconPath: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z M9 1h6v2H9z M9 21h6v2H9z',
+    title: 'Smart Schedule',
+    description: 'Set work hours (9-5, custom, etc.) and active days. Reminders pause outside work hours with manual override option.',
+    color: 'from-emerald-400 to-emerald-600'
+  },
+  {
     iconPath: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z',
     title: 'Water Reminders',
     description: 'Smart hydration reminders with blur screen or ambient pop-up styles to keep you refreshed.',
@@ -58,7 +64,7 @@ const features: Feature[] = [
   {
     iconPath: 'M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z',
     title: 'Keyboard Shortcuts',
-    description: 'Quick access with shortcuts: ⌘⇧B for break, ⌘⇧W for water, ⌘⇧R for ambient reminder.',
+    description: 'Quick access: ⌘⇧B (break), ⌘⇧W (water), ⌘⇧R (ambient), ⌘⇧S (start), ⌘⇧X (stop).',
     color: 'from-red-400 to-red-600'
   },
   {

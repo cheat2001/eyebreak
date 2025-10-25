@@ -40,26 +40,21 @@ class LaunchAtLoginManager {
             if enabled {
                 // Register the app to launch at login
                 if appService.status == .enabled {
-                    print("✅ Launch at login already enabled")
                     return true
                 }
                 
                 try appService.register()
-                print("✅ Launch at login enabled successfully")
                 return true
             } else {
                 // Unregister the app from launch at login
                 if appService.status == .notRegistered {
-                    print("✅ Launch at login already disabled")
                     return true
                 }
                 
                 try appService.unregister()
-                print("✅ Launch at login disabled successfully")
                 return true
             }
         } catch {
-            print("❌ Failed to \(enabled ? "enable" : "disable") launch at login: \(error.localizedDescription)")
             return false
         }
     }

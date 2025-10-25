@@ -13,7 +13,6 @@ class StatusBarController: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        print("🔵 StatusBarController init started")
         // Setup status bar synchronously on main thread
         if Thread.isMainThread {
             self.setupStatusBar()
@@ -22,28 +21,22 @@ class StatusBarController: NSObject, ObservableObject {
                 self.setupStatusBar()
             }
         }
-        print("✅ StatusBarController init completed")
     }
     
     private func setupStatusBar() {
-        print("📍 Setting up status bar")
         
         // Create status bar item - try VARIABLE length first
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         guard let item = statusItem else {
-            print("❌ Failed to create status item")
             return
         }
         
-        print("✅ Status item created: \(item)")
         
         guard let button = item.button else {
-            print("❌ Failed to get status button")
             return
         }
         
-        print("✅ Status button retrieved: \(button)")
         
         // Use ONLY plain text for maximum compatibility
         // Plain text emoji is most reliable across all macOS versions
@@ -56,18 +49,12 @@ class StatusBarController: NSObject, ObservableObject {
         // Force button to be visible
         button.isHidden = false
         
-        print("👁️ Set plain text icon: '\(button.title ?? "nil")'")
         
         // Make status item visible and persistent
         item.isVisible = true
         item.behavior = []  // Empty behavior = non-removable by user
         item.autosaveName = "EyeBreakStatusItem" // Persist across launches
         
-        print("📍 Status item configured:")
-        print("   - Visible: \(item.isVisible)")
-        print("   - Button title: '\(button.title ?? "nil")'")
-        print("   - Button hidden: \(button.isHidden)")
-        print("   - Length: \(item.length)")
         
         // Create menu
         let menu = NSMenu()
@@ -81,29 +68,34 @@ class StatusBarController: NSObject, ObservableObject {
         menu.addItem(NSMenuItem.separator())
         
         // Timer controls
-        let startItem = NSMenuItem(title: "Start Timer", action: #selector(startTimer), keyEquivalent: "")
+        let startItem = NSMenuItem(title: "Start Timer", action: #selector(startTimer), keyEquivalent: "s")
+        startItem.keyEquivalentModifierMask = [.command, .shift]
         startItem.target = self
         menu.addItem(startItem)
         
-        let breakItem = NSMenuItem(title: "Take Break Now", action: #selector(takeBreak), keyEquivalent: "")
+        let breakItem = NSMenuItem(title: "Take Break Now", action: #selector(takeBreak), keyEquivalent: "b")
+        breakItem.keyEquivalentModifierMask = [.command, .shift]
         breakItem.target = self
         menu.addItem(breakItem)
         
-        let stopItem = NSMenuItem(title: "Stop Timer", action: #selector(stopTimer), keyEquivalent: "")
+        let stopItem = NSMenuItem(title: "Stop Timer", action: #selector(stopTimer), keyEquivalent: "x")
+        stopItem.keyEquivalentModifierMask = [.command, .shift]
         stopItem.target = self
         menu.addItem(stopItem)
         
         menu.addItem(NSMenuItem.separator())
         
         // Reminder
-        let reminderItem = NSMenuItem(title: "Show Reminder", action: #selector(showReminder), keyEquivalent: "")
+        let reminderItem = NSMenuItem(title: "Show Reminder", action: #selector(showReminder), keyEquivalent: "r")
+        reminderItem.keyEquivalentModifierMask = [.command, .shift]
         reminderItem.target = self
         menu.addItem(reminderItem)
         
         menu.addItem(NSMenuItem.separator())
 
         // Water Reminder
-        let waterReminderItem = NSMenuItem(title: "Show Water Reminder", action: #selector(showWaterReminder), keyEquivalent: "")
+        let waterReminderItem = NSMenuItem(title: "Show Water Reminder", action: #selector(showWaterReminder), keyEquivalent: "w")
+        waterReminderItem.keyEquivalentModifierMask = [.command, .shift]
         waterReminderItem.target = self
         menu.addItem(waterReminderItem)
 
@@ -115,11 +107,9 @@ class StatusBarController: NSObject, ObservableObject {
         // Assign menu to status item
         item.menu = menu
         
-        print("📋 Menu created with \(menu.items.count) items")
     }
     
     @objc func openSettings() {
-        print("🔧 Opening Settings from menu bar")
         
         // Check if settings window already exists
         var settingsWindowExists = false
@@ -129,7 +119,6 @@ class StatusBarController: NSObject, ObservableObject {
                 window.makeKeyAndOrderFront(nil)
                 NSApp.activate(ignoringOtherApps: true)
                 settingsWindowExists = true
-                print("✅ Brought existing settings window to front")
                 break
             }
         }
@@ -154,37 +143,30 @@ class StatusBarController: NSObject, ObservableObject {
             window.isReleasedWhenClosed = false
             
             window.makeKeyAndOrderFront(nil)
-            print("✅ Created new settings window")
         }
     }
     
     @objc private func startTimer() {
-        print("▶️ Start Timer")
         BreakTimerManager.shared.start()
     }
     
     @objc private func takeBreak() {
-        print("☕️ Take Break")
         BreakTimerManager.shared.takeBreakNow()
     }
     
     @objc private func stopTimer() {
-        print("⏹️ Stop Timer")
         BreakTimerManager.shared.stop()
     }
     
     @objc private func showReminder() {
-        print("💡 Show Reminder")
         AmbientReminderManager.shared.showAmbientReminder()
     }
     
     @objc private func showWaterReminder() {
-        print("💧 Show Water Reminder")
         WaterReminderManager.shared.showWaterReminderNow()
     }
     
     @objc private func quit() {
-        print("👋 Quitting")
         NSApplication.shared.terminate(nil)
     }
     

@@ -233,7 +233,6 @@ struct FloatingBreakContentView: View {
     }
     
     private func handleSkip() {
-        print("🔵 FloatingBreakWindow: Skip button clicked!")
         stopTimer()
         window?.hide()
         onSkip()

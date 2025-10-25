@@ -27,7 +27,6 @@ class ScreenBlurManager {
     // MARK: - Public Methods
     
     func showBreakOverlay(duration: Int, style: OverlayStyle, onSkip: @escaping () -> Void) {
-        print("🟢 ScreenBlurManager.showBreakOverlay() called - duration: \(duration)s, style: \(style)")
         
         // Optimize: Execute on main thread directly if already on main thread
         if Thread.isMainThread {
@@ -50,19 +49,14 @@ class ScreenBlurManager {
         self.overlayWindows.removeAll()
         self.hostingControllers.removeAll()
         
-        print("🟢 Cleared old windows, creating new ones")
         
         // Get the screen with mouse cursor (the active screen user is on)
         let mouseLocation = NSEvent.mouseLocation
         let activeScreen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? NSScreen.main ?? NSScreen.screens[0]
         
-        print("🟢 Mouse location: \(mouseLocation)")
-        print("🟢 Active screen: \(activeScreen.frame)")
-        print("🟢 Creating overlay window for active screen")
         
         // Create overlay ONLY for the active screen where user is working
         let window = self.createOverlayWindow(for: activeScreen)
-        print("🟢 Window created: \(window)")
         
         // CRITICAL: Force window frame to the active screen
         window.setFrame(activeScreen.frame, display: true, animate: false)
@@ -87,25 +81,18 @@ class ScreenBlurManager {
         hostingController.view.frame = activeScreen.frame
         
         window.contentView = hostingController.view
-        print("🟢 Before showing window - window visible: \(window.isVisible)")
-        print("🟢 Window frame: \(window.frame), Screen frame: \(activeScreen.frame)")
         
         // CRITICAL: Show window WITHOUT activating the app
         // This prevents desktop switching but still shows the overlay
         window.orderFrontRegardless()
         
-        print("🟢 After orderFrontRegardless - window level=\(window.level.rawValue), key=\(window.isKeyWindow), visible=\(window.isVisible), alpha=\(window.alphaValue)")
-        print("🟢 Window on screen: \(window.screen != nil), frame: \(window.frame)")
-        print("🟢 Window content view: \(window.contentView != nil)")
         
         self.overlayWindows.append(window)
         self.hostingControllers.append(hostingController)
         
-        print("🟢 Total windows created: 1 (active screen only)")
     }
     
     func hideOverlay() {
-        print("🔴 hideOverlay() called - closing \(overlayWindows.count) window(s)")
         
         // Optimize: Execute on main thread directly if already on main thread
         if Thread.isMainThread {
@@ -118,7 +105,6 @@ class ScreenBlurManager {
     }
     
     private func hideOverlayOnMainThread() {
-        print("🔴 Inside hideOverlay - window count: \(self.overlayWindows.count)")
         
         // First, remove content views to break retain cycles
         for window in self.overlayWindows {
