@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-800;
+  }
+  
+  body {
+    @apply m-0 bg-gray-950 text-gray-100;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', Roboto, sans-serif;
+    background: #020617;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl 
+           shadow-lg shadow-blue-600/20 hover:shadow-2xl hover:shadow-blue-600/40 
+           transition-all duration-300 hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-3 bg-gray-800/50 hover:bg-gray-700/50 text-white font-semibold rounded-xl 
+           border border-gray-700 hover:border-gray-600 backdrop-blur-sm
+           transition-all duration-300 hover:-translate-y-0.5;
+  }
+
+  .card {
+    @apply bg-gray-900/50 backdrop-blur-xl rounded-2xl shadow-xl 
+           border border-gray-800/50 p-6 
+           hover:bg-gray-900/70 hover:border-gray-700/50 hover:shadow-2xl
+           transition-all duration-300;
+  }
+
+  .section-title {
+    @apply text-4xl md:text-6xl font-bold text-white mb-4 
+           bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent;
+  }
+
+  .section-subtitle {
+    @apply text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-700;
+}
