@@ -1,7 +1,9 @@
 <script setup lang="ts">
-const downloadDMG = () => {
-  // Direct link to v2.1.0 release
-  window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg', '_blank')
+const scrollToInstallation = () => {
+  const element = document.getElementById('installation')
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 
 const viewGitHub = () => {
@@ -66,7 +68,7 @@ const viewGitHub = () => {
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up mb-20" style="animation-delay: 0.4s">
-          <button @click="downloadDMG" class="btn-primary text-lg px-10 py-4 group">
+          <button @click="scrollToInstallation" class="btn-primary text-lg px-10 py-4 group">
             <span class="flex items-center gap-3">
               <svg class="w-6 h-6 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>

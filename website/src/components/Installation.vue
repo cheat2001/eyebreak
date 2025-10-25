@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 interface InstallStep {
   number: number
   title: string
@@ -27,11 +29,31 @@ const installSteps: InstallStep[] = [
   },
   {
     number: 4,
+    title: 'Remove Quarantine',
+    description: 'Open Terminal and run: xattr -cr /Applications/EyeBreak.app',
+    iconPath: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z'
+  },
+  {
+    number: 5,
     title: 'Launch & Enjoy',
-    description: 'Open EyeBreak from Applications and start your eye care routine!',
+    description: 'Open EyeBreak from Applications and start protecting your eyes!',
     iconPath: 'M12 2L4.5 7.5l1.5 1.5L10 6v14h4V6l4 3 1.5-1.5L12 2z'
   }
 ]
+
+const copiedStates = ref<{ [key: string]: boolean }>({})
+
+const copyToClipboard = async (text: string, key: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedStates.value[key] = true
+    setTimeout(() => {
+      copiedStates.value[key] = false
+    }, 2000)
+  } catch (err) {
+    console.error('Failed to copy:', err)
+  }
+}
 
 const downloadDMG = () => {
   window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg', '_blank')
@@ -40,6 +62,9 @@ const downloadDMG = () => {
 const viewReleases = () => {
   window.open('https://github.com/cheat2001/eyebreak/releases', '_blank')
 }
+
+const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
+const curlCommand = 'curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg -o ~/Downloads/EyeBreak-v2.1.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.1.0.dmg && open ~/Downloads/EyeBreak-v2.1.0.dmg'
 </script>
 
 <template>
@@ -62,8 +87,8 @@ const viewReleases = () => {
       </div>
 
       <!-- Installation Steps -->
-      <div class="max-w-6xl mx-auto mb-16">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="max-w-6xl mx-auto mb-16 px-4 sm:px-0">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
           <div
             v-for="step in installSteps"
             :key="step.number"
@@ -71,28 +96,28 @@ const viewReleases = () => {
           >
             <!-- Step Number Circle with SVG Icon -->
             <div class="flex flex-col items-center text-center">
-              <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300 relative">
+              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center mb-4 sm:mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300 relative">
                 <!-- Glow effect -->
                 <div class="absolute inset-0 rounded-full bg-blue-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <svg class="w-12 h-12 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
                   <path :d="step.iconPath" />
                 </svg>
               </div>
               
-              <!-- Connecting line -->
-              <div class="absolute top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-blue-600/50 to-blue-600/50 -z-10 hidden lg:block" v-if="step.number < 4"></div>
+              <!-- Connecting line - hide on mobile -->
+              <div class="absolute top-10 sm:top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-blue-600/50 to-blue-600/50 -z-10 hidden lg:block" v-if="step.number < 5"></div>
               
-              <div class="mb-3">
-                <span class="inline-block px-4 py-1.5 bg-blue-600/20 text-blue-400 rounded-full text-sm font-bold border border-blue-500/30">
+              <div class="mb-2 sm:mb-3">
+                <span class="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-blue-600/20 text-blue-400 rounded-full text-xs sm:text-sm font-bold border border-blue-500/30">
                   Step {{ step.number }}
                 </span>
               </div>
               
-              <h3 class="text-xl font-bold text-white mb-3">
+              <h3 class="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
                 {{ step.title }}
               </h3>
               
-              <p class="text-gray-400 text-sm leading-relaxed">
+              <p class="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
                 {{ step.description }}
               </p>
             </div>
@@ -101,22 +126,44 @@ const viewReleases = () => {
       </div>
 
       <!-- Troubleshooting Note -->
-      <div class="max-w-2xl mx-auto mt-8">
-        <div class="p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-xl">
-          <div class="flex items-start gap-3">
-            <svg class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+      <div class="max-w-4xl mx-auto mt-8 px-4 sm:px-0">
+        <div class="p-4 sm:p-6 bg-red-900/20 border-2 border-red-600/40 rounded-xl">
+          <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
             </svg>
-            <div>
-              <h4 class="text-yellow-200 font-semibold mb-2">App won't open?</h4>
-              <p class="text-yellow-100 text-sm mb-3">
-                If macOS blocks the app from opening after installation, you need to remove the quarantine attribute. Open Terminal and run:
+            <div class="flex-1 w-full">
+              <h4 class="text-red-200 font-bold text-base sm:text-lg mb-3">⚠️ IMPORTANT: Manual Installation Requires Extra Step!</h4>
+              <p class="text-red-100 text-sm sm:text-base mb-4 font-medium">
+                If you download the DMG file manually (not using the curl command below), macOS will block the app from opening due to quarantine attributes.
               </p>
-              <div class="bg-gray-950 rounded-lg p-3 font-mono text-sm text-green-400 overflow-x-auto border border-gray-800">
-                <code>xattr -cr /Applications/EyeBreak.app</code>
+              <div class="bg-gray-950 rounded-lg p-3 sm:p-4 mb-4 border-2 border-red-500/30">
+                <p class="text-white text-sm sm:text-base font-semibold mb-3 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z"/>
+                  </svg>
+                  <span>After dragging to Applications, open Terminal and run:</span>
+                </p>
+                <div class="relative group">
+                  <div class="bg-black rounded-lg p-3 sm:p-4 pr-12 sm:pr-14 font-mono text-xs sm:text-sm md:text-base text-green-400 overflow-x-auto border border-gray-800">
+                    <code>{{ xattrCommand }}</code>
+                  </div>
+                  <button 
+                    @click="copyToClipboard(xattrCommand, 'xattr')"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700"
+                    :class="copiedStates['xattr'] ? 'bg-green-600 hover:bg-green-600' : ''"
+                  >
+                    <svg v-if="!copiedStates['xattr']" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <svg v-else class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <p class="text-yellow-100 text-sm mt-2">
-                Then try launching the app again from Applications.
+              <p class="text-red-100 text-xs sm:text-sm">
+                💡 <strong>Pro Tip:</strong> Use the curl installation command below to skip this step entirely! It automatically removes quarantine attributes.
               </p>
             </div>
           </div>
@@ -124,34 +171,91 @@ const viewReleases = () => {
       </div>
 
       <!-- Download Section -->
-      <div class="max-w-2xl mx-auto mt-8">
+      <div class="max-w-2xl mx-auto mt-8 px-4 sm:px-0">
         <div class="card bg-gray-900/50 border-2 border-blue-500/30 backdrop-blur-xl hover:border-blue-500/50 transition-all duration-300">
           <div class="text-center">
-            <h3 class="text-2xl font-bold text-white mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
               Ready to protect your eyes?
             </h3>
-            <p class="text-gray-400 mb-6">
+            <p class="text-sm sm:text-base text-gray-400 mb-6">
               Download EyeBreak v2.1.0 for macOS 14.0+
             </p>
             
-            <!-- Download Button -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button @click="downloadDMG" class="btn-primary">
-                <span class="flex items-center gap-2">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <!-- Installation Methods -->
+            <div class="mb-8">
+              <h4 class="font-semibold text-white text-base sm:text-lg mb-4">Choose Your Installation Method:</h4>
+              
+              <!-- Method 1: Recommended Curl Install -->
+              <div class="bg-green-900/20 border-2 border-green-600/40 rounded-xl p-4 sm:p-6 mb-4">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  <span class="text-green-400 font-bold text-base sm:text-lg">Recommended: One-Command Install</span>
+                </div>
+                <p class="text-gray-300 text-xs sm:text-sm mb-4">
+                  Automatically downloads, removes quarantine, and opens the DMG
+                </p>
+                <div class="relative group">
+                  <div class="bg-gray-950 rounded-lg p-3 sm:p-4 pr-12 sm:pr-14 font-mono text-xs sm:text-sm text-green-400 overflow-x-auto border border-gray-800 text-left">
+                    <code class="break-all">{{ curlCommand }}</code>
+                  </div>
+                  <button 
+                    @click="copyToClipboard(curlCommand, 'curl')"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700"
+                    :class="copiedStates['curl'] ? 'bg-green-600 hover:bg-green-600' : ''"
+                  >
+                    <svg v-if="!copiedStates['curl']" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <svg v-else class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-green-300 text-xs sm:text-sm mt-3 font-medium">
+                  ✨ No extra steps needed! Just drag to Applications and launch.
+                </p>
+              </div>
+
+              <!-- Method 2: Manual Download -->
+              <div class="bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 sm:p-6">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                   </svg>
-                  <span>Download DMG (Universal)</span>
-                </span>
-              </button>
-              <button @click="viewReleases" class="btn-secondary">
-                <span class="flex items-center gap-2">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/>
-                  </svg>
-                  <span>All Releases</span>
-                </span>
-              </button>
+                  <span class="text-blue-400 font-bold text-base sm:text-lg">Manual Download</span>
+                </div>
+                <p class="text-gray-400 text-xs sm:text-sm mb-4">
+                  Download the DMG file directly from GitHub
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center mb-4">
+                  <button @click="downloadDMG" class="btn-primary w-full sm:w-auto">
+                    <span class="flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                      </svg>
+                      <span>Download DMG</span>
+                    </span>
+                  </button>
+                  <button @click="viewReleases" class="btn-secondary w-full sm:w-auto">
+                    <span class="flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/>
+                      </svg>
+                      <span>All Releases</span>
+                    </span>
+                  </button>
+                </div>
+                <div class="bg-orange-900/20 border border-orange-600/30 rounded-lg p-3">
+                  <p class="text-orange-200 text-xs sm:text-sm font-medium flex items-start gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                    <span>Remember: After dragging to Applications, you MUST run the xattr command in Terminal (see Step 4 above)</span>
+                  </p>
+                </div>
+              </div>
             </div>
 
             <!-- Requirements -->
@@ -179,22 +283,6 @@ const viewReleases = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Command Line Installation -->
-        <div class="mt-8 card bg-gray-900/50 border border-gray-700/50 backdrop-blur-xl">
-          <h4 class="font-semibold text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z"/>
-            </svg>
-            <span>Install via Command Line</span>
-          </h4>
-          <div class="bg-gray-950 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto border border-gray-800">
-            <code>curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg -o ~/Downloads/EyeBreak-v2.1.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.1.0.dmg && open ~/Downloads/EyeBreak-v2.1.0.dmg</code>
-          </div>
-          <p class="text-gray-400 text-sm mt-3">
-            Downloads, removes quarantine attribute, and opens the DMG automatically
-          </p>
         </div>
       </div>
     </div>

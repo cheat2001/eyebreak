@@ -23,10 +23,6 @@ const scrollToSection = (sectionId: string) => {
     mobileMenuOpen.value = false
   }
 }
-
-const downloadDMG = () => {
-  window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg', '_blank')
-}
 </script>
 
 <template>
@@ -72,7 +68,7 @@ const downloadDMG = () => {
             </svg>
             GitHub
           </a>
-          <button @click="downloadDMG" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold">
+          <button @click="scrollToSection('installation')" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold">
             Download
           </button>
         </div>
@@ -119,7 +115,7 @@ const downloadDMG = () => {
             </svg>
             GitHub
           </a>
-          <button @click="downloadDMG" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold text-left">
+          <button @click="scrollToSection('installation')" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold text-left">
             Download
           </button>
         </div>

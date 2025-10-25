@@ -57,7 +57,23 @@ class WaterReminderManager: ObservableObject {
     /// Show a water reminder immediately (manual trigger)
     func showWaterReminderNow() {
         print("💧 Showing water reminder on demand")
+        
+        let settings = AppSettings.shared
+        
+        // Check if Smart Schedule allows reminders now
+        if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Manual water reminder blocked (outside work hours)")
+            showOutsideWorkHoursAlert()
+            return
+        }
+        
         showWaterReminder()
+    }
+    
+    /// Force show water reminder bypassing Smart Schedule (private, called from alert)
+    private func forceShowWaterReminder() {
+        print("💧 Force showing water reminder (bypassing schedule)")
+        _showWaterReminderInternal(bypassSchedule: true)
     }
     
     // MARK: - Private Methods
@@ -78,9 +94,19 @@ class WaterReminderManager: ObservableObject {
     }
     
     private func showWaterReminder() {
+        _showWaterReminderInternal(bypassSchedule: false)
+    }
+    
+    private func _showWaterReminderInternal(bypassSchedule: Bool) {
         guard isEnabled else { return }
         
         let settings = AppSettings.shared
+        
+        // Check Smart Schedule (unless bypassed)
+        if !bypassSchedule && settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Water reminder skipped (outside work hours)")
+            return
+        }
         
         // Generate a new random color theme for this reminder (if using random color theme)
         settings.regenerateWaterReminderRandomTheme()
@@ -556,4 +582,27 @@ struct VisualEffectBlur: NSViewRepresentable {
     )
     .frame(width: 500, height: 200)
     .background(Color.black.opacity(0.1))
+}
+
+// MARK: - Smart Schedule Alert Extension
+
+extension WaterReminderManager {
+    private func showOutsideWorkHoursAlert() {
+        let settings = AppSettings.shared
+        let alert = NSAlert()
+        alert.messageText = "Outside Work Hours"
+        alert.informativeText = "Your Smart Schedule is active and water reminders are currently paused.\n\nWork Hours: \(settings.timeString(from: settings.workHoursStart)) - \(settings.timeString(from: settings.workHoursEnd))\n\nWould you like to show a reminder anyway?"
+        alert.alertStyle = .informational
+        alert.icon = NSImage(systemSymbolName: "drop.circle", accessibilityDescription: "Water Reminder")
+        
+        alert.addButton(withTitle: "Show Anyway")
+        alert.addButton(withTitle: "Cancel")
+        
+        let response = alert.runModal()
+        
+        if response == .alertFirstButtonReturn {
+            // Force show reminder bypassing schedule
+            forceShowWaterReminder()
+        }
+    }
 }

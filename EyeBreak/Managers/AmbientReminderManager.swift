@@ -54,7 +54,23 @@ class AmbientReminderManager: ObservableObject {
     
     func showAmbientReminder() {
         print("👁️ Showing ambient reminder on demand")
+        
+        let settings = AppSettings.shared
+        
+        // Check if Smart Schedule allows reminders now
+        if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Manual ambient reminder blocked (outside work hours)")
+            showOutsideWorkHoursAlert()
+            return
+        }
+        
         showRandomReminder()
+    }
+    
+    /// Force show reminder bypassing Smart Schedule (private, called from alert)
+    private func forceShowReminder() {
+        print("👁️ Force showing ambient reminder (bypassing schedule)")
+        _showRandomReminderInternal(bypassSchedule: true)
     }
     
     // MARK: - Private Methods
@@ -73,9 +89,19 @@ class AmbientReminderManager: ObservableObject {
     }
     
     private func showRandomReminder() {
+        _showRandomReminderInternal(bypassSchedule: false)
+    }
+    
+    private func _showRandomReminderInternal(bypassSchedule: Bool) {
         guard isEnabled else { return }
         
         let settings = AppSettings.shared
+        
+        // Check Smart Schedule (unless bypassed)
+        if !bypassSchedule && settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Ambient reminder skipped (outside work hours)")
+            return
+        }
         
         // Generate a new random color theme for this reminder (if using random color theme)
         settings.regenerateAmbientReminderRandomTheme()
@@ -253,5 +279,28 @@ enum ReminderType: String {
         // Lighter variant of the glass color
         let glassColorValue = glassColor
         return glassColorValue.opacity(0.7)
+    }
+}
+
+// MARK: - Smart Schedule Alert Extension
+
+extension AmbientReminderManager {
+    private func showOutsideWorkHoursAlert() {
+        let settings = AppSettings.shared
+        let alert = NSAlert()
+        alert.messageText = "Outside Work Hours"
+        alert.informativeText = "Your Smart Schedule is active and ambient reminders are currently paused.\n\nWork Hours: \(settings.timeString(from: settings.workHoursStart)) - \(settings.timeString(from: settings.workHoursEnd))\n\nWould you like to show a reminder anyway?"
+        alert.alertStyle = .informational
+        alert.icon = NSImage(systemSymbolName: "eye.circle", accessibilityDescription: "Ambient Reminder")
+        
+        alert.addButton(withTitle: "Show Anyway")
+        alert.addButton(withTitle: "Cancel")
+        
+        let response = alert.runModal()
+        
+        if response == .alertFirstButtonReturn {
+            // Force show reminder bypassing schedule
+            forceShowReminder()
+        }
     }
 }

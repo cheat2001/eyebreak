@@ -1,12 +1,48 @@
-# 💧 EyeBreak v2.1.0 - Health & Convenience Update
+# 💧 EyeBreak v2.1.0 - Health & Productivity Update
 
 **Release Date:** October 25, 2025
 
-We're thrilled to announce EyeBreak v2.1.0, featuring a comprehensive hydration reminder system and launch at login support for seamless daily use!
+We're thrilled to announce EyeBreak v2.1.0, featuring Smart Schedule for work-life balance, comprehensive hydration reminders, auto-start convenience, and launch at login support for seamless daily use!
 
 ## 🌟 What's New
 
-### 🚀 Launch at Login (NEW!)
+### ⏰ Smart Schedule System (NEW!)
+
+Take control of when EyeBreak reminds you with intelligent work hours management!
+
+- **Customizable Work Hours:** Set your working schedule (e.g., 9 AM - 5 PM)
+- **Active Days Selection:** Choose which days to enable reminders (work days only, 24/7, or custom)
+- **5 Quick Presets:**
+  - 🏢 **Standard Work** (9 AM - 5 PM, Mon-Fri)
+  - 🌐 **Flexible Hours** (8 AM - 6 PM, Mon-Fri)
+  - 🌅 **Early Bird** (7 AM - 3 PM, Mon-Fri)
+  - 🌙 **Night Owl** (12 PM - 8 PM, Mon-Fri)
+  - 🔄 **24/7 Active** (Always on, all days)
+- **Manual Override:** Force show any reminder with "Show Anyway" option when outside work hours
+- **Real-Time Status:** See if Smart Schedule is "Active" or "Paused" based on current time
+- **Professional Alerts:** Get notified when trying to trigger reminders outside work hours
+
+**How It Works:**
+- When enabled, all reminders (eye breaks, ambient, water) respect your schedule
+- During off-hours, automatic reminders are paused
+- Manual triggers show a confirmation dialog with override option
+- Perfect for maintaining work-life balance!
+
+### 🚀 Auto-Start Timer (NEW!)
+
+Never forget to start your eye care routine!
+
+- **Automatic Timer Start:** EyeBreak timer starts automatically when app launches
+- **One-Click Toggle:** Enable/disable in General Settings
+- **Smart Integration:** Works seamlessly with Launch at Login
+- **0.5s Delay:** Gives app time to fully initialize before starting
+
+**How to Enable:**
+1. Open EyeBreak Settings → General
+2. Toggle "Auto-Start Timer" ON
+3. Next time EyeBreak launches, timer starts automatically!
+
+### 🚀 Launch at Login
 
 EyeBreak now starts automatically when you log into your Mac!
 
@@ -55,6 +91,18 @@ Stay hydrated with our new intelligent water reminder feature that goes beyond s
 
 ## 🚀 Getting Started
 
+### Smart Schedule Setup:
+1. Open EyeBreak Settings → Smart Schedule
+2. Toggle "Smart Schedule" ON
+3. Choose a preset or customize work hours
+4. Select active days (e.g., Mon-Fri for weekdays only)
+5. Watch real-time status indicator show "Active" or "Paused"
+
+### Auto-Start Timer Setup:
+1. Open EyeBreak Settings → General
+2. Toggle "Auto-Start Timer" ON
+3. Timer automatically starts on next app launch!
+
 ### Launch at Login Setup:
 1. Open EyeBreak Settings → General
 2. Toggle "Launch at Login" ON
@@ -66,6 +114,15 @@ Stay hydrated with our new intelligent water reminder feature that goes beyond s
 3. Choose style (Blur Screen or Ambient Pop-up)
 4. Customize theme and messages (optional)
 5. Test with **⌘⇧W** keyboard shortcut
+6. If Smart Schedule is enabled, reminders respect your work hours
+
+## ⌨️ Keyboard Shortcuts
+
+- **⌘⇧S** - Start timer
+- **⌘⇧X** - Stop timer
+- **⌘⇧B** - Force break now (with Smart Schedule override option)
+- **⌘⇧R** - Show ambient reminder (with Smart Schedule override option)
+- **⌘⇧W** - Show water reminder (with Smart Schedule override option)
 
 ## 📦 Installation
 
@@ -76,6 +133,22 @@ Download `EyeBreak-v2.1.0.dmg` and drag to Applications folder. Your existing se
 ## 📝 What's Changed Since v2.0.0
 
 ### Added ✨
+
+#### Smart Schedule System:
+- **Work hours customization** (start time, end time)
+- **Active days selection** (Mon-Sun toggles)
+- **5 quick preset schedules** for common work patterns
+- **Real-time status indicator** (Active/Paused)
+- **Professional alert dialogs** for out-of-hours manual triggers
+- **"Show Anyway" override option** for all reminders
+- **Applies to all features:** Eye breaks, ambient reminders, and water reminders
+- **Settings persistence** with @AppStorage
+
+#### Auto-Start Timer:
+- **Automatic timer start** on app launch
+- **One-click toggle** in General Settings
+- **0.5s initialization delay** for smooth startup
+- **Perfect companion** to Launch at Login feature
 
 #### Launch at Login:
 - **SMAppService integration** for modern macOS 13+ launch at login
@@ -97,30 +170,40 @@ Download `EyeBreak-v2.1.0.dmg` and drag to Applications folder. Your existing se
 
 ### Changed 🔄
 - Simplified display style options (removed redundant "Both" option)
-- Enhanced settings UI organization
+- Enhanced settings UI organization with Smart Schedule section
 - Improved keyboard shortcut documentation
+- Better work-life balance with schedule-aware reminders
+- More intuitive General Settings layout
 
 ### Technical 🔧
+- Smart Schedule computation with `shouldShowBreaksNow` property
+- Time/day validation logic for schedule checking
+- Alert system with manual override capabilities
 - WaterReminderManager singleton
 - WaterBlurOverlayView SwiftUI component
 - LaunchAtLoginManager with SMAppService
+- Auto-start timer with delayed initialization
 - Enhanced multi-screen window management
-- @AppStorage persistence for all settings
+- @AppStorage persistence for all settings including schedule preferences
 
 ## 🙏 Thank You
 
-Thank you to our community for requesting these features! This release focuses on convenience and holistic health during computer work.
+Thank you to our community for requesting these features! This release focuses on work-life balance, convenience, and holistic health during computer work. The Smart Schedule system ensures EyeBreak supports your productivity without interrupting your personal time.
 
 ## 🆚 Comparison: v2.0.0 → v2.1.0
 
 | Feature | v2.0.0 | v2.1.0 |
 |---------|--------|--------|
+| Smart Schedule | ❌ | ✅ **NEW** |
+| Work Hours Management | ❌ | ✅ **NEW** |
+| Auto-Start Timer | ❌ | ✅ **NEW** |
 | Launch at Login | ❌ | ✅ **NEW** |
-| Eye Break Reminders | ✅ | ✅ |
-| Ambient Reminders | ✅ | ✅ |
+| Eye Break Reminders | ✅ | ✅ (Schedule-aware) |
+| Ambient Reminders | ✅ | ✅ (Schedule-aware) |
 | Theme Customization | ✅ | ✅ |
 | Water Reminders | ❌ | ✅ **NEW** |
-| Keyboard Shortcuts | 3 | 4 (+⌘⇧W) |
+| Manual Override | ❌ | ✅ **NEW** |
+| Keyboard Shortcuts | 3 | 5 (+⌘⇧W, improved) |
 | Auto-Start on Login | Manual | Automatic |
 
 ---
@@ -131,4 +214,4 @@ Thank you to our community for requesting these features! This release focuses o
 
 ---
 
-*Stay hydrated, protect your eyes, and work healthier with EyeBreak v2.1.0!* 💧👁️✨
+*Stay hydrated, protect your eyes, work smarter, and maintain work-life balance with EyeBreak v2.1.0!* 💧👁️⏰✨

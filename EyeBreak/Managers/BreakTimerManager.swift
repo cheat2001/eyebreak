@@ -28,6 +28,7 @@ class BreakTimerManager: ObservableObject {
     private var idleDetector: IdleDetector?
     private var cancellables = Set<AnyCancellable>()
     private var wasWorkingBeforePause = false
+    private var isForcedBreak = false // Flag to bypass Smart Schedule during forced breaks
     
     // MARK: - Initialization
     
@@ -75,6 +76,13 @@ class BreakTimerManager: ObservableObject {
             return
         }
         
+        // Check if Smart Schedule allows breaks now
+        if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Break requested outside work hours")
+            showOutsideWorkHoursAlert()
+            return
+        }
+        
         stop()
         remainingSeconds = settings.breakDurationSeconds
         state = .breaking(remainingSeconds: remainingSeconds)
@@ -82,6 +90,32 @@ class BreakTimerManager: ObservableObject {
         startTimer()
         showBreakOverlay()
         print("✅ Break overlay shown")
+        
+        if settings.soundEnabled {
+            SoundManager.shared.playSound(.breakStart)
+        }
+    }
+    
+    /// Force a break even if outside work hours (from alert "Take Break Anyway")
+    func forceBreakNow() {
+        print("🔵 forceBreakNow() called - bypassing Smart Schedule")
+        
+        // Don't start a new break if already breaking
+        if case .breaking = state {
+            print("⚠️ Already breaking, skipping")
+            return
+        }
+        
+        // Set flag to bypass Smart Schedule checks during this break
+        isForcedBreak = true
+        
+        stop()
+        remainingSeconds = settings.breakDurationSeconds
+        state = .breaking(remainingSeconds: remainingSeconds)
+        print("✅ State changed to breaking (forced), duration: \(remainingSeconds)s")
+        startTimer()
+        showBreakOverlay()
+        print("✅ Break overlay shown (forced)")
         
         if settings.soundEnabled {
             SoundManager.shared.playSound(.breakStart)
@@ -162,6 +196,15 @@ class BreakTimerManager: ObservableObject {
         remainingSeconds -= 1
         print("⏱️ Timer tick - remainingSeconds: \(remainingSeconds), state: \(state)")
         
+        // Check smart schedule - pause if outside work hours (UNLESS it's a forced break)
+        if !isForcedBreak && !settings.shouldShowBreaksNow {
+            if state.isActive && state != .paused(wasWorking: wasWorkingBeforePause, remainingSeconds: remainingSeconds) {
+                print("⏰ Smart Schedule: Outside work hours, pausing timer")
+                pause()
+                return
+            }
+        }
+        
         switch state {
         case .working(let seconds):
             if remainingSeconds <= settings.preBreakWarningSeconds && seconds > settings.preBreakWarningSeconds {
@@ -197,6 +240,15 @@ class BreakTimerManager: ObservableObject {
     }
     
     private func startBreak() {
+        // Check if Smart Schedule allows breaks now
+        if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            print("⏰ Smart Schedule: Automatic break skipped (outside work hours)")
+            // Skip to next work session instead of showing break
+            remainingSeconds = settings.workIntervalSeconds
+            state = .working(remainingSeconds: remainingSeconds)
+            return
+        }
+        
         remainingSeconds = settings.breakDurationSeconds
         state = .breaking(remainingSeconds: remainingSeconds)
         
@@ -210,6 +262,9 @@ class BreakTimerManager: ObservableObject {
     }
     
     private func endBreak() {
+        // Reset forced break flag
+        isForcedBreak = false
+        
         // Update statistics
         settings.updateStats(breaksCompleted: 1, breakTime: settings.breakDurationSeconds)
         
@@ -290,5 +345,32 @@ class BreakTimerManager: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    // MARK: - Smart Schedule Alert
+    
+    private func showOutsideWorkHoursAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Outside Work Hours"
+        alert.informativeText = "Your Smart Schedule is active and breaks are currently paused.\n\nWork Hours: \(settings.timeString(from: settings.workHoursStart)) - \(settings.timeString(from: settings.workHoursEnd))\n\nWould you like to take a break anyway or adjust your schedule?"
+        alert.alertStyle = .informational
+        alert.icon = NSImage(systemSymbolName: "clock.badge.exclamationmark", accessibilityDescription: "Schedule")
+        
+        alert.addButton(withTitle: "Take Break Anyway")
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Cancel")
+        
+        let response = alert.runModal()
+        
+        switch response {
+        case .alertFirstButtonReturn:
+            // Take break anyway - use forceBreakNow method
+            forceBreakNow()
+        case .alertSecondButtonReturn:
+            // Open settings
+            NotificationCenter.default.post(name: NSNotification.Name("OpenSettings"), object: nil)
+        default:
+            break
+        }
     }
 }

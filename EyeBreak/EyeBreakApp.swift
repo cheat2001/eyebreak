@@ -104,6 +104,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             WaterReminderManager.shared.startWaterReminders()
         }
         
+        // Auto-start timer if enabled
+        if AppSettings.shared.autoStartTimer {
+            print("🎯 Auto-start timer is enabled, starting timer...")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                BreakTimerManager.shared.start()
+                print("✅ Timer auto-started!")
+            }
+        } else {
+            print("⏸️ Auto-start timer is disabled")
+        }
+        
         print("✅ App launched successfully!")
         print("👀 EyeBreak running in ACCESSORY mode")
         print("   ✓ No Dock icon (prevents Space/desktop switching)")
