@@ -100,8 +100,31 @@ const viewReleases = () => {
         </div>
       </div>
 
+      <!-- Troubleshooting Note -->
+      <div class="max-w-2xl mx-auto mt-8">
+        <div class="p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-xl">
+          <div class="flex items-start gap-3">
+            <svg class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <div>
+              <h4 class="text-yellow-200 font-semibold mb-2">App won't open?</h4>
+              <p class="text-yellow-100 text-sm mb-3">
+                If macOS blocks the app from opening after installation, you need to remove the quarantine attribute. Open Terminal and run:
+              </p>
+              <div class="bg-gray-950 rounded-lg p-3 font-mono text-sm text-green-400 overflow-x-auto border border-gray-800">
+                <code>xattr -cr /Applications/EyeBreak.app</code>
+              </div>
+              <p class="text-yellow-100 text-sm mt-2">
+                Then try launching the app again from Applications.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Download Section -->
-      <div class="max-w-2xl mx-auto">
+      <div class="max-w-2xl mx-auto mt-8">
         <div class="card bg-gray-900/50 border-2 border-blue-500/30 backdrop-blur-xl hover:border-blue-500/50 transition-all duration-300">
           <div class="text-center">
             <h3 class="text-2xl font-bold text-white mb-4">
@@ -167,10 +190,10 @@ const viewReleases = () => {
             <span>Install via Command Line</span>
           </h4>
           <div class="bg-gray-950 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto border border-gray-800">
-            <code>curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg -o ~/Downloads/EyeBreak.dmg</code>
+            <code>curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg -o ~/Downloads/EyeBreak-v2.1.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.1.0.dmg && open ~/Downloads/EyeBreak-v2.1.0.dmg</code>
           </div>
           <p class="text-gray-400 text-sm mt-3">
-            Download directly to your Downloads folder using curl
+            Downloads, removes quarantine attribute, and opens the DMG automatically
           </p>
         </div>
       </div>
