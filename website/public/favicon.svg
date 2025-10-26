@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="20" fill="url(#gradient)"/>
+  <g transform="translate(50, 50)">
+    <!-- Eye shape -->
+    <ellipse cx="0" cy="0" rx="30" ry="18" fill="white" opacity="0.95"/>
+    <!-- Iris -->
+    <circle cx="0" cy="0" r="12" fill="#1E3A8A"/>
+    <!-- Pupil -->
+    <circle cx="0" cy="0" r="6" fill="#0F172A"/>
+    <!-- Highlight -->
+    <circle cx="-3" cy="-3" r="3" fill="white" opacity="0.8"/>
+  </g>
+</svg>

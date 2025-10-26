@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
+const router = useRouter()
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 20
@@ -17,12 +19,30 @@ onUnmounted(() => {
 })
 
 const scrollToSection = (sectionId: string) => {
-  const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-    mobileMenuOpen.value = false
+  // If not on home page, navigate first
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/').then(() => {
+      setTimeout(() => {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    })
+  } else {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
   }
+  mobileMenuOpen.value = false
 }
+
+const navigateToReleases = () => {
+  router.push('/releases')
+  mobileMenuOpen.value = false
+}
+
 </script>
 
 <template>
@@ -54,6 +74,9 @@ const scrollToSection = (sectionId: string) => {
           </button>
           <button @click="scrollToSection('installation')" class="text-gray-300 hover:text-white transition-colors">
             Install
+          </button>
+          <button @click="navigateToReleases" class="text-gray-300 hover:text-white transition-colors">
+            Releases
           </button>
           <button @click="scrollToSection('documentation')" class="text-gray-300 hover:text-white transition-colors">
             Docs
@@ -101,6 +124,9 @@ const scrollToSection = (sectionId: string) => {
           </button>
           <button @click="scrollToSection('installation')" class="text-gray-300 hover:text-white transition-colors text-left">
             Install
+          </button>
+          <button @click="navigateToReleases" class="text-gray-300 hover:text-white transition-colors text-left">
+            Releases
           </button>
           <button @click="scrollToSection('documentation')" class="text-gray-300 hover:text-white transition-colors text-left">
             Docs

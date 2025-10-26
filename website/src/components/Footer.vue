@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+
 const currentYear = new Date().getFullYear()
+const router = useRouter()
 
 interface Link {
   text: string
-  href: string
+  href?: string
+  route?: string
+  external?: boolean
 }
 
 const quickLinks: Link[] = [
-  { text: 'Home', href: '#' },
+  { text: 'Home', route: '/' },
   { text: 'Features', href: '#features' },
   { text: 'Screenshots', href: '#screenshots' },
   { text: 'Installation', href: '#installation' },
@@ -15,20 +20,37 @@ const quickLinks: Link[] = [
 ]
 
 const resources: Link[] = [
-  { text: 'GitHub', href: 'https://github.com/cheat2001/eyebreak' },
-  { text: 'Releases', href: 'https://github.com/cheat2001/eyebreak/releases' },
-  { text: 'Issues', href: 'https://github.com/cheat2001/eyebreak/issues' },
-  { text: 'Discussions', href: 'https://github.com/cheat2001/eyebreak/discussions' },
-  { text: 'Contributing', href: 'https://github.com/cheat2001/eyebreak/blob/main/CONTRIBUTING.md' }
+  { text: 'GitHub', href: 'https://github.com/cheat2001/eyebreak', external: true },
+  { text: 'Releases', route: '/releases' },
+  { text: 'Issues', href: 'https://github.com/cheat2001/eyebreak/issues', external: true },
+  { text: 'Discussions', href: 'https://github.com/cheat2001/eyebreak/discussions', external: true },
+  { text: 'Contributing', href: 'https://github.com/cheat2001/eyebreak/blob/main/CONTRIBUTING.md', external: true }
 ]
 
 const docs: Link[] = [
-  { text: 'Quick Start', href: 'https://github.com/cheat2001/eyebreak/blob/main/QUICK_START.md' },
-  { text: 'README', href: 'https://github.com/cheat2001/eyebreak/blob/main/README.md' },
-  { text: 'FAQ', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/FAQ.md' },
-  { text: 'Water Reminder Guide', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/WATER_REMINDER_FEATURE.md' },
-  { text: 'Release Notes', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/releases/RELEASE_NOTES_v2.1.0.md' }
+  { text: 'Quick Start', href: 'https://github.com/cheat2001/eyebreak/blob/main/QUICK_START.md', external: true },
+  { text: 'README', href: 'https://github.com/cheat2001/eyebreak/blob/main/README.md', external: true },
+  { text: 'FAQ', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/FAQ.md', external: true },
+  { text: 'Water Reminder Guide', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/WATER_REMINDER_FEATURE.md', external: true },
+  { text: 'Release Notes', route: '/releases' }
 ]
+
+const legal: Link[] = [
+  { text: 'Privacy Policy', route: '/privacy' },
+  { text: 'MIT License', href: 'https://github.com/cheat2001/eyebreak/blob/main/LICENSE', external: true }
+]
+
+const handleLinkClick = (link: Link) => {
+  if (link.route) {
+    router.push(link.route)
+  } else if (link.href && !link.external) {
+    // Internal anchor link
+    const element = document.querySelector(link.href)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+}
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -72,11 +94,20 @@ const scrollToTop = () => {
           <ul class="space-y-3">
             <li v-for="link in quickLinks" :key="link.text">
               <a
+                v-if="link.href || link.external"
                 :href="link.href"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                :target="link.external ? '_blank' : undefined"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
               >
                 {{ link.text }}
               </a>
+              <button
+                v-else
+                @click="handleLinkClick(link)"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+              >
+                {{ link.text }}
+              </button>
             </li>
           </ul>
         </div>
@@ -87,12 +118,20 @@ const scrollToTop = () => {
           <ul class="space-y-3">
             <li v-for="link in resources" :key="link.text">
               <a
+                v-if="link.href || link.external"
                 :href="link.href"
-                target="_blank"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                :target="link.external ? '_blank' : undefined"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
               >
                 {{ link.text }}
               </a>
+              <button
+                v-else
+                @click="handleLinkClick(link)"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+              >
+                {{ link.text }}
+              </button>
             </li>
           </ul>
         </div>
@@ -103,12 +142,20 @@ const scrollToTop = () => {
           <ul class="space-y-3">
             <li v-for="link in docs" :key="link.text">
               <a
+                v-if="link.href || link.external"
                 :href="link.href"
-                target="_blank"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                :target="link.external ? '_blank' : undefined"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
               >
                 {{ link.text }}
               </a>
+              <button
+                v-else
+                @click="handleLinkClick(link)"
+                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+              >
+                {{ link.text }}
+              </button>
             </li>
           </ul>
         </div>
@@ -124,6 +171,13 @@ const scrollToTop = () => {
         </div>
 
         <div class="flex items-center gap-6 text-sm text-gray-400">
+          <button
+            @click="handleLinkClick(legal[0])"
+            class="hover:text-white transition-colors"
+          >
+            Privacy Policy
+          </button>
+          <span>•</span>
           <a
             href="https://github.com/cheat2001/eyebreak/blob/main/LICENSE"
             target="_blank"
