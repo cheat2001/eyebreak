@@ -35,11 +35,6 @@ const docs: Link[] = [
   { text: 'Release Notes', route: '/releases' }
 ]
 
-const legal: Link[] = [
-  { text: 'Privacy Policy', route: '/privacy' },
-  { text: 'MIT License', href: 'https://github.com/cheat2001/eyebreak/blob/main/LICENSE', external: true }
-]
-
 const handleLinkClick = (link: Link) => {
   if (link.route) {
     router.push(link.route)
@@ -172,7 +167,7 @@ const scrollToTop = () => {
 
         <div class="flex items-center gap-6 text-sm text-gray-400">
           <button
-            @click="handleLinkClick(legal[0])"
+            @click="router.push('/privacy')"
             class="hover:text-white transition-colors"
           >
             Privacy Policy
