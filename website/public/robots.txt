@@ -1,4 +1,22 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://eyebreak.app/sitemap.xml
+# Disallow admin or unnecessary paths
+Disallow: /admin/
+Disallow: /*.json$
+
+# Sitemap
+Sitemap: https://eyebreak2.web.app/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 0
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /

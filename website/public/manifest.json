@@ -1,0 +1,27 @@
+{
+  "name": "EyeBreak",
+  "short_name": "EyeBreak",
+  "description": "Protect your eyes with smart break reminders, hydration alerts, and beautiful themes. Free macOS app for healthier screen time.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1F2937",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "productivity", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/assets/eyebreak.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "label": "EyeBreak main interface"
+    }
+  ]
+}
