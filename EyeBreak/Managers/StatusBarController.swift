@@ -9,7 +9,7 @@ import AppKit
 import SwiftUI
 
 class StatusBarController: NSObject, ObservableObject {
-    private(set) var statusItem: NSStatusItem?  // Changed to private(set) to allow reading
+    private(set) var statusItem: NSStatusItem?
     
     override init() {
         super.init()
@@ -37,11 +37,17 @@ class StatusBarController: NSObject, ObservableObject {
             return
         }
         
-        
-        // Use ONLY plain text for maximum compatibility
-        // Plain text emoji is most reliable across all macOS versions
-        button.title = " 👁️ "  // Space before and after for visibility
-        button.imagePosition = .noImage  // Don't use image at all
+        // Set clean, simple icon
+        if let icon = NSImage(systemSymbolName: "eye.fill", accessibilityDescription: "EyeBreak") {
+            icon.isTemplate = true
+            
+            // Apply configuration for menu bar appropriate sizing
+            let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .regular, scale: .small)
+            let configuredIcon = icon.withSymbolConfiguration(config)
+            
+            button.image = configuredIcon
+            button.imagePosition = .imageOnly
+        }
         
         button.toolTip = "EyeBreak - Eye Care Reminders"
         button.appearsDisabled = false
@@ -168,15 +174,5 @@ class StatusBarController: NSObject, ObservableObject {
     
     @objc private func quit() {
         NSApplication.shared.terminate(nil)
-    }
-    
-    func updateIcon(breaking: Bool) {
-        guard let button = statusItem?.button else { return }
-        
-        let iconName = breaking ? "eye.trianglebadge.exclamationmark.fill" : "eye.fill"
-        if let icon = NSImage(systemSymbolName: iconName, accessibilityDescription: "EyeBreak") {
-            icon.isTemplate = true
-            button.image = icon
-        }
     }
 }
