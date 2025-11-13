@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AppKit
+import Combine
 
 /// Manages ambient eye exercise reminders that appear while working
 class AmbientReminderManager: ObservableObject {
@@ -20,6 +21,10 @@ class AmbientReminderManager: ObservableObject {
     private var reminderTimer: Timer?
     private var activeReminders: [NSWindow] = []
     @Published var isEnabled: Bool = false
+    @Published var isPausedDueToScreenLock: Bool = false
+    @Published var secondsUntilNextReminder: Int = 0
+    private var nextReminderDate: Date?
+    private var cancellables = Set<AnyCancellable>()
     
     private let reminderTypes: [ReminderType] = [
         .blink,
@@ -32,7 +37,10 @@ class AmbientReminderManager: ObservableObject {
     
     // MARK: - Initialization
     
-    private init() {}
+    private init() {
+        setupScreenLockNotifications()
+        startCountdownTimer()
+    }
     
     // MARK: - Public Methods
     
@@ -75,11 +83,35 @@ class AmbientReminderManager: ObservableObject {
         let settings = AppSettings.shared
         let interval = TimeInterval(settings.ambientReminderIntervalMinutes * 60)
         
+        // Store the next reminder date
+        nextReminderDate = Date().addingTimeInterval(interval)
+        secondsUntilNextReminder = Int(interval)
+        
         reminderTimer?.invalidate()
         reminderTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.showRandomReminder()
             self?.scheduleNextReminder()
         }
+    }
+    
+    private func startCountdownTimer() {
+        // Update countdown every second
+        Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateCountdown()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateCountdown() {
+        guard isEnabled, let nextDate = nextReminderDate else {
+            secondsUntilNextReminder = 0
+            return
+        }
+        
+        let remaining = Int(nextDate.timeIntervalSinceNow)
+        secondsUntilNextReminder = max(0, remaining)
     }
     
     private func showRandomReminder() {
@@ -289,4 +321,48 @@ extension AmbientReminderManager {
             forceShowReminder()
         }
     }
+    
+    /// Setup screen lock/unlock notifications to pause/resume reminders
+    private func setupScreenLockNotifications() {
+        // Pause when screen locks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsLocked"))
+            .sink { [weak self] _ in
+                self?.pauseForScreenLock()
+            }
+            .store(in: &cancellables)
+        
+        // Resume when screen unlocks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsUnlocked"))
+            .sink { [weak self] _ in
+                self?.resumeFromScreenLock()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func pauseForScreenLock() {
+        guard isEnabled else { return }
+        isPausedDueToScreenLock = true
+        reminderTimer?.invalidate()
+        reminderTimer = nil
+        hideAllReminders()
+        // Keep the next reminder date so countdown continues to show
+    }
+    
+    private func resumeFromScreenLock() {
+        guard isEnabled && isPausedDueToScreenLock else { return }
+        isPausedDueToScreenLock = false
+        
+        // Calculate remaining time and reschedule
+        if let nextDate = nextReminderDate, nextDate > Date() {
+            let remaining = nextDate.timeIntervalSinceNow
+            reminderTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+                self?.showRandomReminder()
+                self?.scheduleNextReminder()
+            }
+        } else {
+            // If time has passed, schedule a new reminder
+            scheduleNextReminder()
+        }
+    }
 }
+

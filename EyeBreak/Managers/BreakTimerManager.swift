@@ -312,13 +312,31 @@ class BreakTimerManager: ObservableObject {
     }
     
     private func setupWorkspaceNotifications() {
+        // Pause when Mac goes to sleep
         NotificationCenter.default.publisher(for: NSWorkspace.willSleepNotification)
             .sink { [weak self] _ in
                 self?.pause()
             }
             .store(in: &cancellables)
         
+        // Resume when Mac wakes up
         NotificationCenter.default.publisher(for: NSWorkspace.didWakeNotification)
+            .sink { [weak self] _ in
+                if case .paused = self?.state {
+                    self?.resume()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Pause when screen locks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsLocked"))
+            .sink { [weak self] _ in
+                self?.pause()
+            }
+            .store(in: &cancellables)
+        
+        // Resume when screen unlocks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsUnlocked"))
             .sink { [weak self] _ in
                 if case .paused = self?.state {
                     self?.resume()

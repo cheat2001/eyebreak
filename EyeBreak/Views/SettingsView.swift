@@ -66,13 +66,319 @@ struct SettingsView: View {
     }
 }
 
+// MARK: - Unified Countdown Display Component
+
+struct UnifiedCountdownCard: View {
+    @EnvironmentObject var timerManager: BreakTimerManager
+    @EnvironmentObject var settings: AppSettings
+    @ObservedObject var ambientManager = AmbientReminderManager.shared
+    @ObservedObject var waterManager = WaterReminderManager.shared
+    @State private var pulseAnimation = false
+    @State private var currentTime = Date()
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // Header with icon
+            HStack {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue.opacity(0.3), Color.cyan.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: "clock.badge.checkmark")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.blue, .cyan],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .symbolEffect(.pulse.byLayer, options: .repeating)
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Active Timers")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    Text("All your health reminders at a glance")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+            }
+            .padding(.bottom, 8)
+            
+            VStack(spacing: 12) {
+                // Eye Break Timer
+                CountdownRow(
+                    icon: "eye.fill",
+                    title: "Next Eye Break",
+                    color: .blue,
+                    countdown: eyeBreakCountdown,
+                    isActive: eyeBreakIsActive,
+                    status: eyeBreakStatus
+                )
+                
+                Divider()
+                    .padding(.horizontal, 8)
+                
+                // Ambient Reminder Timer
+                CountdownRow(
+                    icon: "sparkles",
+                    title: "Ambient Reminder",
+                    color: .orange,
+                    countdown: ambientCountdown,
+                    isActive: ambientManager.isEnabled,
+                    status: ambientStatus
+                )
+                
+                Divider()
+                    .padding(.horizontal, 8)
+                
+                // Water Reminder Timer
+                CountdownRow(
+                    icon: "drop.fill",
+                    title: "Water Reminder",
+                    color: .cyan,
+                    countdown: waterCountdown,
+                    isActive: waterManager.isEnabled,
+                    status: waterStatus
+                )
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(NSColor.controlBackgroundColor))
+                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.blue.opacity(0.2), Color.cyan.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+        )
+        .onReceive(timer) { _ in
+            currentTime = Date()
+        }
+    }
+    
+    // MARK: - Eye Break Computed Properties
+    
+    private var eyeBreakIsActive: Bool {
+        timerManager.state != .idle
+    }
+    
+    private var eyeBreakStatus: String {
+        switch timerManager.state {
+        case .idle:
+            return "Not started"
+        case .working:
+            return "Working"
+        case .preBreak:
+            return "Break soon"
+        case .breaking:
+            return "On break"
+        case .paused:
+            return "Paused"
+        }
+    }
+    
+    private var eyeBreakCountdown: String {
+        switch timerManager.state {
+        case .idle:
+            return "--:--"
+        case .working(let seconds), .preBreak(let seconds), .breaking(let seconds):
+            return formatTime(seconds)
+        case .paused(_, let seconds):
+            return formatTime(seconds)
+        }
+    }
+    
+    // MARK: - Ambient Reminder Computed Properties
+    
+    private var ambientStatus: String {
+        if !ambientManager.isEnabled {
+            return "Disabled"
+        } else if ambientManager.isPausedDueToScreenLock {
+            return "Paused (Screen locked)"
+        } else if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            return "Paused (Outside work hours)"
+        } else {
+            return "Active"
+        }
+    }
+    
+    private var ambientCountdown: String {
+        if !ambientManager.isEnabled {
+            return "--:--"
+        }
+        // Use actual countdown from manager
+        return formatTime(ambientManager.secondsUntilNextReminder)
+    }
+    
+    // MARK: - Water Reminder Computed Properties
+    
+    private var waterStatus: String {
+        if !waterManager.isEnabled {
+            return "Disabled"
+        } else if waterManager.isPausedDueToScreenLock {
+            return "Paused (Screen locked)"
+        } else if settings.smartScheduleEnabled && !settings.shouldShowBreaksNow {
+            return "Paused (Outside work hours)"
+        } else {
+            return "Active"
+        }
+    }
+    
+    private var waterCountdown: String {
+        if !waterManager.isEnabled {
+            return "--:--"
+        }
+        // Use actual countdown from manager
+        return formatTime(waterManager.secondsUntilNextReminder)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func formatTime(_ totalSeconds: Int) -> String {
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+// MARK: - Countdown Row Component
+
+struct CountdownRow: View {
+    let icon: String
+    let title: String
+    let color: Color
+    let countdown: String
+    let isActive: Bool
+    let status: String
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon with status indicator
+            ZStack(alignment: .bottomTrailing) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundColor(color)
+                        .symbolRenderingMode(.hierarchical)
+                }
+                
+                // Status dot
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 12, height: 12)
+                    .overlay(
+                        Circle()
+                            .stroke(Color(NSColor.controlBackgroundColor), lineWidth: 2)
+                    )
+                    .offset(x: 2, y: 2)
+            }
+            
+            // Title and status
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(statusColor)
+                        .frame(width: 6, height: 6)
+                    
+                    Text(status)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            // Countdown display
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(countdown)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: isActive ? [color, color.opacity(0.7)] : [Color.secondary.opacity(0.5), Color.secondary.opacity(0.3)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                
+                if isActive {
+                    Text("remaining")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("interval")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isActive ? color.opacity(0.05) : Color.clear)
+        )
+    }
+    
+    private var statusColor: Color {
+        if !isActive {
+            return .gray
+        } else if status.contains("Paused") {
+            return .orange
+        } else {
+            return .green
+        }
+    }
+}
+
 // MARK: - General Settings
+
 
 struct GeneralSettingsView: View {
     @EnvironmentObject var settings: AppSettings
     
     var body: some View {
         Form {
+            // Unified Countdown Display at the top
+            Section {
+                UnifiedCountdownCard()
+            } header: {
+                Text("")
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+            
             Section {
                 Toggle("Launch at Login", isOn: Binding(
                     get: { settings.launchAtLogin },

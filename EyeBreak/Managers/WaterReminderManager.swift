@@ -8,6 +8,7 @@
 import SwiftUI
 import AppKit
 import UserNotifications
+import Combine
 
 /// Manages water drinking reminders to encourage hydration during work
 class WaterReminderManager: ObservableObject {
@@ -20,6 +21,10 @@ class WaterReminderManager: ObservableObject {
     
     private var reminderTimer: Timer?
     @Published var isEnabled: Bool = false
+    @Published var isPausedDueToScreenLock: Bool = false
+    @Published var secondsUntilNextReminder: Int = 0
+    private var nextReminderDate: Date?
+    private var cancellables = Set<AnyCancellable>()
     
     // Preset water message templates (theme will be added at runtime)
     private let waterMessages: [(icon: String, title: String, message: String)] = [
@@ -31,9 +36,13 @@ class WaterReminderManager: ObservableObject {
         ("cup.and.saucer.fill", "Drink Up!", "Keep your energy up with some water."),
         ("sparkles", "Hydration Time", "A sip of water helps you stay focused!"),
         ("leaf.fill", "Wellness Check", "Take a moment to drink some water.")
-    ]    // MARK: - Initialization
+    ]    
+    // MARK: - Initialization
     
-    private init() {}
+    private init() {
+        setupScreenLockNotifications()
+        startCountdownTimer()
+    }
     
     // MARK: - Public Methods
     
@@ -78,11 +87,35 @@ class WaterReminderManager: ObservableObject {
         let settings = AppSettings.shared
         let interval = settings.waterReminderInterval
         
+        // Store the next reminder date
+        nextReminderDate = Date().addingTimeInterval(interval)
+        secondsUntilNextReminder = Int(interval)
+        
         reminderTimer?.invalidate()
         reminderTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.showWaterReminder()
             self?.scheduleNextReminder()
         }
+    }
+    
+    private func startCountdownTimer() {
+        // Update countdown every second
+        Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateCountdown()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateCountdown() {
+        guard isEnabled, let nextDate = nextReminderDate else {
+            secondsUntilNextReminder = 0
+            return
+        }
+        
+        let remaining = Int(nextDate.timeIntervalSinceNow)
+        secondsUntilNextReminder = max(0, remaining)
     }
     
     private func showWaterReminder() {
@@ -583,6 +616,48 @@ extension WaterReminderManager {
         if response == .alertFirstButtonReturn {
             // Force show reminder bypassing schedule
             forceShowWaterReminder()
+        }
+    }
+    
+    /// Setup screen lock/unlock notifications to pause/resume reminders
+    private func setupScreenLockNotifications() {
+        // Pause when screen locks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsLocked"))
+            .sink { [weak self] _ in
+                self?.pauseForScreenLock()
+            }
+            .store(in: &cancellables)
+        
+        // Resume when screen unlocks
+        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsUnlocked"))
+            .sink { [weak self] _ in
+                self?.resumeFromScreenLock()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func pauseForScreenLock() {
+        guard isEnabled else { return }
+        isPausedDueToScreenLock = true
+        reminderTimer?.invalidate()
+        reminderTimer = nil
+        // Keep the next reminder date so countdown continues to show
+    }
+    
+    private func resumeFromScreenLock() {
+        guard isEnabled && isPausedDueToScreenLock else { return }
+        isPausedDueToScreenLock = false
+        
+        // Calculate remaining time and reschedule
+        if let nextDate = nextReminderDate, nextDate > Date() {
+            let remaining = nextDate.timeIntervalSinceNow
+            reminderTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+                self?.showWaterReminder()
+                self?.scheduleNextReminder()
+            }
+        } else {
+            // If time has passed, schedule a new reminder
+            scheduleNextReminder()
         }
     }
 }
