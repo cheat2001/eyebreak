@@ -104,12 +104,18 @@ class AmbientReminderManager: ObservableObject {
             .store(in: &cancellables)
     }
     
+    /// Updates the countdown display every second
     private func updateCountdown() {
+        // When paused, keep the saved value frozen - don't recalculate
+        guard !isPausedDueToScreenLock else { return }
+        
+        // Only update if reminders are active and a date is set
         guard isEnabled, let nextDate = nextReminderDate else {
             secondsUntilNextReminder = 0
             return
         }
         
+        // Calculate remaining seconds until next reminder
         let remaining = Int(nextDate.timeIntervalSinceNow)
         secondsUntilNextReminder = max(0, remaining)
     }
@@ -322,45 +328,90 @@ extension AmbientReminderManager {
         }
     }
     
-    /// Setup screen lock/unlock notifications to pause/resume reminders
+    // MARK: - Screen Lock Handling
+    
+    /// Sets up system notifications to automatically pause/resume reminders when screen locks
     private func setupScreenLockNotifications() {
-        // Pause when screen locks
-        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsLocked"))
-            .sink { [weak self] _ in
-                self?.pauseForScreenLock()
-            }
-            .store(in: &cancellables)
+        let notificationCenter = DistributedNotificationCenter.default()
         
-        // Resume when screen unlocks
-        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsUnlocked"))
-            .sink { [weak self] _ in
-                self?.resumeFromScreenLock()
-            }
-            .store(in: &cancellables)
+        // Screen lock events
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screenIsLocked"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pauseForScreenLock()
+        }
+        
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screenIsUnlocked"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.resumeFromScreenLock()
+        }
+        
+        // Screen saver events (treated same as screen lock)
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screensaver.didstart"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pauseForScreenLock()
+        }
+        
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screensaver.didstop"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.resumeFromScreenLock()
+        }
     }
     
+    /// Pauses the reminder timer when screen locks, preserving the remaining time
     private func pauseForScreenLock() {
         guard isEnabled else { return }
+        
+        // Mark as paused
         isPausedDueToScreenLock = true
+        
+        // Stop the timer
         reminderTimer?.invalidate()
         reminderTimer = nil
+        
+        // Hide any active reminders
         hideAllReminders()
-        // Keep the next reminder date so countdown continues to show
+        
+        // Save the remaining seconds before clearing the date
+        // This preserves the countdown value for display and resume
+        if let nextDate = nextReminderDate {
+            secondsUntilNextReminder = max(0, Int(nextDate.timeIntervalSinceNow))
+        }
+        
+        // Clear the date to prevent updateCountdown() from recalculating
+        nextReminderDate = nil
     }
     
+    /// Resumes the reminder timer when screen unlocks, continuing from saved time
     private func resumeFromScreenLock() {
         guard isEnabled && isPausedDueToScreenLock else { return }
+        
+        // Clear paused flag
         isPausedDueToScreenLock = false
         
-        // Calculate remaining time and reschedule
-        if let nextDate = nextReminderDate, nextDate > Date() {
-            let remaining = nextDate.timeIntervalSinceNow
+        // Resume with saved remaining time
+        if secondsUntilNextReminder > 0 {
+            let remaining = TimeInterval(secondsUntilNextReminder)
+            nextReminderDate = Date().addingTimeInterval(remaining)
+            
+            // Schedule timer to fire after the remaining time
             reminderTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
                 self?.showRandomReminder()
                 self?.scheduleNextReminder()
             }
         } else {
-            // If time has passed, schedule a new reminder
+            // Time expired during lock - schedule immediately
             scheduleNextReminder()
         }
     }

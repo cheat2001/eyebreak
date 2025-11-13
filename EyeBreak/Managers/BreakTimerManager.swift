@@ -311,15 +311,17 @@ class BreakTimerManager: ObservableObject {
         }
     }
     
+    // MARK: - Screen Lock and Sleep Handling
+    
+    /// Sets up system notifications to automatically pause/resume timer during sleep and screen lock
     private func setupWorkspaceNotifications() {
-        // Pause when Mac goes to sleep
+        // Mac sleep events
         NotificationCenter.default.publisher(for: NSWorkspace.willSleepNotification)
             .sink { [weak self] _ in
                 self?.pause()
             }
             .store(in: &cancellables)
         
-        // Resume when Mac wakes up
         NotificationCenter.default.publisher(for: NSWorkspace.didWakeNotification)
             .sink { [weak self] _ in
                 if case .paused = self?.state {
@@ -328,21 +330,45 @@ class BreakTimerManager: ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Pause when screen locks
-        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsLocked"))
-            .sink { [weak self] _ in
-                self?.pause()
-            }
-            .store(in: &cancellables)
+        // Screen lock events
+        let notificationCenter = DistributedNotificationCenter.default()
         
-        // Resume when screen unlocks
-        DistributedNotificationCenter.default().publisher(for: NSNotification.Name("com.apple.screenIsUnlocked"))
-            .sink { [weak self] _ in
-                if case .paused = self?.state {
-                    self?.resume()
-                }
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screenIsLocked"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pause()
+        }
+        
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screenIsUnlocked"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            if case .paused = self?.state {
+                self?.resume()
             }
-            .store(in: &cancellables)
+        }
+        
+        // Screen saver events (treated same as screen lock)
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screensaver.didstart"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pause()
+        }
+        
+        notificationCenter.addObserver(
+            forName: NSNotification.Name("com.apple.screensaver.didstop"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            if case .paused = self?.state {
+                self?.resume()
+            }
+        }
     }
     
     // MARK: - Smart Schedule Alert
