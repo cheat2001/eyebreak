@@ -1,5 +1,5 @@
 cask "eyebreak" do
-  version "1.0.0"
+  version "2.2.0"
   sha256 :no_check  # Will be updated with actual SHA256 after first release
 
   url "https://github.com/YOUR_USERNAME/lookaway/releases/download/v#{version}/EyeBreak.zip"

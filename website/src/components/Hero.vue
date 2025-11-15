@@ -56,7 +56,7 @@ const viewGitHub = () => {
         <!-- Version Badges -->
         <div class="mb-12 flex justify-center gap-3 flex-wrap animate-slide-up" style="animation-delay: 0.3s">
           <span class="px-5 py-2.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-full text-sm font-semibold backdrop-blur-sm">
-            v2.1.0
+            v2.2.0
           </span>
           <span class="px-5 py-2.5 bg-green-600/20 border border-green-500/30 text-green-300 rounded-full text-sm font-semibold backdrop-blur-sm">
             macOS 14.0+

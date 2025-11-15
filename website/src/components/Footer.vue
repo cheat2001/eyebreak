@@ -194,7 +194,7 @@ const scrollToTop = () => {
       <!-- Version Badge -->
       <div class="mt-12 text-center">
         <span class="inline-block px-6 py-3 bg-gray-800/50 border border-gray-700 backdrop-blur-sm rounded-full text-sm text-gray-400">
-          v2.1.0 • macOS 14.0+ • Universal Binary
+          v2.2.0 • macOS 14.0+ • Universal Binary
         </span>
       </div>
     </div>

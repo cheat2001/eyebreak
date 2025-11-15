@@ -157,11 +157,11 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ### Download the App (Recommended) ⭐️
 
-1. **[Download EyeBreak-v2.1.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
+1. **[Download EyeBreak-v2.2.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
 2. **Remove quarantine** (required for unsigned apps):
    ```bash
    cd ~/Downloads
-   xattr -cr EyeBreak-v2.1.0.dmg
+   xattr -cr EyeBreak-v2.2.0.dmg
    ```
 3. **Open** the DMG file
 4. **Drag** `EyeBreak.app` to your `Applications` folder
@@ -177,7 +177,7 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 ### Quick One-Line Install
 
 ```bash
-curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.0.0/EyeBreak-v2.0.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
+curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.2.0/EyeBreak-v2.2.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
 ```
 
 Then just drag to Applications!

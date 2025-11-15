@@ -5,11 +5,11 @@
 
 set -e  # Exit on any error
 
-echo "🚀 Building EyeBreak v2.1.0"
+echo "🚀 Building EyeBreak v2.2.0"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Configuration
-VERSION="2.1.0"
+VERSION="2.2.0"
 APP_NAME="EyeBreak"
 BUILD_CONFIG="Release"
 SCHEME="EyeBreak"

@@ -47,7 +47,7 @@ Remember: Every 20 minutes, look 20 feet away for 20 seconds! 👁️✨
 EOF
 
 # Create DMG
-DMG_NAME="EyeBreak-v2.1.0.dmg"
+DMG_NAME="EyeBreak-v2.2.0.dmg"
 echo "💿 Creating DMG: $DMG_NAME"
 
 # Remove old DMG if exists

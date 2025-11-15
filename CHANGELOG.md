@@ -5,6 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-11-13
+
+### 🔒 Major Features: Screen Lock Detection & Unified Dashboard
+
+This release introduces intelligent screen lock detection that automatically pauses all timers when you're away, and a beautiful unified dashboard showing real-time countdowns for all active reminders.
+
+**[Full Release Notes](docs/releases/RELEASE_NOTES_v2.2.0.md)**
+
+### Added
+
+#### Automatic Screen Lock Pause (NEW!)
+- **Smart Pause System:**
+  - All timers automatically pause when Mac screen locks
+  - Smart resume with exact remaining time when unlocked
+  - Works with macOS sleep/wake and screen lock/unlock events
+  - No manual intervention needed - fully automatic
+  - Preserves timer progress across lock/unlock cycles
+  
+- **Benefits:**
+  - No wasted break reminders while away from desk
+  - Accurate timing based on actual computer usage
+  - Better battery life by pausing unnecessary timers
+  - Intelligent behavior that feels natural
+
+#### Unified Countdown Dashboard (NEW!)
+- **All-in-One Timer View:**
+  - Eye breaks, ambient reminders, and water reminders in one place
+  - Real-time countdown updates every second
+  - Visual status indicators (Green=Active, Orange=Paused, Gray=Disabled)
+  - Smart status messages showing current state
+  - Beautiful glass-morphism cards with gradients
+  - Color-coded by reminder type (Blue, Orange, Cyan)
+  
+- **Location:**
+  - EyeBreak Settings → General tab
+  - Always visible for quick reference
+  - Professional, polished interface
+
+### Changed
+- **Enhanced Timer Management:**
+  - Date-based countdown calculations for better accuracy
+  - Countdown displays even when paused
+  - Intelligent resume after screen unlock
+  - Improved UI update frequency
+
+### Technical
+- **Architecture:**
+  - Combine framework integration for reactive countdowns
+  - @Published properties for automatic UI updates
+  - DistributedNotificationCenter for system event detection
+  - Memory-efficient shared timers per manager
+  
+- **Performance:**
+  - Optimized countdown update frequency
+  - Reduced CPU usage during idle
+  - Better memory management with weak references
+  - Smoother animations and transitions
+
+### Fixed
+- Ambient reminder timer not showing accurate countdown
+- Water reminder timer displaying static intervals
+- Timers continuing to run when Mac screen is locked
+- Resume behavior after screen unlock not preserving state
+
 ## [2.1.0] - 2025-10-25
 
 ### � Major Features: Launch at Login & Water Reminder System

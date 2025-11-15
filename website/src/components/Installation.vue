@@ -12,7 +12,7 @@ const installSteps: InstallStep[] = [
   {
     number: 1,
     title: 'Download',
-    description: 'Download the EyeBreak-v2.1.0.dmg file from GitHub releases',
+    description: 'Download the EyeBreak-v2.2.0.dmg file from GitHub releases',
     iconPath: 'M12 2a10 10 0 0110 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2m0 2a8 8 0 00-8 8 8 8 0 008 8 8 8 0 008-8 8 8 0 00-8-8m1 8v-4h-2v4H8l4 4 4-4h-3z'
   },
   {
@@ -56,7 +56,7 @@ const copyToClipboard = async (text: string, key: string) => {
 }
 
 const downloadDMG = () => {
-  window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg', '_blank')
+  window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.2.0/EyeBreak-v2.2.0.dmg', '_blank')
 }
 
 const viewReleases = () => {
@@ -64,7 +64,7 @@ const viewReleases = () => {
 }
 
 const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
-const curlCommand = 'curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.1.0/EyeBreak-v2.1.0.dmg -o ~/Downloads/EyeBreak-v2.1.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.1.0.dmg && open ~/Downloads/EyeBreak-v2.1.0.dmg'
+const curlCommand = 'curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.2.0/EyeBreak-v2.2.0.dmg -o ~/Downloads/EyeBreak-v2.2.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.2.0.dmg && open ~/Downloads/EyeBreak-v2.2.0.dmg'
 </script>
 
 <template>
@@ -178,7 +178,7 @@ const curlCommand = 'curl -L https://github.com/cheat2001/eyebreak/releases/down
               Ready to protect your eyes?
             </h3>
             <p class="text-sm sm:text-base text-gray-400 mb-6">
-              Download EyeBreak v2.1.0 for macOS 14.0+
+              Download EyeBreak v2.2.0 for macOS 14.0+
             </p>
             
             <!-- Installation Methods -->

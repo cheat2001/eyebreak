@@ -16,10 +16,62 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: '2.2.0',
+    date: 'November 13, 2025',
+    title: 'Smart Pause & Unified Dashboard Update',
+    badge: 'Latest',
+    features: [
+      {
+        title: '🔒 Automatic Screen Lock Pause',
+        items: [
+          'All timers automatically pause when Mac screen locks',
+          'Smart resume with exact remaining time when unlocked',
+          'Works with macOS sleep/wake and screen lock/unlock events',
+          'No manual intervention needed - fully automatic',
+          'Preserves timer progress across lock/unlock cycles',
+          'Better battery life by pausing unnecessary timers'
+        ]
+      },
+      {
+        title: '⏱️ Unified Countdown Dashboard',
+        items: [
+          'All-in-one timer view in Settings → General tab',
+          'Eye breaks, ambient reminders, and water reminders in one place',
+          'Real-time countdown updates every second',
+          'Visual status indicators (Green=Active, Orange=Paused, Gray=Disabled)',
+          'Smart status messages showing current state',
+          'Beautiful glass-morphism cards with gradients',
+          'Color-coded by reminder type (Blue, Orange, Cyan)'
+        ]
+      },
+      {
+        title: '🎨 Enhanced Timer Management',
+        items: [
+          'Date-based countdown calculations for better accuracy',
+          'Countdown displays even when paused',
+          'Intelligent resume after screen unlock',
+          'Improved UI update frequency'
+        ]
+      }
+    ],
+    improvements: [
+      'Optimized countdown update frequency (1-second intervals)',
+      'Reduced CPU usage during idle periods',
+      'Better memory management with weak references',
+      'Smoother UI animations and transitions',
+      'More accurate date calculations'
+    ],
+    bugFixes: [
+      'Fixed ambient reminder timer not showing accurate countdown',
+      'Fixed water reminder timer displaying static intervals',
+      'Fixed timers continuing to run when Mac screen is locked',
+      'Fixed resume behavior after screen unlock not preserving state'
+    ]
+  },
+  {
     version: '2.1.0',
     date: 'October 25, 2025',
     title: 'Health & Productivity Update',
-    badge: 'Latest',
     features: [
       {
         title: '⏰ Smart Schedule System',
