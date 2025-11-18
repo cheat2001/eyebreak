@@ -6,7 +6,7 @@ Disallow: /admin/
 Disallow: /*.json$
 
 # Sitemap
-Sitemap: https://eyebreak2.web.app/sitemap.xml
+Sitemap: https://eyebreak.app/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 0

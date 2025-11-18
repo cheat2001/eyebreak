@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://eyebreak2.web.app/</loc>
-    <lastmod>2025-10-29</lastmod>
+    <loc>https://eyebreak.app/</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://eyebreak2.web.app/assets/eyebreak.png</image:loc>
+      <image:loc>https://eyebreak.app/assets/eyebreak.png</image:loc>
       <image:title>EyeBreak App Screenshot</image:title>
       <image:caption>EyeBreak macOS app interface showing break reminders</image:caption>
     </image:image>
   </url>
   <url>
-    <loc>https://eyebreak2.web.app/releases</loc>
-    <lastmod>2025-10-26</lastmod>
+    <loc>https://eyebreak.app/releases</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://eyebreak2.web.app/privacy</loc>
-    <lastmod>2025-10-26</lastmod>
+    <loc>https://eyebreak.app/privacy</loc>
+    <lastmod>2025-11-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
