@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const currentYear = new Date().getFullYear()
 const router = useRouter()
+const showDonateModal = ref(false)
+const showKHQRModal = ref(false)
 
 interface Link {
   text: string
@@ -159,6 +162,165 @@ const scrollToTop = () => {
       <!-- Divider -->
       <div class="border-t border-gray-800/50 my-12"></div>
 
+      <!-- Support Section -->
+      <div class="mb-12">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 mb-4">
+            <svg class="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <h4 class="text-xl font-semibold text-white">Support EyeBreak</h4>
+          </div>
+          <p class="text-gray-400 mb-6 leading-relaxed">
+            EyeBreak is free and open-source. If it helps protect your eyes, consider supporting the project to keep it alive and thriving.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <!-- PayPal (International) -->
+            <button
+              @click="showDonateModal = true"
+              class="group inline-flex items-center gap-3 px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 text-blue-400 rounded-lg transition-all duration-300 hover:-translate-y-1"
+            >
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+              </svg>
+              <div class="text-left">
+                <div class="font-semibold">PayPal</div>
+                <div class="text-xs text-gray-500">International</div>
+              </div>
+            </button>
+            
+            <!-- KHQR (Cambodia Local) -->
+            <button
+              @click="showKHQRModal = true"
+              class="group inline-flex items-center gap-3 px-6 py-3 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 hover:border-green-500/50 text-green-400 rounded-lg transition-all duration-300 hover:-translate-y-1"
+            >
+              <img src="/khqr_logo.png" alt="KHQR" class="w-6 h-6 object-contain" />
+              <div class="text-left">
+                <div class="font-semibold">KHQR</div>
+                <div class="text-xs text-gray-500">Cambodia 🇰🇭</div>
+              </div>
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-4">
+            Every contribution helps keep EyeBreak free and ad-free for everyone.
+          </p>
+        </div>
+      </div>
+
+      <!-- PayPal Donate Modal -->
+      <Teleport to="body">
+        <Transition name="modal">
+          <div
+            v-if="showDonateModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            @click="showDonateModal = false"
+          >
+            <div
+              class="bg-gray-900 border border-gray-700 rounded-2xl max-w-md w-full p-8 shadow-2xl"
+              @click.stop
+            >
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h3 class="text-2xl font-bold text-white mb-2">PayPal Donation</h3>
+                  <p class="text-gray-400 text-sm">International supporters</p>
+                </div>
+                <button
+                  @click="showDonateModal = false"
+                  class="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- PayPal QR Code -->
+              <div class="bg-white p-6 rounded-xl mb-6 flex items-center justify-center">
+                <img 
+                  src="/paypal.png" 
+                  alt="PayPal Donation QR Code"
+                  class="w-64 h-64 object-contain"
+                />
+              </div>
+
+              <p class="text-center text-gray-400 text-sm mb-6">
+                Scan with your PayPal app or click the button below
+              </p>
+
+              <div class="flex gap-3">
+                <a
+                  href="https://www.paypal.com/donate/?hosted_button_id=KSQCFH8HU6DZN"
+                  target="_blank"
+                  class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-center font-semibold"
+                >
+                  Donate via PayPal
+                </a>
+                <button
+                  @click="showDonateModal = false"
+                  class="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
+
+      <!-- KHQR Modal -->
+      <Teleport to="body">
+        <Transition name="modal">
+          <div
+            v-if="showKHQRModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            @click="showKHQRModal = false"
+          >
+            <div
+              class="bg-gray-900 border border-gray-700 rounded-2xl max-w-md w-full p-8 shadow-2xl"
+              @click.stop
+            >
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h3 class="text-2xl font-bold text-white mb-2">KHQR Payment</h3>
+                  <p class="text-gray-400 text-sm">For Cambodia supporters 🇰🇭</p>
+                </div>
+                <button
+                  @click="showKHQRModal = false"
+                  class="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- KHQR Code -->
+              <div class="bg-white p-6 rounded-xl mb-6 flex items-center justify-center">
+                <img 
+                  src="/khqr_pay.jpg" 
+                  alt="KHQR Payment Code"
+                  class="w-64 h-64 object-contain"
+                />
+              </div>
+
+              <p class="text-center text-gray-400 text-sm mb-6">
+                Scan with any Cambodian banking app (ABA, Wing, ACLEDA, etc.)
+              </p>
+
+              <button
+                @click="showKHQRModal = false"
+                class="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-800/50 my-12"></div>
+
       <!-- Bottom Footer -->
       <div class="flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="text-gray-400 text-sm">
@@ -204,5 +366,25 @@ const scrollToTop = () => {
 <style scoped>
 a {
   text-decoration: none;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active > div,
+.modal-leave-active > div {
+  transition: transform 0.3s ease;
+}
+
+.modal-enter-from > div,
+.modal-leave-to > div {
+  transform: scale(0.9);
 }
 </style>

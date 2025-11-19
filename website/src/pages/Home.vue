@@ -5,6 +5,7 @@ import Installation from '../components/Installation.vue'
 import Screenshots from '../components/Screenshots.vue'
 import Documentation from '../components/Documentation.vue'
 import Footer from '../components/Footer.vue'
+import FloatingDonate from '../components/FloatingDonate.vue'
 </script>
 
 <template>
@@ -15,6 +16,7 @@ import Footer from '../components/Footer.vue'
     <Installation />
     <Documentation />
     <Footer />
+    <FloatingDonate />
   </div>
 </template>
 
