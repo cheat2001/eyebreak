@@ -163,7 +163,7 @@ const scrollToTop = () => {
       <div class="border-t border-gray-800/50 my-12"></div>
 
       <!-- Support Section -->
-      <div class="mb-12">
+      <div id="support" class="mb-12">
         <div class="max-w-3xl mx-auto text-center">
           <div class="inline-flex items-center gap-2 mb-4">
             <svg class="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 24 24">

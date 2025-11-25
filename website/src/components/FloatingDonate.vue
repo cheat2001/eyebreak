@@ -10,9 +10,18 @@ const checkScroll = () => {
 }
 
 const scrollToSupport = () => {
-  const footer = document.querySelector('footer')
-  if (footer) {
-    footer.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  const supportSection = document.querySelector('#support')
+  if (supportSection) {
+    // Scroll to show the support section with some padding
+    const yOffset = -50 // Add some offset to show above the section
+    const y = supportSection.getBoundingClientRect().top + window.pageYOffset + yOffset
+    window.scrollTo({ top: y, behavior: 'smooth' })
+  } else {
+    // Fallback to footer if #support not found
+    const footer = document.querySelector('footer')
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 }
 
