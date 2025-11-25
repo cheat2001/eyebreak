@@ -307,12 +307,21 @@ const scrollToTop = () => {
                 Scan with any Cambodian banking app (ABA, Wing, ACLEDA, etc.)
               </p>
 
-              <button
-                @click="showKHQRModal = false"
-                class="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
-              >
-                Close
-              </button>
+              <div class="flex gap-3">
+                <a
+                  href="https://pay.ababank.com/oRF8/fnuxbuun"
+                  target="_blank"
+                  class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-center font-semibold"
+                >
+                  Pay via KHQR
+                </a>
+                <button
+                  @click="showKHQRModal = false"
+                  class="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </Transition>
