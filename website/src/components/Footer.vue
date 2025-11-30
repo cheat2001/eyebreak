@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { config } from '../config'
 
 const currentYear = new Date().getFullYear()
 const router = useRouter()
@@ -23,18 +24,18 @@ const quickLinks: Link[] = [
 ]
 
 const resources: Link[] = [
-  { text: 'GitHub', href: 'https://github.com/cheat2001/eyebreak', external: true },
+  { text: 'GitHub', href: config.github.url, external: true },
   { text: 'Releases', route: '/releases' },
-  { text: 'Issues', href: 'https://github.com/cheat2001/eyebreak/issues', external: true },
-  { text: 'Discussions', href: 'https://github.com/cheat2001/eyebreak/discussions', external: true },
-  { text: 'Contributing', href: 'https://github.com/cheat2001/eyebreak/blob/main/CONTRIBUTING.md', external: true }
+  { text: 'Issues', href: `${config.github.url}/issues`, external: true },
+  { text: 'Discussions', href: `${config.github.url}/discussions`, external: true },
+  { text: 'Contributing', href: `${config.github.url}/blob/main/CONTRIBUTING.md`, external: true }
 ]
 
 const docs: Link[] = [
-  { text: 'Quick Start', href: 'https://github.com/cheat2001/eyebreak/blob/main/QUICK_START.md', external: true },
-  { text: 'README', href: 'https://github.com/cheat2001/eyebreak/blob/main/README.md', external: true },
-  { text: 'FAQ', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/FAQ.md', external: true },
-  { text: 'Water Reminder Guide', href: 'https://github.com/cheat2001/eyebreak/blob/main/docs/WATER_REMINDER_FEATURE.md', external: true },
+  { text: 'Quick Start', href: `${config.github.url}/blob/main/QUICK_START.md`, external: true },
+  { text: 'README', href: `${config.github.url}/blob/main/README.md`, external: true },
+  { text: 'FAQ', href: `${config.github.url}/blob/main/docs/FAQ.md`, external: true },
+  { text: 'Water Reminder Guide', href: `${config.github.url}/blob/main/docs/WATER_REMINDER_FEATURE.md`, external: true },
   { text: 'Release Notes', route: '/releases' }
 ]
 
@@ -75,7 +76,7 @@ const scrollToTop = () => {
           </p>
           <div class="flex gap-4">
             <a
-              href="https://github.com/cheat2001/eyebreak"
+              :href="config.github.url"
               target="_blank"
               class="group w-12 h-12 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-gray-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-1"
             >
@@ -249,7 +250,7 @@ const scrollToTop = () => {
 
               <div class="flex gap-3">
                 <a
-                  href="https://www.paypal.com/donate/?hosted_button_id=KSQCFH8HU6DZN"
+                  :href="config.donation.paypalUrl"
                   target="_blank"
                   class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-center font-semibold"
                 >
@@ -309,7 +310,7 @@ const scrollToTop = () => {
 
               <div class="flex gap-3">
                 <a
-                  href="https://pay.ababank.com/oRF8/fnuxbuun"
+                  :href="config.donation.khqrUrl"
                   target="_blank"
                   class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-center font-semibold"
                 >
@@ -345,7 +346,7 @@ const scrollToTop = () => {
           </button>
           <span>•</span>
           <a
-            href="https://github.com/cheat2001/eyebreak/blob/main/LICENSE"
+            :href="`${config.github.url}/blob/main/LICENSE`"
             target="_blank"
             class="hover:text-white transition-colors"
           >
@@ -365,7 +366,7 @@ const scrollToTop = () => {
       <!-- Version Badge -->
       <div class="mt-12 text-center">
         <span class="inline-block px-6 py-3 bg-gray-800/50 border border-gray-700 backdrop-blur-sm rounded-full text-sm text-gray-400">
-          v2.2.0 • macOS 14.0+ • Universal Binary
+          v{{ config.app.version }} • macOS {{ config.requirements.macOSVersion }} • Universal Binary
         </span>
       </div>
     </div>

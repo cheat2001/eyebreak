@@ -71,7 +71,7 @@ import Footer from '../components/Footer.vue'
             <h2 class="text-3xl font-bold text-white mb-4">Open Source</h2>
             <p class="leading-relaxed">
               EyeBreak is open-source software. You can review the complete source code on 
-              <a href="https://github.com/cheat2001/eyebreak" target="_blank" class="text-blue-400 hover:text-blue-300 underline">
+              <a href="https://github.com/cheat2001/eyebreak" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
                 GitHub
               </a> to verify our privacy claims.
             </p>
@@ -95,7 +95,7 @@ import Footer from '../components/Footer.vue'
             <h2 class="text-3xl font-bold text-white mb-4">Contact</h2>
             <p class="leading-relaxed">
               If you have questions about this Privacy Policy, please open an issue on our 
-              <a href="https://github.com/cheat2001/eyebreak/issues" target="_blank" class="text-blue-400 hover:text-blue-300 underline">
+              <a href="https://github.com/cheat2001/eyebreak/issues" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
                 GitHub repository
               </a>.
             </p>

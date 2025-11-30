@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { config } from '../config'
 
 interface Release {
   tag_name: string
@@ -16,6 +17,7 @@ interface RepoData {
 const totalDownloads = ref<number | null>(null)
 const githubStars = ref<number | null>(null)
 const isLoadingStats = ref(true)
+const statsError = ref(false)
 
 const scrollToInstallation = () => {
   const element = document.getElementById('installation')
@@ -25,15 +27,16 @@ const scrollToInstallation = () => {
 }
 
 const viewGitHub = () => {
-  window.open('https://github.com/cheat2001/eyebreak', '_blank')
+  window.open(config.github.url, '_blank')
 }
 
 const fetchGitHubStats = async () => {
   try {
     isLoadingStats.value = true
+    statsError.value = false
     
     // Fetch releases for download count
-    const releasesResponse = await fetch('https://api.github.com/repos/cheat2001/eyebreak/releases')
+    const releasesResponse = await fetch(`https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases`)
     if (releasesResponse.ok) {
       const releases: Release[] = await releasesResponse.json()
       let total = 0
@@ -46,13 +49,14 @@ const fetchGitHubStats = async () => {
     }
     
     // Fetch repo data for stars
-    const repoResponse = await fetch('https://api.github.com/repos/cheat2001/eyebreak')
+    const repoResponse = await fetch(`https://api.github.com/repos/${config.github.owner}/${config.github.repo}`)
     if (repoResponse.ok) {
       const repoData: RepoData = await repoResponse.json()
       githubStars.value = repoData.stargazers_count
     }
   } catch (error) {
-    console.error('Error fetching GitHub stats:', error)
+    statsError.value = true
+    // Silently fail - stats are not critical
   } finally {
     isLoadingStats.value = false
   }
@@ -108,10 +112,10 @@ onMounted(() => {
         <!-- Version Badges -->
         <div class="mb-12 flex justify-center gap-3 flex-wrap animate-slide-up" style="animation-delay: 0.3s">
           <span class="px-5 py-2.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-full text-sm font-semibold backdrop-blur-sm">
-            v2.2.0
+            v{{ config.app.version }}
           </span>
           <span class="px-5 py-2.5 bg-green-600/20 border border-green-500/30 text-green-300 rounded-full text-sm font-semibold backdrop-blur-sm">
-            macOS 14.0+
+            macOS {{ config.requirements.macOSVersion }}
           </span>
           <span class="px-5 py-2.5 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-full text-sm font-semibold backdrop-blur-sm">
             Free & Open Source
