@@ -49,7 +49,7 @@ const navigateToReleases = () => {
   <nav 
     :class="[
       'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-      isScrolled ? 'bg-gray-900/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+      isScrolled || mobileMenuOpen ? 'bg-gray-900/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'
     ]"
   >
     <div class="container mx-auto px-4">
