@@ -241,7 +241,7 @@ onUnmounted(() => {
                     </div>
                     <p class="text-gray-400 text-sm mt-2">{{ loadProgress }}%</p>
                   </div>
-                  <p class="text-gray-500 text-xs mt-2">High quality video • {{ (53).toFixed(0) }}MB</p>
+                  <p class="text-gray-400 text-xs mt-2">Preparing your demo experience...</p>
                 </div>
               </div>
             </div>
