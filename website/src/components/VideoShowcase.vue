@@ -33,14 +33,6 @@ const togglePlay = () => {
   }
 }
 
-const handleVideoClick = (e: MouseEvent) => {
-  // Only toggle if clicking on video itself, not on controls
-  const target = e.target as HTMLElement
-  if (target.tagName === 'VIDEO') {
-    togglePlay()
-  }
-}
-
 const handleOverlayClick = (e: MouseEvent) => {
   e.stopPropagation()
   togglePlay()
