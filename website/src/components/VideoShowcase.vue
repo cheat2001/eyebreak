@@ -103,13 +103,13 @@ onMounted(() => {
             }
           }
         })
-      },
-      {
-        threshold: 0.3
-      }
-    )
+        },
+        {
+          threshold: 0.15
+        }
+      )
 
-    observer.observe(videoContainerRef.value)
+      observer.observe(videoContainerRef.value)
   }
 })
 
@@ -259,8 +259,8 @@ onUnmounted(() => {
                   </svg>
                 </div>
                 
-                <!-- Animated text below button -->
-                <div class="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <!-- Animated text below button - Hidden on mobile -->
+                <div class="hidden md:block absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
                   <p class="text-white font-semibold text-lg animate-bounce">Click to Play</p>
                 </div>
               </div>
