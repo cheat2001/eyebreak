@@ -10,6 +10,16 @@ const animateIn = ref(false)
 const isLoading = ref(true)
 const loadProgress = ref(0)
 const canPlayThrough = ref(false)
+const mouseX = ref(0)
+const mouseY = ref(0)
+
+const handleMouseMove = (e: MouseEvent) => {
+  if (videoContainerRef.value) {
+    const rect = videoContainerRef.value.getBoundingClientRect()
+    mouseX.value = e.clientX - rect.left
+    mouseY.value = e.clientY - rect.top
+  }
+}
 
 const togglePlay = () => {
   if (videoRef.value) {
@@ -23,7 +33,16 @@ const togglePlay = () => {
   }
 }
 
-const handleVideoClick = () => {
+const handleVideoClick = (e: MouseEvent) => {
+  // Only toggle if clicking on video itself, not on controls
+  const target = e.target as HTMLElement
+  if (target.tagName === 'VIDEO') {
+    togglePlay()
+  }
+}
+
+const handleOverlayClick = (e: MouseEvent) => {
+  e.stopPropagation()
   togglePlay()
 }
 
@@ -156,11 +175,23 @@ onUnmounted(() => {
         ref="videoContainerRef"
         class="relative max-w-5xl mx-auto transition-all duration-1000 delay-200"
         :class="animateIn ? 'opacity-100 scale-100' : 'opacity-0 scale-95'"
+        @mousemove="handleMouseMove"
       >
         <!-- Animated glow effect behind video -->
         <div 
           class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl scale-110 transition-all duration-1000"
           :class="isPlaying ? 'animate-pulse-glow' : ''"
+        ></div>
+        
+        <!-- Interactive cursor glow -->
+        <div 
+          class="hidden lg:block absolute w-64 h-64 bg-blue-500/30 rounded-full blur-3xl pointer-events-none transition-opacity duration-300"
+          :style="{
+            left: `${mouseX}px`,
+            top: `${mouseY}px`,
+            transform: 'translate(-50%, -50%)',
+            opacity: animateIn ? 0.5 : 0
+          }"
         ></div>
         
         <!-- Floating particles effect -->
@@ -227,7 +258,6 @@ onUnmounted(() => {
               ref="videoRef"
               class="w-full h-full object-contain cursor-pointer transition-opacity duration-500"
               :class="{ 'opacity-0': isLoading, 'opacity-100': !isLoading }"
-              @click="handleVideoClick"
               controls
               preload="metadata"
               muted
@@ -243,7 +273,7 @@ onUnmounted(() => {
             <div 
               v-if="!isPlaying && !isLoading"
               class="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm transition-all duration-500 cursor-pointer group-hover:bg-black/40"
-              @click="togglePlay"
+              @click="handleOverlayClick"
             >
               <div class="relative">
                 <!-- Multiple pulse rings -->
@@ -251,8 +281,8 @@ onUnmounted(() => {
                 <div class="absolute inset-0 bg-purple-500 rounded-full animate-ping opacity-50" style="animation-delay: 0.5s"></div>
                 <div class="absolute inset-0 bg-pink-500 rounded-full animate-ping opacity-25" style="animation-delay: 1s"></div>
                 
-                <!-- Play button with enhanced effects -->
-                <div class="relative w-28 h-28 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 animate-float">
+                <!-- Play button with enhanced 3D effects -->
+                <div class="relative w-28 h-28 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 animate-float" style="transform-style: preserve-3d;">
                   <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
                   <svg class="w-14 h-14 text-white ml-1 relative z-10 drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
@@ -310,13 +340,19 @@ onUnmounted(() => {
               
               <!-- Feature highlights -->
               <div class="flex gap-2 flex-wrap">
-                <span class="px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-full text-sm font-medium backdrop-blur-sm">
+                <span 
+                  class="px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-full text-sm font-medium backdrop-blur-sm transition-all duration-300 hover:bg-blue-600/30 hover:border-blue-500/50 cursor-default"
+                >
                   Break Timer
                 </span>
-                <span class="px-4 py-2 bg-cyan-600/20 border border-cyan-500/30 text-cyan-300 rounded-full text-sm font-medium backdrop-blur-sm">
+                <span 
+                  class="px-4 py-2 bg-cyan-600/20 border border-cyan-500/30 text-cyan-300 rounded-full text-sm font-medium backdrop-blur-sm transition-all duration-300 hover:bg-cyan-600/30 hover:border-cyan-500/50 cursor-default"
+                >
                   Hydration
                 </span>
-                <span class="px-4 py-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-full text-sm font-medium backdrop-blur-sm">
+                <span 
+                  class="px-4 py-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-full text-sm font-medium backdrop-blur-sm transition-all duration-300 hover:bg-purple-600/30 hover:border-purple-500/50 cursor-default"
+                >
                   Themes
                 </span>
               </div>
