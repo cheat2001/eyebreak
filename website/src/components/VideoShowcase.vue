@@ -7,6 +7,9 @@ const isPlaying = ref(false)
 const showControls = ref(false)
 const hasAutoPlayed = ref(false)
 const animateIn = ref(false)
+const isLoading = ref(true)
+const loadProgress = ref(0)
+const canPlayThrough = ref(false)
 
 const togglePlay = () => {
   if (videoRef.value) {
@@ -28,6 +31,7 @@ let observer: IntersectionObserver | null = null
 
 onMounted(() => {
   if (videoRef.value) {
+    // Video event listeners
     videoRef.value.addEventListener('play', () => {
       isPlaying.value = true
     })
@@ -37,39 +41,75 @@ onMounted(() => {
     videoRef.value.addEventListener('ended', () => {
       isPlaying.value = false
     })
+    
+    // Loading state listeners
+    videoRef.value.addEventListener('loadstart', () => {
+      isLoading.value = true
+      loadProgress.value = 0
+    })
+    
+    videoRef.value.addEventListener('progress', () => {
+      if (videoRef.value) {
+        const buffered = videoRef.value.buffered
+        if (buffered.length > 0) {
+          const loadedPercentage = (buffered.end(0) / videoRef.value.duration) * 100
+          loadProgress.value = Math.round(loadedPercentage)
+        }
+      }
+    })
+    
+    videoRef.value.addEventListener('canplay', () => {
+      isLoading.value = false
+    })
+    
+    videoRef.value.addEventListener('canplaythrough', () => {
+      canPlayThrough.value = true
+      isLoading.value = false
+    })
+    
+    videoRef.value.addEventListener('waiting', () => {
+      isLoading.value = true
+    })
+    
+    videoRef.value.addEventListener('playing', () => {
+      isLoading.value = false
+    })
+  }
 
-    // Set up Intersection Observer for autoplay and animations
-    if (videoContainerRef.value) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              // Trigger animations
+  // Set up Intersection Observer for autoplay and animations
+  if (videoContainerRef.value) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Trigger animations
+            setTimeout(() => {
+              animateIn.value = true
+            }, 100)
+            
+            // Autoplay video
+            if (!hasAutoPlayed.value && videoRef.value) {
               setTimeout(() => {
-                animateIn.value = true
-              }, 100)
-              
-              // Autoplay video
-              if (!hasAutoPlayed.value && videoRef.value) {
-                setTimeout(() => {
+                // Only autoplay if video has buffered enough
+                if (canPlayThrough.value || loadProgress.value > 25) {
                   videoRef.value?.play().then(() => {
                     hasAutoPlayed.value = true
                     isPlaying.value = true
                   }).catch((error) => {
                     console.log('Autoplay prevented:', error)
                   })
-                }, 600)
-              }
+                }
+              }, 600)
             }
-          })
-        },
-        {
-          threshold: 0.3
-        }
-      )
+          }
+        })
+      },
+      {
+        threshold: 0.3
+      }
+    )
 
-      observer.observe(videoContainerRef.value)
-    }
+    observer.observe(videoContainerRef.value)
   }
 })
 
@@ -149,23 +189,59 @@ onUnmounted(() => {
         >
           <!-- Video element -->
           <div class="relative aspect-video bg-gray-950">
+            <!-- Video thumbnail/poster while loading -->
+            <div 
+              v-if="isLoading" 
+              class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950"
+            >
+              <div class="text-center">
+                <!-- Loading spinner -->
+                <div class="relative w-24 h-24 mx-auto mb-6">
+                  <div class="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+                  <div class="absolute inset-0 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                <!-- Loading text and progress -->
+                <div class="space-y-3">
+                  <p class="text-white font-semibold text-lg">Loading Video...</p>
+                  <div class="w-64 mx-auto">
+                    <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                      <div 
+                        class="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-300 ease-out"
+                        :style="{ width: `${loadProgress}%` }"
+                      ></div>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">{{ loadProgress }}%</p>
+                  </div>
+                  <p class="text-gray-500 text-xs mt-2">High quality video • {{ (53).toFixed(0) }}MB</p>
+                </div>
+              </div>
+            </div>
+            
             <video
               ref="videoRef"
-              class="w-full h-full object-contain cursor-pointer"
+              class="w-full h-full object-contain cursor-pointer transition-opacity duration-500"
+              :class="{ 'opacity-0': isLoading, 'opacity-100': !isLoading }"
               @click="handleVideoClick"
               controls
-              preload="auto"
+              preload="metadata"
               muted
               playsinline
+              poster=""
             >
               <source src="../assets/videos/eyebreak video.mov" type="video/quicktime">
               <source src="../assets/videos/eyebreak video.mov" type="video/mp4">
               Your browser does not support the video tag.
             </video>
             
-            <!-- Play overlay (shows when video is paused) -->
+            <!-- Play overlay (shows when video is paused and loaded) -->
             <div 
-              v-if="!isPlaying"
+              v-if="!isPlaying && !isLoading"
               class="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm transition-all duration-500 cursor-pointer group-hover:bg-black/40"
               @click="togglePlay"
             >
