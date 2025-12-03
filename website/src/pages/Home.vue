@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Hero from '../components/Hero.vue'
+import VideoShowcase from '../components/VideoShowcase.vue'
 import Features from '../components/Features.vue'
 import Installation from '../components/Installation.vue'
 import Screenshots from '../components/Screenshots.vue'
@@ -11,6 +12,7 @@ import FloatingDonate from '../components/FloatingDonate.vue'
 <template>
   <div class="home">
     <Hero />
+    <VideoShowcase />
     <Features />
     <Screenshots />
     <Installation />
