@@ -241,7 +241,7 @@ onUnmounted(() => {
                     </div>
                     <p class="text-gray-400 text-sm mt-2">{{ loadProgress }}%</p>
                   </div>
-                  <p class="text-gray-400 text-xs mt-2">Preparing your demo experience...</p>
+                  <p class="text-gray-300 text-sm mt-2">Preparing your demo experience...</p>
                 </div>
               </div>
             </div>
