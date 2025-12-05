@@ -486,134 +486,127 @@ struct GeneralSettingsView: View {
 
 struct BreakSettingsView: View {
     @EnvironmentObject var settings: AppSettings
-    
+
     var body: some View {
         Form {
+            // MARK: - Timing Section
             Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Work Interval: \(settings.workIntervalMinutes) minutes")
-                        .font(.headline)
-                    
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.workIntervalMinutes) },
-                            set: { settings.workIntervalMinutes = Int($0) }
-                        ),
-                        in: 10...60,
-                        step: 5
-                    )
-                    
-                    Text("How long to work before taking a break")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 4)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Break Duration: \(settings.breakDurationSeconds) seconds")
-                        .font(.headline)
-                    
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.breakDurationSeconds) },
-                            set: { settings.breakDurationSeconds = Int($0) }
-                        ),
-                        in: 10...60,
-                        step: 5
-                    )
-                    
-                    Text("How long each break should last")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 4)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Pre-Break Warning: \(settings.preBreakWarningSeconds) seconds")
-                        .font(.headline)
-                    
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.preBreakWarningSeconds) },
-                            set: { settings.preBreakWarningSeconds = Int($0) }
-                        ),
-                        in: 10...60,
-                        step: 10
-                    )
-                    
-                    Text("Advance notice before break starts")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 4)
-            } header: {
-                Text("Timing")
-            }
-            
-            Section {
-                Picker("Break Style", selection: $settings.breakStyle) {
-                    ForEach(BreakStyle.allCases) { style in
-                        Label(style.rawValue, systemImage: style.icon)
-                            .tag(style)
+                VStack(spacing: 12) {
+                    EnhancedSliderCard(
+                        title: "Work Interval",
+                        value: settings.workIntervalMinutes,
+                        unit: "min",
+                        icon: "desktopcomputer",
+                        color: .blue,
+                        range: 10...60
+                    ) { newValue in
+                        settings.workIntervalMinutes = Int(newValue)
+                    }
+
+                    EnhancedSliderCard(
+                        title: "Break Duration",
+                        value: settings.breakDurationSeconds,
+                        unit: "sec",
+                        icon: "eye.slash",
+                        color: .green,
+                        range: 10...60
+                    ) { newValue in
+                        settings.breakDurationSeconds = Int(newValue)
+                    }
+
+                    EnhancedSliderCard(
+                        title: "Pre-Break Warning",
+                        value: settings.preBreakWarningSeconds,
+                        unit: "sec",
+                        icon: "bell.fill",
+                        color: .orange,
+                        range: 10...60
+                    ) { newValue in
+                        settings.preBreakWarningSeconds = Int(newValue)
                     }
                 }
-                .pickerStyle(.inline)
-                
-                Text(settings.breakStyle.description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                // Preview button for testing break styles
-                Button(action: previewBreakStyle) {
-                    Label("Preview Break Style", systemImage: "eye.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .help("Test how your selected break style will look")
             } header: {
-                Text("Break Style")
+                SectionHeaderView(title: "Timing", icon: "clock.fill", color: .blue)
             }
-            
+
+            // MARK: - Break Style Section
             Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Exercise Interval: \(settings.exerciseIntervalSeconds) seconds")
-                        .font(.headline)
-                    
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.exerciseIntervalSeconds) },
-                            set: { settings.exerciseIntervalSeconds = Int($0) }
-                        ),
-                        in: 2...10,
-                        step: 1
-                    )
+                VStack(spacing: 12) {
+                    ForEach(BreakStyle.allCases) { style in
+                        BreakStyleOptionCard(
+                            style: style,
+                            isSelected: settings.breakStyle == style
+                        ) {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                settings.breakStyle = style
+                            }
+                        }
+                    }
+
+                    Button(action: previewBreakStyle) {
+                        HStack {
+                            Image(systemName: "play.circle.fill")
+                            Text("Preview Break Style")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [.purple, .purple.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                        .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                    .buttonStyle(ProfessionalButtonStyle(color: .purple))
                 }
-                
-                Text("How long to hold each eye position during exercise")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Eye Exercise Duration: \(settings.eyeExerciseDurationSeconds / 60) minutes")
-                        .font(.headline)
-                    
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.eyeExerciseDurationSeconds) },
-                            set: { settings.eyeExerciseDurationSeconds = Int($0) }
-                        ),
-                        in: 60...1800,
-                        step: 60
-                    )
-                }
-                
-                Text("Duration for dedicated eye exercise breaks (1-30 minutes)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             } header: {
-                Text("Eye Exercise Settings")
+                SectionHeaderView(title: "Break Style", icon: "sparkles.rectangle.stack.fill", color: .purple)
             }
-            
+
+            // MARK: - Eye Exercise Section
+            Section {
+                VStack(spacing: 12) {
+                    EnhancedSliderCard(
+                        title: "Exercise Interval",
+                        value: settings.exerciseIntervalSeconds,
+                        unit: "sec",
+                        icon: "arrow.triangle.2.circlepath",
+                        color: .cyan,
+                        range: 2...10
+                    ) { newValue in
+                        settings.exerciseIntervalSeconds = Int(newValue)
+                    }
+
+                    EnhancedSliderCard(
+                        title: "Exercise Duration",
+                        value: settings.eyeExerciseDurationSeconds / 60,
+                        unit: "min",
+                        icon: "figure.walk",
+                        color: .teal,
+                        range: 1...30
+                    ) { newValue in
+                        settings.eyeExerciseDurationSeconds = Int(newValue) * 60
+                    }
+
+                    HStack(spacing: 8) {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.secondary)
+                        Text("Exercise interval controls how long to hold each eye position")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 4)
+                }
+            } header: {
+                SectionHeaderView(title: "Eye Exercise", icon: "eye.circle.fill", color: .cyan)
+            }
+
+            // MARK: - Ambient Reminders Section
             Section {
                 VStack(alignment: .leading, spacing: 16) {
                     // Enhanced toggle with icon
@@ -1817,6 +1810,138 @@ struct TimerStatusBanner: View {
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+// MARK: - Section Header View
+
+struct SectionHeaderView: View {
+    let title: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(color)
+
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(color)
+        }
+        .textCase(nil)
+    }
+}
+
+// MARK: - Settings Section Card
+
+struct SettingsSectionCard<Content: View>: View {
+    let title: String
+    let icon: String
+    let color: Color
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Section Header
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(
+                            LinearGradient(
+                                colors: [color.opacity(0.2), color.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 32, height: 32)
+
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.primary)
+            }
+
+            // Content
+            content
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(NSColor.controlBackgroundColor))
+                .shadow(color: .black.opacity(0.05), radius: 10)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(color.opacity(0.1), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Break Style Option Card
+
+struct BreakStyleOptionCard: View {
+    let style: BreakStyle
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 14) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.purple.opacity(0.15) : Color.secondary.opacity(0.08))
+                        .frame(width: 44, height: 44)
+
+                    Image(systemName: style.icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(isSelected ? .purple : .secondary)
+                }
+
+                // Text
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(style.rawValue)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(isSelected ? .primary : .secondary)
+
+                    Text(style.description)
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                // Checkmark
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.purple)
+                }
+            }
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? Color.purple.opacity(0.08) : Color.secondary.opacity(0.04))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? Color.purple.opacity(0.3) : Color.clear, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
