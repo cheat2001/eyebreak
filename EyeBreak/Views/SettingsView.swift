@@ -11,15 +11,15 @@ struct SettingsView: View {
     @EnvironmentObject var timerManager: BreakTimerManager
     @EnvironmentObject var settings: AppSettings
     @Environment(\.openWindow) var openWindow
-    
+
     @State private var selectedTab: Tab = .general
-    
+
     enum Tab: String, CaseIterable {
         case general = "General"
         case breaks = "Breaks"
         case statistics = "Statistics"
         case about = "About"
-        
+
         var icon: String {
             switch self {
             case .general: return "gearshape.fill"
@@ -28,25 +28,50 @@ struct SettingsView: View {
             case .about: return "info.circle.fill"
             }
         }
+
+        var color: Color {
+            switch self {
+            case .general: return .gray
+            case .breaks: return .blue
+            case .statistics: return .green
+            case .about: return .purple
+            }
+        }
     }
-    
+
     var body: some View {
         NavigationSplitView {
             List(Tab.allCases, id: \.self, selection: $selectedTab) { tab in
-                Label(tab.rawValue, systemImage: tab.icon)
-                    .tag(tab)
+                HStack(spacing: 10) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(selectedTab == tab ? tab.color.opacity(0.15) : Color.clear)
+                            .frame(width: 28, height: 28)
+
+                        Image(systemName: tab.icon)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(selectedTab == tab ? tab.color : .secondary)
+                    }
+
+                    Text(tab.rawValue)
+                        .font(.system(size: 13, weight: selectedTab == tab ? .semibold : .regular))
+                        .foregroundColor(selectedTab == tab ? .primary : .secondary)
+                }
+                .padding(.vertical, 4)
+                .tag(tab)
             }
-            .navigationSplitViewColumnWidth(150)
+            .navigationSplitViewColumnWidth(160)
+            .listStyle(.sidebar)
         } detail: {
             VStack(spacing: 0) {
                 // Large Countdown Timer Display at the top
                 TimerStatusBanner()
                     .environmentObject(timerManager)
                     .environmentObject(settings)
-                
+
                 Divider()
-                
-                // Main content
+
+                // Main content with smooth transition
                 Group {
                     switch selectedTab {
                     case .general:
@@ -60,6 +85,9 @@ struct SettingsView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.opacity.combined(with: .move(edge: .trailing)))
+                .animation(.easeInOut(duration: 0.2), value: selectedTab)
+                .id(selectedTab) // Force view recreation for animation
             }
         }
         .navigationTitle("EyeBreak Settings")
@@ -1301,70 +1329,166 @@ struct BreakSettingsView: View {
 // MARK: - About View
 
 struct AboutView: View {
+    @State private var isHoveringGithub = false
+    @State private var isHoveringIssue = false
+
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                // App Icon
-                Image(systemName: "eye.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(.blue)
-                    .padding(.top, 40)
-                
+            VStack(spacing: 32) {
+                // App Icon with gradient background
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue.opacity(0.2), Color.cyan.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 120, height: 120)
+
+                    Image(systemName: "eye.fill")
+                        .font(.system(size: 56))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.blue, .cyan],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+                .shadow(color: .blue.opacity(0.2), radius: 20)
+                .padding(.top, 40)
+
                 VStack(spacing: 8) {
                     Text("EyeBreak")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Version 1.0.0")
-                        .font(.subheadline)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.primary, .primary.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+
+                    Text("Version 2.2")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(.secondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(8)
                 }
-                
-                // Description
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("About EyeBreak")
-                        .font(.headline)
-                    
+
+                // Description Card
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundStyle(.blue)
+                        Text("About")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+
                     Text("""
-                    EyeBreak helps you reduce digital eye strain by following the 20-20-20 rule: \
-                    Every 20 minutes, look at something 20 feet away for 20 seconds.
-                    
-                    Built with privacy in mind, all your data stays on your Mac. \
-                    No analytics, no tracking, no internet connection required.
+                    EyeBreak helps you reduce digital eye strain by following the 20-20-20 rule: Every 20 minutes, look at something 20 feet away for 20 seconds.
+
+                    Built with privacy in mind, all your data stays on your Mac. No analytics, no tracking, no internet connection required.
                     """)
                     .font(.body)
                     .foregroundColor(.secondary)
+                    .lineSpacing(4)
                 }
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(12)
-                
-                // Features
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(NSColor.controlBackgroundColor))
+                        .shadow(color: .black.opacity(0.05), radius: 10)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.blue.opacity(0.1), lineWidth: 1)
+                )
+
+                // Features Card
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Key Features")
-                        .font(.headline)
-                    
-                    FeatureRow(icon: "eye.fill", title: "20-20-20 Rule", description: "Scientifically-backed eye care")
-                    FeatureRow(icon: "timer", title: "Smart Timer", description: "Automatic break reminders")
-                    FeatureRow(icon: "bell.fill", title: "Notifications", description: "Gentle pre-break warnings")
-                    FeatureRow(icon: "chart.bar.fill", title: "Statistics", description: "Track your progress")
-                    FeatureRow(icon: "lock.fill", title: "Privacy First", description: "All data stays local")
+                    HStack {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(.orange)
+                        Text("Key Features")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+
+                    VStack(spacing: 12) {
+                        FeatureRow(icon: "eye.fill", title: "20-20-20 Rule", description: "Scientifically-backed eye care")
+                        FeatureRow(icon: "timer", title: "Smart Timer", description: "Automatic break reminders")
+                        FeatureRow(icon: "drop.fill", title: "Water Reminders", description: "Stay hydrated throughout the day")
+                        FeatureRow(icon: "sparkles", title: "Ambient Reminders", description: "Gentle eye exercise prompts")
+                        FeatureRow(icon: "calendar", title: "Smart Schedule", description: "Respects your work hours")
+                        FeatureRow(icon: "lock.fill", title: "Privacy First", description: "All data stays local")
+                    }
                 }
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(12)
-                
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(NSColor.controlBackgroundColor))
+                        .shadow(color: .black.opacity(0.05), radius: 10)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.orange.opacity(0.1), lineWidth: 1)
+                )
+
                 // Links
-                VStack(spacing: 12) {
+                HStack(spacing: 16) {
                     Link(destination: URL(string: "https://github.com/cheat2001/eyebreak")!) {
-                        Label("GitHub Repository", systemImage: "link")
+                        HStack {
+                            Image(systemName: "link")
+                            Text("GitHub")
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.blue.opacity(isHoveringGithub ? 0.15 : 0.08))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                        )
+                        .scaleEffect(isHoveringGithub ? 1.02 : 1.0)
                     }
-                    
-                    Link(destination: URL(string: "https://github.com")!) {
-                        Label("Report an Issue", systemImage: "exclamationmark.triangle")
+                    .onHover { isHoveringGithub = $0 }
+                    .animation(.easeOut(duration: 0.15), value: isHoveringGithub)
+
+                    Link(destination: URL(string: "https://github.com/cheat2001/eyebreak/issues")!) {
+                        HStack {
+                            Image(systemName: "exclamationmark.bubble")
+                            Text("Report Issue")
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.orange.opacity(isHoveringIssue ? 0.15 : 0.08))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                        )
+                        .scaleEffect(isHoveringIssue ? 1.02 : 1.0)
                     }
+                    .onHover { isHoveringIssue = $0 }
+                    .animation(.easeOut(duration: 0.15), value: isHoveringIssue)
                 }
-                
+
                 // Copyright
                 Text("© 2025 EyeBreak. All rights reserved.")
                     .font(.caption)
@@ -1381,23 +1505,36 @@ struct FeatureRow: View {
     let icon: String
     let title: String
     let description: String
-    
+
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(.blue)
-                .frame(width: 24)
-            
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .center, spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.blue.opacity(0.1))
+                    .frame(width: 36, height: 36)
+
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.primary)
+
                 Text(description)
-                    .font(.caption)
+                    .font(.system(size: 12))
                     .foregroundColor(.secondary)
             }
+
+            Spacer()
         }
     }
 }

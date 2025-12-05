@@ -298,10 +298,9 @@ struct MenuBarView: View {
                     .cornerRadius(12)
                     .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
-                .buttonStyle(.plain)
-                .scaleEffect(1.0)
+                .professionalButtonStyle(color: .blue)
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: timerManager.state)
-                
+
             } else if timerManager.state.isActive {
                 HStack(spacing: 8) {
                     Button(action: {
@@ -324,8 +323,8 @@ struct MenuBarView: View {
                                 .stroke(Color.red.opacity(0.3), lineWidth: 1)
                         )
                     }
-                    .buttonStyle(.plain)
-                    
+                    .professionalButtonStyle(color: .red, isOutlined: true)
+
                     Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                             timerManager.takeBreakNow()
@@ -349,15 +348,30 @@ struct MenuBarView: View {
                         .cornerRadius(10)
                         .shadow(color: .green.opacity(0.3), radius: 6, x: 0, y: 3)
                     }
-                    .buttonStyle(.plain)
+                    .professionalButtonStyle(color: .green)
                 }
             } else if case .paused = timerManager.state {
                 Button(action: timerManager.resume) {
-                    Label("Resume Timer", systemImage: "play.fill")
-                        .frame(maxWidth: .infinity)
+                    HStack {
+                        Image(systemName: "play.circle.fill")
+                            .font(.title3)
+                        Text("Resume Timer")
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(
+                        LinearGradient(
+                            colors: [.orange, .orange.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                .professionalButtonStyle(color: .orange)
             }
         }
     }
@@ -457,13 +471,58 @@ struct StatBadge: View {
     }
 }
 
-// MARK: - Hover Effect
+// MARK: - Enhanced Hover Effect
+
+struct HoverEffectModifier: ViewModifier {
+    @State private var isHovered = false
+    let cornerRadius: CGFloat
+
+    init(cornerRadius: CGFloat = 8) {
+        self.cornerRadius = cornerRadius
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(isHovered ? Color.accentColor.opacity(0.1) : Color.clear)
+            )
+            .scaleEffect(isHovered ? 1.02 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: isHovered)
+            .onHover { hovering in
+                isHovered = hovering
+            }
+            .contentShape(Rectangle())
+    }
+}
 
 extension View {
-    func hoverEffect() -> some View {
-        self.background(
-            Color.accentColor.opacity(0.0001)
-        )
-        .contentShape(Rectangle())
+    func hoverEffect(cornerRadius: CGFloat = 8) -> some View {
+        self.modifier(HoverEffectModifier(cornerRadius: cornerRadius))
+    }
+}
+
+// MARK: - Professional Button Style
+
+struct ProfessionalButtonStyle: ButtonStyle {
+    let color: Color
+    let isOutlined: Bool
+
+    init(color: Color = .blue, isOutlined: Bool = false) {
+        self.color = color
+        self.isOutlined = isOutlined
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .brightness(configuration.isPressed ? -0.05 : 0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+extension View {
+    func professionalButtonStyle(color: Color = .blue, isOutlined: Bool = false) -> some View {
+        self.buttonStyle(ProfessionalButtonStyle(color: color, isOutlined: isOutlined))
     }
 }

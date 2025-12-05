@@ -7,10 +7,13 @@
 
 import AppKit
 import SwiftUI
+import Combine
 
 class StatusBarController: NSObject, ObservableObject {
     private(set) var statusItem: NSStatusItem?
-    
+    private var cancellables = Set<AnyCancellable>()
+    private var timerManager = BreakTimerManager.shared
+
     override init() {
         super.init()
         // Setup status bar synchronously on main thread
@@ -20,6 +23,106 @@ class StatusBarController: NSObject, ObservableObject {
             DispatchQueue.main.sync {
                 self.setupStatusBar()
             }
+        }
+
+        // Subscribe to timer state changes to update menu bar text
+        setupTimerObserver()
+    }
+
+    // MARK: - Timer Observer
+
+    private func setupTimerObserver() {
+        timerManager.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                self?.updateMenuBarText(for: state)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func updateMenuBarText(for state: TimerState) {
+        guard let button = statusItem?.button else { return }
+
+        // Get the icon
+        let icon: NSImage?
+        let iconName: String
+
+        switch state {
+        case .idle:
+            iconName = "eye"
+        case .working, .preBreak:
+            iconName = "eye.fill"
+        case .breaking:
+            iconName = "eye.slash.fill"
+        case .paused:
+            iconName = "pause.circle"
+        }
+
+        icon = NSImage(systemSymbolName: iconName, accessibilityDescription: "EyeBreak")
+        icon?.isTemplate = true
+
+        // Apply configuration for menu bar appropriate sizing
+        let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium, scale: .small)
+        let configuredIcon = icon?.withSymbolConfiguration(config)
+
+        // Format the time text
+        let timeText: String
+        switch state {
+        case .idle:
+            timeText = ""
+        case .working(let seconds), .preBreak(let seconds):
+            timeText = formatTimeCompact(seconds)
+        case .breaking(let seconds):
+            timeText = formatTimeCompact(seconds)
+        case .paused(_, let seconds):
+            timeText = formatTimeCompact(seconds)
+        }
+
+        // Update button
+        button.image = configuredIcon
+
+        if timeText.isEmpty {
+            button.imagePosition = .imageOnly
+            button.title = ""
+        } else {
+            button.imagePosition = .imageLeading
+            button.title = " \(timeText)"
+
+            // Style the title
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .medium),
+                .foregroundColor: NSColor.labelColor
+            ]
+            button.attributedTitle = NSAttributedString(string: " \(timeText)", attributes: attributes)
+        }
+
+        // Update tooltip
+        button.toolTip = tooltipText(for: state)
+    }
+
+    private func formatTimeCompact(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let secs = seconds % 60
+
+        if minutes > 0 {
+            return "\(minutes):\(String(format: "%02d", secs))"
+        } else {
+            return "0:\(String(format: "%02d", secs))"
+        }
+    }
+
+    private func tooltipText(for state: TimerState) -> String {
+        switch state {
+        case .idle:
+            return "EyeBreak - Click to start"
+        case .working(let seconds):
+            return "Working - Break in \(formatTimeCompact(seconds))"
+        case .preBreak(let seconds):
+            return "Break starting in \(seconds) seconds"
+        case .breaking(let seconds):
+            return "On break - \(seconds) seconds remaining"
+        case .paused:
+            return "Timer paused"
         }
     }
     
