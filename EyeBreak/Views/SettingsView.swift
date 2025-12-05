@@ -1334,8 +1334,8 @@ struct AboutView: View {
     @State private var isHoveringIssue = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 32) {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 28) {
                 // App Icon with gradient background
                 ZStack {
                     Circle()
@@ -1346,10 +1346,10 @@ struct AboutView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .frame(width: 120, height: 120)
+                        .frame(width: 100, height: 100)
 
                     Image(systemName: "eye.fill")
-                        .font(.system(size: 56))
+                        .font(.system(size: 44))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.blue, .cyan],
@@ -1358,12 +1358,12 @@ struct AboutView: View {
                             )
                         )
                 }
-                .shadow(color: .blue.opacity(0.2), radius: 20)
-                .padding(.top, 40)
+                .shadow(color: .blue.opacity(0.2), radius: 15)
+                .padding(.top, 24)
 
-                VStack(spacing: 8) {
+                VStack(spacing: 6) {
                     Text("EyeBreak")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.primary, .primary.opacity(0.8)],
@@ -1382,64 +1382,58 @@ struct AboutView: View {
                 }
 
                 // Description Card
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "info.circle.fill")
                             .foregroundStyle(.blue)
                         Text("About")
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 14, weight: .semibold))
                     }
 
-                    Text("""
-                    EyeBreak helps you reduce digital eye strain by following the 20-20-20 rule: Every 20 minutes, look at something 20 feet away for 20 seconds.
-
-                    Built with privacy in mind, all your data stays on your Mac. No analytics, no tracking, no internet connection required.
-                    """)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .lineSpacing(4)
+                    Text("EyeBreak helps you reduce digital eye strain by following the 20-20-20 rule: Every 20 minutes, look at something 20 feet away for 20 seconds. Built with privacy in mind—all your data stays on your Mac.")
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                        .lineSpacing(3)
                 }
-                .padding(20)
+                .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 14)
                         .fill(Color(NSColor.controlBackgroundColor))
-                        .shadow(color: .black.opacity(0.05), radius: 10)
+                        .shadow(color: .black.opacity(0.05), radius: 8)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 14)
                         .stroke(Color.blue.opacity(0.1), lineWidth: 1)
                 )
 
                 // Features Card
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "sparkles")
                             .foregroundStyle(.orange)
                         Text("Key Features")
-                            .font(.headline)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 14, weight: .semibold))
                     }
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 8) {
                         FeatureRow(icon: "eye.fill", title: "20-20-20 Rule", description: "Scientifically-backed eye care")
                         FeatureRow(icon: "timer", title: "Smart Timer", description: "Automatic break reminders")
-                        FeatureRow(icon: "drop.fill", title: "Water Reminders", description: "Stay hydrated throughout the day")
-                        FeatureRow(icon: "sparkles", title: "Ambient Reminders", description: "Gentle eye exercise prompts")
+                        FeatureRow(icon: "drop.fill", title: "Water Reminders", description: "Stay hydrated")
+                        FeatureRow(icon: "sparkles", title: "Ambient Reminders", description: "Gentle exercise prompts")
                         FeatureRow(icon: "calendar", title: "Smart Schedule", description: "Respects your work hours")
                         FeatureRow(icon: "lock.fill", title: "Privacy First", description: "All data stays local")
                     }
                 }
-                .padding(20)
+                .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 14)
                         .fill(Color(NSColor.controlBackgroundColor))
-                        .shadow(color: .black.opacity(0.05), radius: 10)
+                        .shadow(color: .black.opacity(0.05), radius: 8)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 14)
                         .stroke(Color.orange.opacity(0.1), lineWidth: 1)
                 )
 
@@ -1494,10 +1488,10 @@ struct AboutView: View {
                 Text("© 2025 EyeBreak. All rights reserved.")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                    .padding(.bottom, 40)
+                    .padding(.bottom, 24)
             }
-            .padding(.horizontal, 40)
-            .frame(maxWidth: 600)
+            .padding(.horizontal, 32)
+            .frame(maxWidth: 550)
         }
     }
 }
@@ -1508,14 +1502,14 @@ struct FeatureRow: View {
     let description: String
 
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
+        HStack(alignment: .center, spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 6)
                     .fill(Color.blue.opacity(0.1))
-                    .frame(width: 36, height: 36)
+                    .frame(width: 30, height: 30)
 
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.blue, .cyan],
@@ -1525,13 +1519,13 @@ struct FeatureRow: View {
                     )
             }
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.primary)
 
                 Text(description)
-                    .font(.system(size: 12))
+                    .font(.system(size: 11))
                     .foregroundColor(.secondary)
             }
 

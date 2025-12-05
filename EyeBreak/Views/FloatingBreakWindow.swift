@@ -101,98 +101,152 @@ struct FloatingBreakContentView: View {
         VStack(spacing: 0) {
             // Header with close button
             HStack {
-                // App indicator
-                HStack(spacing: 8) {
-                    Image(systemName: "eye.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(.blue)
-                    
+                // App indicator with gradient icon
+                HStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.35), Color.cyan.opacity(0.2)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 32, height: 32)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                            )
+                            .shadow(color: .blue.opacity(0.2), radius: 4)
+
+                        Image(systemName: "eye.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.blue, .cyan],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    }
+
                     Text("EyeBreak")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.primary)
                 }
-                
+
                 Spacer()
-                
-                // Subtle close button
+
+                // Enhanced close button with better visibility
                 Button(action: handleSkip) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .frame(width: 20, height: 20)
-                        .background(Color.secondary.opacity(0.1))
-                        .clipShape(Circle())
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.secondary.opacity(0.8))
+                        .frame(width: 24, height: 24)
+                        .background(
+                            Circle()
+                                .fill(Color.secondary.opacity(isHovered ? 0.2 : 0.12))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                        )
                 }
                 .buttonStyle(.plain)
-                .opacity(isHovered ? 1 : 0.6)
                 .help("Close (or press ESC)")
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .padding(.bottom, 8)
-            
+            .padding(.bottom, 10)
+
             Divider()
-                .opacity(0.3)
-            
+                .opacity(0.4)
+
             // Main content with better spacing
             VStack(spacing: 20) {
                 VStack(spacing: 8) {
                     Text("Take a Break")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundColor(.primary)
-                    
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.primary, .primary.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+
                     Text("Look 20 feet away for 20 seconds")
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 8)
-                
-                // Circular progress timer - larger and more prominent
+
+                // Circular progress timer with enhanced styling
                 ZStack {
+                    // Background ring
                     Circle()
-                        .stroke(Color.gray.opacity(0.15), lineWidth: 6)
-                        .frame(width: 100, height: 100)
-                    
+                        .stroke(Color.blue.opacity(0.1), lineWidth: 8)
+                        .frame(width: 110, height: 110)
+
+                    // Progress ring with gradient
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
-                            LinearGradient(
-                                colors: [.blue, .cyan],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                            AngularGradient(
+                                colors: [.blue, .cyan, .blue],
+                                center: .center
                             ),
-                            style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                            style: StrokeStyle(lineWidth: 8, lineCap: .round)
                         )
-                        .frame(width: 100, height: 100)
+                        .frame(width: 110, height: 110)
                         .rotationEffect(.degrees(-90))
                         .animation(.linear(duration: 1), value: progress)
-                    
+                        .shadow(color: .blue.opacity(0.3), radius: 4)
+
                     VStack(spacing: 2) {
                         Text("\(remainingSeconds)")
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
+                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.blue, .cyan],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .contentTransition(.numericText())
                         Text("seconds")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundColor(.secondary)
                     }
                 }
-                
-                // Subtle skip button
+
+                // Enhanced skip button with clear outline style
                 Button(action: handleSkip) {
-                    Text("Skip Break")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.blue)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
-                        .background(Color.blue.opacity(0.08))
-                        .clipShape(Capsule())
+                    HStack(spacing: 6) {
+                        Image(systemName: "forward.fill")
+                            .font(.system(size: 11))
+                        Text("Skip Break")
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                    .foregroundColor(.blue)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 24)
+                    .background(
+                        Capsule()
+                            .fill(Color.blue.opacity(0.12))
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.blue.opacity(0.4), lineWidth: 1.5)
+                    )
+                    .shadow(color: .blue.opacity(0.15), radius: 4, x: 0, y: 2)
                 }
                 .buttonStyle(.plain)
                 .help("Skip this break")
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            .padding(.bottom, 24)
         }
         .frame(width: 340, height: 280)
         .background(

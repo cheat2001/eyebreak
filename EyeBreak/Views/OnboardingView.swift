@@ -364,22 +364,51 @@ struct FeatureItem: View {
     let icon: String
     let title: String
     let description: String
-    
+
+    @State private var animate = false
+
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(.blue)
-                .frame(width: 32)
-            
+        HStack(alignment: .center, spacing: 16) {
+            // Enhanced icon with gradient background
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.blue.opacity(0.2), Color.cyan.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 44, height: 44)
+                    .shadow(color: .blue.opacity(0.15), radius: 6)
+
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .scaleEffect(animate ? 1.0 : 0.8)
+            .animation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1), value: animate)
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.headline)
-                
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.primary)
+
                 Text(description)
                     .font(.body)
                     .foregroundColor(.secondary)
             }
+
+            Spacer()
+        }
+        .onAppear {
+            animate = true
         }
     }
 }
@@ -465,50 +494,127 @@ struct PermissionCard: View {
     let required: Bool
     let granted: Bool
     let action: () -> Void
-    
+
+    @State private var animate = false
+    @State private var isHovered = false
+
+    private var cardColor: Color {
+        granted ? .green : (required ? .orange : .blue)
+    }
+
     var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.title)
-                .foregroundStyle(.blue)
-                .frame(width: 40)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+        HStack(spacing: 20) {
+            // Enhanced icon with gradient background
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [cardColor.opacity(0.2), cardColor.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 56, height: 56)
+                    .shadow(color: cardColor.opacity(0.2), radius: 8)
+
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [cardColor, cardColor.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .scaleEffect(animate ? 1.0 : 0.8)
+            .animation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1), value: animate)
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
                     Text(title)
-                        .font(.headline)
-                    
-                    if required {
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.primary)
+
+                    if required && !granted {
                         Text("Required")
-                            .font(.caption)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.red.opacity(0.2))
+                            .font(.system(size: 11, weight: .semibold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red.opacity(0.15))
+                            )
                             .foregroundColor(.red)
-                            .cornerRadius(4)
                     }
                 }
-                
+
                 Text(description)
-                    .font(.body)
+                    .font(.system(size: 14))
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             if granted {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-                    .font(.title2)
-            } else {
-                Button("Grant") {
-                    action()
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.15))
+                        .frame(width: 40, height: 40)
+
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.green, .mint],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                 }
-                .buttonStyle(.bordered)
+                .transition(.scale.combined(with: .opacity))
+            } else {
+                Button(action: action) {
+                    Text("Grant")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            LinearGradient(
+                                colors: [cardColor, cardColor.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .clipShape(Capsule())
+                        .shadow(color: cardColor.opacity(0.3), radius: 6, x: 0, y: 3)
+                }
+                .buttonStyle(.plain)
+                .scaleEffect(isHovered ? 1.05 : 1.0)
+                .animation(.easeOut(duration: 0.15), value: isHovered)
+                .onHover { isHovered = $0 }
             }
         }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(12)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(cardColor.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                colors: [cardColor.opacity(0.3), cardColor.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                )
+        )
+        .shadow(color: cardColor.opacity(0.1), radius: 8, x: 0, y: 4)
+        .onAppear {
+            animate = true
+        }
     }
 }
