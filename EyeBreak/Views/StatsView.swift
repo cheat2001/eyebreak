@@ -43,11 +43,27 @@ struct StatsView: View {
                 insightsSection
                 
                 // Reset Button
-                Button(role: .destructive, action: {
+                Button(action: {
                     settings.resetStats()
                 }) {
-                    Label("Reset Statistics", systemImage: "trash")
+                    HStack {
+                        Image(systemName: "trash.fill")
+                        Text("Reset Statistics")
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(.red)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.red.opacity(0.1))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.red.opacity(0.3), lineWidth: 1)
+                    )
                 }
+                .buttonStyle(.plain)
                 .padding(.top)
             }
             .padding(40)
@@ -58,21 +74,33 @@ struct StatsView: View {
     
     private var todaySummarySection: some View {
         VStack(spacing: 16) {
-            HStack {
-                Image(systemName: "chart.bar.fill")
-                    .font(.title2)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.green.opacity(0.2), Color.green.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                
+                        .frame(width: 40, height: 40)
+
+                    Image(systemName: "chart.bar.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.green, .mint],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
                 Text("Today's Statistics")
                     .font(.title2)
                     .fontWeight(.bold)
-                
+
                 Spacer()
             }
             
@@ -197,13 +225,35 @@ struct StatsView: View {
     
     private var historicalChartSection: some View {
         VStack(spacing: 16) {
-            HStack {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue.opacity(0.2), Color.blue.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+
+                    Image(systemName: "calendar.badge.clock")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.blue, .cyan],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
                 Text("Break History")
                     .font(.title2)
                     .fontWeight(.bold)
-                
+
                 Spacer()
-                
+
                 Picker("Time Range", selection: $selectedTimeRange) {
                     ForEach(TimeRange.allCases, id: \.self) { range in
                         Text(range.rawValue).tag(range)
@@ -255,10 +305,36 @@ struct StatsView: View {
     
     private var insightsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Insights")
-                .font(.title2)
-                .fontWeight(.bold)
-            
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.orange.opacity(0.2), Color.orange.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+
+                    Image(systemName: "lightbulb.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.orange, .yellow],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
+                Text("Insights")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Spacer()
+            }
+
             let stats = settings.getAllStats()
             let insights = generateInsights(from: stats)
             

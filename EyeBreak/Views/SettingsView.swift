@@ -433,9 +433,9 @@ struct GeneralSettingsView: View {
                     }
                 }
             } header: {
-                Text("General")
+                SectionHeaderView(title: "General", icon: "gearshape.fill", color: .gray)
             }
-            
+
             Section {
                 Picker("Session Type", selection: $settings.sessionType) {
                     ForEach(SessionType.allCases) { type in
@@ -446,24 +446,32 @@ struct GeneralSettingsView: View {
                     // Session type change will automatically update intervals
                 }
             } header: {
-                Text("Session Type")
+                SectionHeaderView(title: "Session Type", icon: "clock.badge.checkmark", color: .blue)
             } footer: {
                 Text(sessionTypeDescription)
             }
-            
+
             Section {
                 SmartScheduleView()
             } header: {
-                Text("Smart Schedule")
+                SectionHeaderView(title: "Smart Schedule", icon: "calendar.badge.clock", color: .purple)
             } footer: {
                 Text("Automatically pause breaks outside your work hours")
             }
-            
+
             Section {
-                Button("Reset to Defaults") {
+                Button(action: {
                     settings.resetToDefaults()
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.counterclockwise")
+                        Text("Reset to Defaults")
+                    }
+                    .foregroundColor(.red)
                 }
-                .foregroundColor(.red)
+                .buttonStyle(.plain)
+            } header: {
+                SectionHeaderView(title: "Reset", icon: "arrow.triangle.2.circlepath", color: .red)
             }
         }
         .formStyle(.grouped)
