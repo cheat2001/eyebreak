@@ -850,7 +850,7 @@ struct BreakSettingsView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             } header: {
-                Text("🎯 Ambient Reminders (While Working)")
+                SectionHeaderView(title: "Ambient Reminders", icon: "sparkles", color: .orange)
             } footer: {
                 Text("These fun emoji reminders appear randomly while you work, without interrupting. They're different from scheduled break overlays.")
                     .font(.caption)
@@ -1145,7 +1145,7 @@ struct BreakSettingsView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             } header: {
-                Text("💧 Water Reminders")
+                SectionHeaderView(title: "Water Reminders", icon: "drop.fill", color: .blue)
             } footer: {
                 Text("Staying hydrated is essential for focus and health. These gentle reminders help you remember to drink water regularly.")
                     .font(.caption)
@@ -1245,7 +1245,7 @@ struct BreakSettingsView: View {
                     }
                 }
             } header: {
-                Text("🎨 Color Themes")
+                SectionHeaderView(title: "Color Themes", icon: "paintpalette.fill", color: .pink)
             } footer: {
                 Text("Customize the appearance of ambient reminders, break overlays, and water reminders. Choose from preset themes or create your own custom color scheme.")
                     .font(.caption)
@@ -1262,7 +1262,7 @@ struct BreakSettingsView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             } header: {
-                Text("Goals")
+                SectionHeaderView(title: "Goals", icon: "target", color: .green)
             }
         }
         .formStyle(.grouped)
