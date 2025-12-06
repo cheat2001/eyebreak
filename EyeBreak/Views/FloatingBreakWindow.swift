@@ -15,7 +15,7 @@ class FloatingBreakWindow: NSWindow {
     
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 340, height: 280),
+            contentRect: NSRect(x: 0, y: 0, width: 340, height: 320),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -248,7 +248,7 @@ struct FloatingBreakContentView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 24)
         }
-        .frame(width: 340, height: 280)
+        .frame(width: 340, height: 320)
         .background(
             ZStack {
                 // Background with blur effect

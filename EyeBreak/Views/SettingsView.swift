@@ -1372,7 +1372,7 @@ struct AboutView: View {
                             )
                         )
 
-                    Text("Version 2.2")
+                    Text("Version 2.3")
                         .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 12)
