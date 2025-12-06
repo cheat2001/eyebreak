@@ -269,23 +269,9 @@ struct StatsView: View {
             if #available(macOS 13.0, *) {
                 VStack(spacing: 12) {
                     // Legend
-                    HStack(spacing: 20) {
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(Color.green)
-                                .frame(width: 10, height: 10)
-                            Text("Goal Met")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 10, height: 10)
-                            Text("Below Goal")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                    HStack(spacing: 16) {
+                        LegendItem(color: .green, secondaryColor: .mint, label: "Goal Met")
+                        LegendItem(color: .blue, secondaryColor: .cyan, label: "Below Goal")
                         Spacer()
                     }
                     .padding(.horizontal, 4)
@@ -529,6 +515,39 @@ struct Insight {
 
 // MARK: - Supporting Views
 
+struct LegendItem: View {
+    let color: Color
+    let secondaryColor: Color
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [color, secondaryColor],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 12, height: 12)
+                    .shadow(color: color.opacity(0.3), radius: 3)
+            }
+            Text(label)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(color.opacity(0.08))
+        )
+    }
+}
+
 struct StatBox: View {
     let title: String
     let value: String
@@ -560,14 +579,23 @@ struct InsightCard: View {
     let title: String
     let description: String
     let color: Color
-    
+
+    @State private var isHovered = false
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(color.opacity(0.15))
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.2), color.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     .frame(width: 44, height: 44)
-                
+                    .shadow(color: color.opacity(0.2), radius: isHovered ? 8 : 4)
+
                 Image(systemName: icon)
                     .font(.title3)
                     .foregroundStyle(
@@ -578,13 +606,13 @@ struct InsightCard: View {
                         )
                     )
             }
-            
+
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(color)
-                
+
                 Text(description)
                     .font(.body)
                     .foregroundColor(.secondary)
@@ -595,13 +623,18 @@ struct InsightCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(color.opacity(0.08))
+                .fill(color.opacity(isHovered ? 0.12 : 0.08))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(color.opacity(0.2), lineWidth: 1)
+                        .stroke(color.opacity(isHovered ? 0.3 : 0.2), lineWidth: 1)
                 )
         )
-        .shadow(color: color.opacity(0.1), radius: 8, x: 0, y: 4)
+        .shadow(color: color.opacity(isHovered ? 0.2 : 0.1), radius: isHovered ? 12 : 8, x: 0, y: isHovered ? 6 : 4)
+        .scaleEffect(isHovered ? 1.01 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovered)
+        .onHover { hovering in
+            isHovered = hovering
+        }
     }
 }
 

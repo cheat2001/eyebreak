@@ -120,7 +120,7 @@ struct MenuBarView: View {
                 .frame(width: 8, height: 8)
                 .shadow(color: timerManager.state.isActive ? .green.opacity(0.5) : .clear, radius: 4)
         }
-        .animation(.easeInOut(duration: 0.3), value: timerManager.state.isActive)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: timerManager.state.isActive)
     }
     
     // MARK: - Status Section
@@ -151,6 +151,7 @@ struct MenuBarView: View {
                             )
                             .frame(width: 100, height: 100)
                             .rotationEffect(.degrees(-90))
+                            .shadow(color: .blue.opacity(0.4), radius: 8)
                             .animation(.linear(duration: 1), value: progressValue)
                         
                         // Time display
@@ -192,6 +193,7 @@ struct MenuBarView: View {
                             )
                             .frame(width: 100, height: 100)
                             .rotationEffect(.degrees(-90))
+                            .shadow(color: .green.opacity(0.4), radius: 8)
                             .animation(.linear(duration: 1), value: progressValue)
                         
                         VStack(spacing: 4) {
@@ -451,23 +453,58 @@ struct StatBadge: View {
     let value: String
     let label: String
     let color: Color
-    
+
     var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .foregroundStyle(color)
-                .font(.body)
-            
+        HStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.2), color.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 32, height: 32)
+
+                Image(systemName: icon)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .font(.system(size: 14, weight: .semibold))
+            }
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
                     .font(.system(.body, design: .rounded))
-                    .fontWeight(.semibold)
-                
+                    .fontWeight(.bold)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.primary, .primary.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+
                 Text(label)
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(color.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(color.opacity(0.15), lineWidth: 1)
+                )
+        )
     }
 }
 

@@ -293,7 +293,7 @@ struct BreakOverlayView: View {
     // MARK: - Methods
     
     private func startAnimation() {
-        withAnimation(.easeOut(duration: 0.3)) {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
             opacity = 1
             scale = 1
         }
