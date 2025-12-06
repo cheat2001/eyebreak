@@ -5,6 +5,61 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-12-06
+
+### 🎨 Professional UI Polish Update
+
+This release focuses on visual refinements and professional polish throughout the entire application.
+
+**[Full Release Notes](docs/releases/RELEASE_NOTES_v2.3.0.md)**
+
+### Added
+
+#### Menu Bar Timer Display (NEW!)
+- **Live Countdown in Menu Bar:**
+  - See remaining time directly in the menu bar
+  - Dynamic state icons (eye, filled eye, slashed eye, pause)
+  - Monospaced digits for clean, stable display
+  - Smart tooltips with detailed status information
+
+#### New Reusable Components
+- **SectionHeaderView** - Consistent section headers across settings
+- **ProfessionalButtonStyle** - Subtle press animations
+- **HoverEffectModifier** - Unified hover behavior
+- **BreakStyleOptionCard** - Selection highlighting for options
+- **EnhancedSliderCard** - Timing controls with icons
+
+### Changed
+
+#### Enhanced Floating Break Window
+- Improved header icon badge with gradient and shadow
+- Enhanced close button with visible border
+- Skip button with stronger border and shadow
+- Increased divider visibility for better section separation
+
+#### Polished Onboarding Experience
+- Gradient icon badges with blue-to-cyan styling
+- Spring animations on feature items
+- Dynamic color theming on permission cards
+- Hover effects on action buttons
+
+#### Refined Settings Views
+- Hidden scrollbar in About section for cleaner look
+- Compact layout with optimized spacing
+- Consistent section headers throughout
+- Enhanced stat boxes with gradient backgrounds
+
+### Improved
+
+- Linear and angular gradients throughout the UI
+- Color-matched shadow and glow effects
+- Spring animations with tuned damping
+- Content transitions for numeric text changes
+- Rounded design fonts for friendly appearance
+- Consistent sizing hierarchy across all views
+
+---
+
 ## [2.2.0] - 2025-11-13
 
 ### 🔒 Major Features: Screen Lock Detection & Unified Dashboard
@@ -619,4 +674,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
 
 ---
 
-*Last updated: October 5, 2025*
+*Last updated: December 6, 2025*

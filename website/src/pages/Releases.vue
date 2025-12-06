@@ -16,10 +16,71 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: '2.3.0',
+    date: 'December 6, 2025',
+    title: 'Professional UI Polish Update',
+    badge: 'Latest',
+    features: [
+      {
+        title: '📊 Menu Bar Timer Display',
+        items: [
+          'Live countdown visible directly in the menu bar',
+          'Dynamic state icons (eye, filled eye, slashed eye, pause)',
+          'Monospaced digits for clean, stable display',
+          'Smart tooltips with detailed status information'
+        ]
+      },
+      {
+        title: '🪟 Enhanced Floating Break Window',
+        items: [
+          'Improved header icon badge with gradient and shadow',
+          'Enhanced close button with visible border',
+          'Skip button with stronger border and shadow',
+          'Increased divider visibility for better section separation'
+        ]
+      },
+      {
+        title: '🎨 Polished Onboarding Experience',
+        items: [
+          'Gradient icon badges with blue-to-cyan styling',
+          'Spring animations on feature items',
+          'Dynamic color theming on permission cards',
+          'Hover effects on action buttons'
+        ]
+      },
+      {
+        title: '⚙️ Refined Settings Views',
+        items: [
+          'Hidden scrollbar in About section for cleaner look',
+          'Compact layout with optimized spacing',
+          'New SectionHeaderView component for consistency',
+          'Enhanced stat boxes with gradient backgrounds'
+        ]
+      },
+      {
+        title: '🧩 New Reusable Components',
+        items: [
+          'SectionHeaderView - Consistent section headers',
+          'ProfessionalButtonStyle - Subtle press animations',
+          'HoverEffectModifier - Unified hover behavior',
+          'BreakStyleOptionCard - Selection highlighting',
+          'EnhancedSliderCard - Timing controls with icons'
+        ]
+      }
+    ],
+    improvements: [
+      'Linear and angular gradients throughout the UI',
+      'Color-matched shadow and glow effects',
+      'Spring animations with tuned damping',
+      'Content transitions for numeric text changes',
+      'Rounded design fonts for friendly appearance',
+      'Consistent sizing hierarchy across all views'
+    ]
+  },
+  {
     version: '2.2.0',
     date: 'November 13, 2025',
     title: 'Smart Pause & Unified Dashboard Update',
-    badge: 'Latest',
     features: [
       {
         title: '🔒 Automatic Screen Lock Pause',

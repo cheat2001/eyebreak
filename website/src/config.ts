@@ -6,7 +6,7 @@
 export const config = {
   app: {
     name: import.meta.env.VITE_APP_NAME || 'EyeBreak',
-    version: import.meta.env.VITE_APP_VERSION || '2.2.0',
+    version: import.meta.env.VITE_APP_VERSION || '2.3.0',
   },
   github: {
     owner: import.meta.env.VITE_GITHUB_OWNER || 'cheat2001',

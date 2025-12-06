@@ -8,7 +8,7 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
-[![Version](https://img.shields.io/badge/version-2.2.0-brightgreen.svg)](https://github.com/cheat2001/eyebreak/releases)
+[![Version](https://img.shields.io/badge/version-2.3.0-brightgreen.svg)](https://github.com/cheat2001/eyebreak/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -66,29 +66,31 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - ♿️ **Accessibility Support** - Full VoiceOver, Dynamic Type, and Reduced Motion support
 - 🌐 **No Internet Required** - Works completely offline
 
-## 🎨 What's New in v2.2.0
+## 🎨 What's New in v2.3.0
 
-### 🔒 Automatic Screen Lock Pause (NEW!)
-- **Auto-Pause on Lock** - All timers automatically pause when your Mac screen locks
-- **Smart Resume** - Timers automatically resume with exact remaining time when you unlock
-- **Seamless Integration** - Works with macOS sleep/wake and screen lock/unlock events
-- **No Manual Intervention** - Everything happens automatically in the background
-- **Preserve Progress** - Your countdown state is maintained across lock/unlock cycles
+### 📊 Menu Bar Timer Display (NEW!)
+- **Live Countdown** - See remaining time directly in the menu bar
+- **Dynamic State Icons** - Eye icons change based on timer state (active, paused, break)
+- **Monospaced Digits** - Clean, stable display that doesn't shift
+- **Smart Tooltips** - Hover for detailed status information
 
-### ⏱️ Unified Countdown Dashboard (NEW!)
-- **All-in-One View** - Eye breaks, ambient reminders, and water reminders displayed together
-- **Real-Time Countdowns** - All timers update every second with accurate countdown displays
-- **Visual Status Indicators** - Green (active), Orange (paused), Gray (disabled)
-- **Smart Status Messages** - Clear text showing current state (Active, Paused, Disabled)
-- **Professional Design** - Beautiful glass-morphism cards with gradients and animations
-- **Color-Coded** - Each reminder type has its own color (Blue, Orange, Cyan)
-- **Location** - General Settings tab, always visible for quick reference
+### 🪟 Enhanced Floating Break Window
+- **Improved Header** - Gradient icon badge with shadow effects
+- **Better Close Button** - Enhanced visibility with visible border
+- **Polished Skip Button** - Stronger border and shadow for clarity
+- **Visual Separation** - Increased divider visibility
 
-### 🎨 Enhanced Timer Management
-- **Date-Based Precision** - More accurate countdown calculations
-- **Countdown Visibility** - See remaining time even when paused
-- **Intelligent Resume** - Calculates exact remaining duration after unlock
-- **Better UX** - Know exactly when your next reminder will appear
+### 🎨 Polished UI Throughout
+- **Gradient Styling** - Linear and angular gradients across all views
+- **Spring Animations** - Smooth, natural-feeling transitions
+- **Hover Effects** - Unified hover behavior on interactive elements
+- **Rounded Design** - Friendly, modern typography
+
+### ⚙️ Refined Settings Views
+- **Hidden Scrollbar** - Cleaner About section appearance
+- **Compact Layout** - Optimized spacing throughout
+- **Consistent Headers** - New SectionHeaderView component
+- **Enhanced Stat Boxes** - Gradient backgrounds for visual interest
 
 ---
 
@@ -137,7 +139,7 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 - **⌘⇧R** - Show ambient reminder (with Smart Schedule override)
 - **⌘⇧W** - Show water reminder (with Smart Schedule override)
 
-[See Full v2.2.0 Release Notes](docs/releases/RELEASE_NOTES_v2.2.0.md) | [v2.1.0 Release Notes](docs/releases/RELEASE_NOTES_v2.1.0.md) | [Water Reminder Guide](docs/WATER_REMINDER_FEATURE.md)
+[See Full v2.3.0 Release Notes](docs/releases/RELEASE_NOTES_v2.3.0.md) | [v2.2.0 Release Notes](docs/releases/RELEASE_NOTES_v2.2.0.md) | [Water Reminder Guide](docs/WATER_REMINDER_FEATURE.md)
 
 ### Previous: v2.0.0 Theme Customization
 - **Default Theme** - Classic vibrant style
@@ -157,11 +159,11 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 
 ### Download the App (Recommended) ⭐️
 
-1. **[Download EyeBreak-v2.2.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)** 
+1. **[Download EyeBreak-v2.3.0.dmg](https://github.com/cheat2001/eyebreak/releases/latest)**
 2. **Remove quarantine** (required for unsigned apps):
    ```bash
    cd ~/Downloads
-   xattr -cr EyeBreak-v2.2.0.dmg
+   xattr -cr EyeBreak-v2.3.0.dmg
    ```
 3. **Open** the DMG file
 4. **Drag** `EyeBreak.app` to your `Applications` folder
@@ -177,7 +179,7 @@ This gives your eye muscles a chance to relax and reduces the risk of eye strain
 ### Quick One-Line Install
 
 ```bash
-curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.2.0/EyeBreak-v2.2.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
+curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.3.0/EyeBreak-v2.3.0.dmg -o ~/Downloads/EyeBreak.dmg && xattr -cr ~/Downloads/EyeBreak.dmg && open ~/Downloads/EyeBreak.dmg
 ```
 
 Then just drag to Applications!

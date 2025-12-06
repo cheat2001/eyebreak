@@ -14,7 +14,7 @@ Since the app is unsigned, you need to remove macOS quarantine:
 
 ```bash
 cd ~/Downloads
-xattr -cr EyeBreak-v2.2.0.dmg
+xattr -cr EyeBreak-v2.3.0.dmg
 ```
 
 ### Step 3: Install
@@ -75,17 +75,18 @@ Quick presets for common workflows:
 
 ## 🎨 Theme Customization (v2.0+)
 
-### New in v2.2.0 🔒
+### New in v2.3.0 🎨
 
-**Automatic Screen Lock Pause**
-- All timers automatically pause when your Mac screen locks
-- Smart resume with exact remaining time when unlocked
-- No more wasted reminders while you're away!
+**Menu Bar Timer Display**
+- Live countdown visible directly in the menu bar
+- Dynamic state icons that change based on timer state
+- Monospaced digits for clean, stable display
 
-**Unified Dashboard**
-- See all timer countdowns in one place (Settings → General)
-- Real-time updates for eye breaks, ambient reminders, and water reminders
-- Visual status indicators (Green=Active, Orange=Paused, Gray=Disabled)
+**Professional UI Polish**
+- Enhanced floating break window with gradient styling
+- Polished onboarding with spring animations
+- Refined settings views with hidden scrollbars
+- New reusable components for consistent design
 
 ## 🎨 Theme Customization
 
@@ -332,7 +333,7 @@ Your preferences are saved automatically.
 ## 📚 Learn More
 
 - Full documentation: `docs/` folder
-- Release notes: `docs/releases/RELEASE_NOTES_v2.2.0.md`
+- Release notes: `docs/releases/RELEASE_NOTES_v2.3.0.md`
 - Changelog: `CHANGELOG.md`
 
 ## 💬 Need Help?
