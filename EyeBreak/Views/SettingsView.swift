@@ -836,31 +836,15 @@ struct BreakSettingsView: View {
                                             )
                                     )
                                     
-                                    // Helpful examples
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "lightbulb.fill")
-                                            .foregroundColor(.orange)
-                                            .font(.caption)
-                                        Text("Suggestions: \"Stretch your neck\" • \"Blink slowly\" • \"Hydrate yourself\"")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .padding(.horizontal, 8)
                                 }
                             }
                         }
                     }
                 }
-                
-                Text(settings.ambientRemindersEnabled 
-                    ? "Cute animated reminders will pop up on your screen while you work (blink, look left/right, etc.)"
-                    : "Enable to show quick eye exercise reminders while working - separate from scheduled breaks")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             } header: {
                 SectionHeaderView(title: "Ambient Reminders", icon: "sparkles", color: .orange)
             } footer: {
-                Text("These fun emoji reminders appear randomly while you work, without interrupting. They're different from scheduled break overlays.")
+                Text("Gentle reminders appear while you work to encourage blinking and looking away. They don't interrupt your workflow.")
                     .font(.caption)
             }
             
@@ -1130,32 +1114,15 @@ struct BreakSettingsView: View {
                                                     .stroke(Color.blue.opacity(0.2), lineWidth: 1)
                                             )
                                     )
-                                    
-                                    // Helpful examples
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "lightbulb.fill")
-                                            .foregroundColor(.orange)
-                                            .font(.caption)
-                                        Text("Suggestions: \"Time to hydrate\" • \"Drink some water\" • \"Stay refreshed\"")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .padding(.horizontal, 8)
                                 }
                             }
                         }
                     }
                 }
-                
-                Text(settings.waterReminderEnabled 
-                    ? "Gentle reminders will help you stay hydrated throughout your work sessions 💧"
-                    : "Enable to receive periodic reminders to drink water and stay hydrated")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             } header: {
                 SectionHeaderView(title: "Water Reminders", icon: "drop.fill", color: .blue)
             } footer: {
-                Text("Staying hydrated is essential for focus and health. These gentle reminders help you remember to drink water regularly.")
+                Text("Stay hydrated for better focus and health. Reminders appear at your chosen interval.")
                     .font(.caption)
             }
             
