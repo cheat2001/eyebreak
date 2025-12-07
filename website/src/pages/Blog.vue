@@ -1,9 +1,50 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 
 const router = useRouter()
+
+// Meta tag management
+const setMetaTag = (name: string, content: string, isProperty = false) => {
+  const attribute = isProperty ? 'property' : 'name'
+  let meta = document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement
+
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute(attribute, name)
+    document.head.appendChild(meta)
+  }
+
+  meta.content = content
+}
+
+const updateMetaTags = () => {
+  const title = 'Eye Health Blog | EyeBreak - Tips for Healthier Screen Time'
+  const description = 'Discover expert tips on eye health, the 20-20-20 rule, blue light protection, and digital wellness. Learn how to protect your eyes while working on screens.'
+
+  document.title = title
+  setMetaTag('description', description)
+  setMetaTag('og:title', title, true)
+  setMetaTag('og:description', description, true)
+  setMetaTag('og:url', 'https://eyebreak.app/blog', true)
+  setMetaTag('og:type', 'website', true)
+  setMetaTag('twitter:title', title)
+  setMetaTag('twitter:description', description)
+}
+
+const cleanupMeta = () => {
+  document.title = 'EyeBreak - Your Eyes Deserve a Break | Free macOS Eye Care App'
+}
+
+onMounted(() => {
+  updateMetaTags()
+})
+
+onUnmounted(() => {
+  cleanupMeta()
+})
 
 interface BlogPost {
   slug: string

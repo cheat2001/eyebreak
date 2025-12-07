@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
@@ -7,12 +7,17 @@ import Footer from '../components/Footer.vue'
 const route = useRoute()
 const router = useRouter()
 
+// Store original meta tags to restore on unmount
+const originalMeta: Record<string, string> = {}
+
 interface BlogPostContent {
   slug: string
   title: string
   date: string
+  dateISO: string
   readTime: string
   category: string
+  excerpt: string
   content: string[]
 }
 
@@ -21,8 +26,10 @@ const blogPosts: BlogPostContent[] = [
     slug: 'the-science-behind-20-20-20-rule',
     title: 'The Science Behind the 20-20-20 Rule',
     date: 'December 5, 2025',
+    dateISO: '2025-12-05',
     readTime: '4 min read',
     category: 'Eye Health',
+    excerpt: 'Learn why looking at something 20 feet away for 20 seconds every 20 minutes can significantly reduce digital eye strain and improve your eye health.',
     content: [
       `If you spend hours staring at screens, you've probably experienced digital eye strain - that uncomfortable feeling of tired, dry, or irritated eyes. The 20-20-20 rule is a simple yet scientifically-backed technique to combat this modern problem.`,
       `## What is the 20-20-20 Rule?`,
@@ -43,8 +50,10 @@ const blogPosts: BlogPostContent[] = [
     slug: 'how-blue-light-affects-your-eyes',
     title: 'How Blue Light Affects Your Eyes',
     date: 'December 1, 2025',
+    dateISO: '2025-12-01',
     readTime: '5 min read',
     category: 'Digital Wellness',
+    excerpt: 'Discover the effects of blue light from screens on your eyes and sleep patterns, and learn practical tips to protect yourself.',
     content: [
       `Blue light is everywhere - from the sun to our smartphones, computers, and LED lights. While blue light exposure during the day can be beneficial, excessive exposure, especially at night, can have significant effects on both your eyes and overall health.`,
       `## What is Blue Light?`,
@@ -68,8 +77,10 @@ const blogPosts: BlogPostContent[] = [
     slug: 'hydration-and-eye-health',
     title: 'Why Hydration Matters for Eye Health',
     date: 'November 28, 2025',
+    dateISO: '2025-11-28',
     readTime: '3 min read',
     category: 'Eye Health',
+    excerpt: 'Your eyes need proper hydration to function well. Learn how staying hydrated can prevent dry eyes and improve your overall eye comfort.',
     content: [
       `You probably know that staying hydrated is important for your overall health, but did you know it's crucial for your eyes too? Dehydration can directly impact your eye comfort and vision quality.`,
       `## The Eye-Hydration Connection`,
@@ -94,8 +105,10 @@ const blogPosts: BlogPostContent[] = [
     slug: 'remote-work-eye-care-tips',
     title: 'Best Eye Care Practices for Remote Workers',
     date: 'November 20, 2025',
+    dateISO: '2025-11-20',
     readTime: '6 min read',
     category: 'Productivity',
+    excerpt: 'Working from home means more screen time. Here are essential tips to keep your eyes healthy during long work sessions.',
     content: [
       `Remote work has become the norm for millions of people, and while it offers many benefits, it often means more screen time than ever. Here's your comprehensive guide to keeping your eyes healthy while working from home.`,
       `## Set Up an Eye-Friendly Workspace`,
@@ -150,6 +163,123 @@ const formatContent = (text: string): string => {
 const goBack = () => {
   router.push('/blog')
 }
+
+// Meta tag management functions
+const setMetaTag = (name: string, content: string, isProperty = false) => {
+  const attribute = isProperty ? 'property' : 'name'
+  let meta = document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement
+
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute(attribute, name)
+    document.head.appendChild(meta)
+  } else if (!originalMeta[name]) {
+    originalMeta[name] = meta.content
+  }
+
+  meta.content = content
+}
+
+const updateMetaTags = (post: BlogPostContent | undefined) => {
+  if (!post) return
+
+  const url = `https://eyebreak.app/blog/${post.slug}`
+  const title = `${post.title} | EyeBreak Blog`
+
+  // Update document title
+  document.title = title
+
+  // Basic meta tags
+  setMetaTag('description', post.excerpt)
+  setMetaTag('author', 'EyeBreak')
+
+  // Open Graph
+  setMetaTag('og:title', title, true)
+  setMetaTag('og:description', post.excerpt, true)
+  setMetaTag('og:url', url, true)
+  setMetaTag('og:type', 'article', true)
+  setMetaTag('og:image', 'https://eyebreak.app/og-image.png', true)
+
+  // Twitter
+  setMetaTag('twitter:title', title)
+  setMetaTag('twitter:description', post.excerpt)
+  setMetaTag('twitter:url', url)
+
+  // Article specific
+  setMetaTag('article:published_time', post.dateISO, true)
+  setMetaTag('article:section', post.category, true)
+}
+
+const injectArticleSchema = (post: BlogPostContent | undefined) => {
+  if (!post) return
+
+  // Remove existing schema if any
+  const existingSchema = document.getElementById('article-schema')
+  if (existingSchema) {
+    existingSchema.remove()
+  }
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    'headline': post.title,
+    'description': post.excerpt,
+    'datePublished': post.dateISO,
+    'dateModified': post.dateISO,
+    'author': {
+      '@type': 'Organization',
+      'name': 'EyeBreak',
+      'url': 'https://eyebreak.app'
+    },
+    'publisher': {
+      '@type': 'Organization',
+      'name': 'EyeBreak',
+      'url': 'https://eyebreak.app',
+      'logo': {
+        '@type': 'ImageObject',
+        'url': 'https://eyebreak.app/app-icon.png'
+      }
+    },
+    'mainEntityOfPage': {
+      '@type': 'WebPage',
+      '@id': `https://eyebreak.app/blog/${post.slug}`
+    },
+    'articleSection': post.category,
+    'image': 'https://eyebreak.app/og-image.png'
+  }
+
+  const script = document.createElement('script')
+  script.id = 'article-schema'
+  script.type = 'application/ld+json'
+  script.textContent = JSON.stringify(schema)
+  document.head.appendChild(script)
+}
+
+const cleanupMeta = () => {
+  // Restore original title
+  document.title = 'EyeBreak - Your Eyes Deserve a Break | Free macOS Eye Care App'
+
+  // Remove article schema
+  const schema = document.getElementById('article-schema')
+  if (schema) {
+    schema.remove()
+  }
+}
+
+// Watch for route changes and update meta
+watch(() => currentPost.value, (post) => {
+  updateMetaTags(post)
+  injectArticleSchema(post)
+}, { immediate: true })
+
+onMounted(() => {
+  updateMetaTags(currentPost.value)
+  injectArticleSchema(currentPost.value)
+})
+
+onUnmounted(() => {
+  cleanupMeta()
+})
 </script>
 
 <template>
