@@ -153,8 +153,3 @@ const features: Feature[] = [
   </section>
 </template>
 
-<style scoped>
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-</style>

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../pages/Home.vue'
 import Releases from '../pages/Releases.vue'
 import Privacy from '../pages/Privacy.vue'
+import Blog from '../pages/Blog.vue'
+import BlogPost from '../pages/BlogPost.vue'
 import NotFound from '../pages/NotFound.vue'
 
 const router = createRouter({
@@ -21,6 +23,16 @@ const router = createRouter({
       path: '/privacy',
       name: 'privacy',
       component: Privacy
+    },
+    {
+      path: '/blog',
+      name: 'blog',
+      component: Blog
+    },
+    {
+      path: '/blog/:slug',
+      name: 'blog-post',
+      component: BlogPost
     },
     {
       path: '/:pathMatch(.*)*',

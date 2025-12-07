@@ -23,9 +23,9 @@ const goBack = () => {
     <div class="relative z-10 text-center max-w-2xl mx-auto">
       <!-- 404 Icon -->
       <div class="mb-8 flex justify-center">
-        <div class="relative group">
+        <div class="relative group animate-float">
           <div class="absolute inset-0 bg-blue-600 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-          <div class="relative w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl shadow-2xl flex items-center justify-center">
+          <div class="relative w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
             <svg class="w-20 h-20 text-white opacity-50" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
             </svg>
@@ -52,17 +52,17 @@ const goBack = () => {
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <button
           @click="goHome"
-          class="group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 font-semibold hover:shadow-lg hover:shadow-blue-500/50 flex items-center gap-2"
+          class="btn-primary group flex items-center gap-2 text-lg py-4"
         >
           <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
           </svg>
           <span>Back to Home</span>
         </button>
-        
+
         <button
           @click="goBack"
-          class="px-8 py-4 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 rounded-lg transition-all duration-300 font-semibold"
+          class="btn-secondary text-lg py-4"
         >
           Go Back
         </button>
@@ -72,19 +72,19 @@ const goBack = () => {
       <div class="mt-16 pt-8 border-t border-gray-800">
         <p class="text-gray-500 mb-4">Looking for something specific?</p>
         <div class="flex flex-wrap justify-center gap-4 text-sm">
-          <button @click="router.push('/')" class="text-gray-400 hover:text-blue-400 transition-colors">
+          <button @click="router.push('/')" class="text-gray-400 hover:text-blue-400 hover:underline underline-offset-4 transition-all duration-200">
             Home
           </button>
           <span class="text-gray-700">•</span>
-          <button @click="router.push('/releases')" class="text-gray-400 hover:text-blue-400 transition-colors">
+          <button @click="router.push('/releases')" class="text-gray-400 hover:text-blue-400 hover:underline underline-offset-4 transition-all duration-200">
             Releases
           </button>
           <span class="text-gray-700">•</span>
-          <a href="https://github.com/cheat2001/eyebreak" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-blue-400 transition-colors">
+          <a href="https://github.com/cheat2001/eyebreak" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-blue-400 hover:underline underline-offset-4 transition-all duration-200">
             GitHub
           </a>
           <span class="text-gray-700">•</span>
-          <button @click="router.push('/privacy')" class="text-gray-400 hover:text-blue-400 transition-colors">
+          <button @click="router.push('/privacy')" class="text-gray-400 hover:text-blue-400 hover:underline underline-offset-4 transition-all duration-200">
             Privacy
           </button>
         </div>
@@ -101,5 +101,9 @@ const goBack = () => {
   50% {
     transform: translateY(-10px);
   }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 </style>

@@ -105,9 +105,3 @@ const screenshots: Screenshot[] = [
   </section>
 </template>
 
-<style scoped>
-.group:hover .aspect-video {
-  transform: scale(1.02);
-  transition: transform 0.3s ease;
-}
-</style>
