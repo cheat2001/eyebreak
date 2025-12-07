@@ -1,47 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-interface InstallStep {
-  number: number
-  title: string
-  description: string
-  iconPath: string
-}
-
-const installSteps: InstallStep[] = [
-  {
-    number: 1,
-    title: 'Download',
-    description: 'Download the EyeBreak-v2.3.0.dmg file from GitHub releases',
-    iconPath: 'M12 2a10 10 0 0110 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2m0 2a8 8 0 00-8 8 8 8 0 008 8 8 8 0 008-8 8 8 0 00-8-8m1 8v-4h-2v4H8l4 4 4-4h-3z'
-  },
-  {
-    number: 2,
-    title: 'Open DMG',
-    description: 'Double-click the downloaded DMG file to mount it',
-    iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'
-  },
-  {
-    number: 3,
-    title: 'Drag to Applications',
-    description: 'Drag EyeBreak.app to your Applications folder',
-    iconPath: 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z'
-  },
-  {
-    number: 4,
-    title: 'Remove Quarantine',
-    description: 'Open Terminal and run: xattr -cr /Applications/EyeBreak.app',
-    iconPath: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z'
-  },
-  {
-    number: 5,
-    title: 'Launch & Enjoy',
-    description: 'Open EyeBreak from Applications and start protecting your eyes!',
-    iconPath: 'M12 2L4.5 7.5l1.5 1.5L10 6v14h4V6l4 3 1.5-1.5L12 2z'
-  }
-]
-
 const copiedStates = ref<{ [key: string]: boolean }>({})
+const activeTab = ref<'terminal' | 'manual'>('terminal')
 
 const copyToClipboard = async (text: string, key: string) => {
   try {
@@ -59,231 +20,191 @@ const downloadDMG = () => {
   window.open('https://github.com/cheat2001/eyebreak/releases/download/v2.3.0/EyeBreak-v2.3.0.dmg', '_blank')
 }
 
-const viewReleases = () => {
-  window.open('https://github.com/cheat2001/eyebreak/releases', '_blank')
-}
-
-const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
 const curlCommand = 'curl -L https://github.com/cheat2001/eyebreak/releases/download/v2.3.0/EyeBreak-v2.3.0.dmg -o ~/Downloads/EyeBreak-v2.3.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.3.0.dmg && open ~/Downloads/EyeBreak-v2.3.0.dmg'
+const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
 </script>
 
 <template>
-  <section id="installation" class="py-20 px-4 bg-gray-950 relative overflow-hidden">
-    <!-- Background glow -->
-    <div class="absolute top-0 left-1/2 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
-    
-    <div class="container mx-auto max-w-7xl relative z-10">
-      <!-- Section Header -->
-      <div class="text-center mb-16">
-        <div class="inline-flex items-center gap-3 mb-4">
-          <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M13 2.05v2.02c3.95.49 7 3.85 7 7.93s-3.05 7.44-7 7.93v2.02c5.05-.5 9-4.76 9-9.95s-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+  <section id="installation" class="py-24 px-4 bg-gray-950 relative overflow-hidden">
+    <!-- Background elements -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-3xl"></div>
+
+    <div class="container mx-auto max-w-3xl relative z-10">
+      <div class="text-center">
+        <!-- Icon -->
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-8 shadow-2xl shadow-blue-500/20">
+          <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
           </svg>
-          <h2 class="section-title">Quick Installation</h2>
         </div>
-        <p class="section-subtitle">
-          Get started in less than 2 minutes
+
+        <!-- Title -->
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+          Download EyeBreak
+        </h2>
+        <p class="text-gray-400 text-lg mb-8">
+          Free, open-source, and ready in seconds
         </p>
-      </div>
 
-      <!-- Installation Steps -->
-      <div class="max-w-6xl mx-auto mb-16 px-4 sm:px-0">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
-          <div
-            v-for="step in installSteps"
-            :key="step.number"
-            class="relative group"
-          >
-            <!-- Step Number Circle with SVG Icon -->
-            <div class="flex flex-col items-center text-center">
-              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center mb-4 sm:mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300 relative">
-                <!-- Glow effect -->
-                <div class="absolute inset-0 rounded-full bg-blue-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
-                  <path :d="step.iconPath" />
+        <!-- Version & Requirements -->
+        <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400 mb-10">
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            v2.3.0
+          </span>
+          <span class="text-gray-600">|</span>
+          <span>macOS 14.0+</span>
+          <span class="text-gray-600">|</span>
+          <span>Universal Binary</span>
+          <span class="text-gray-600">|</span>
+          <span>~10 MB</span>
+        </div>
+
+        <!-- Installation Methods Tabs -->
+        <div class="bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden">
+          <!-- Tab Headers -->
+          <div class="grid grid-cols-2 border-b border-gray-800">
+            <button
+              @click="activeTab = 'terminal'"
+              class="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
+              :class="activeTab === 'terminal' ? 'bg-gray-800/50 text-white' : 'text-gray-400 hover:text-white'"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z"/>
+              </svg>
+              <span class="flex items-center gap-1">
+                Terminal
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              </span>
+            </button>
+            <button
+              @click="activeTab = 'manual'"
+              class="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
+              :class="activeTab === 'manual' ? 'bg-gray-800/50 text-white' : 'text-gray-400 hover:text-white'"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              <span>Download</span>
+            </button>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="p-6">
+            <!-- Terminal Install Tab -->
+            <div v-if="activeTab === 'terminal'" class="text-left">
+              <p class="text-gray-300 mb-4">
+                Paste this command in Terminal. It downloads, configures, and opens EyeBreak automatically:
+              </p>
+              <div class="relative group mb-4">
+                <div class="bg-black rounded-lg p-4 pr-14 font-mono text-sm text-green-400 overflow-x-auto border border-gray-800">
+                  <code class="break-all">{{ curlCommand }}</code>
+                </div>
+                <button
+                  @click="copyToClipboard(curlCommand, 'curl')"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                  :class="copiedStates['curl'] ? 'bg-green-600 hover:bg-green-600' : ''"
+                >
+                  <svg v-if="!copiedStates['curl']" class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+              <div class="flex items-center gap-3 text-sm text-gray-400">
+                <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
+                <span>Then just drag to Applications and launch!</span>
               </div>
-              
-              <!-- Connecting line - hide on mobile -->
-              <div class="absolute top-10 sm:top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-blue-600/50 to-blue-600/50 -z-10 hidden lg:block" v-if="step.number < 5"></div>
-              
-              <div class="mb-2 sm:mb-3">
-                <span class="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-blue-600/20 text-blue-400 rounded-full text-xs sm:text-sm font-bold border border-blue-500/30">
-                  Step {{ step.number }}
-                </span>
-              </div>
-              
-              <h3 class="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
-                {{ step.title }}
-              </h3>
-              
-              <p class="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
-                {{ step.description }}
-              </p>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Troubleshooting Note -->
-      <div class="max-w-4xl mx-auto mt-8 px-4 sm:px-0">
-        <div class="p-4 sm:p-6 bg-red-900/20 border-2 border-red-600/40 rounded-xl">
-          <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-            </svg>
-            <div class="flex-1 w-full">
-              <h4 class="text-red-200 font-bold text-base sm:text-lg mb-3">⚠️ IMPORTANT: Manual Installation Requires Extra Step!</h4>
-              <p class="text-red-100 text-sm sm:text-base mb-4 font-medium">
-                If you download the DMG file manually (not using the curl command below), macOS will block the app from opening due to quarantine attributes.
-              </p>
-              <div class="bg-gray-950 rounded-lg p-3 sm:p-4 mb-4 border-2 border-red-500/30">
-                <p class="text-white text-sm sm:text-base font-semibold mb-3 flex items-center gap-2">
-                  <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 3h2v2h-2V7zm0 4h2v2h-2v-2zM8 7h2v2H8V7zm0 4h2v2H8v-2zm-1 4l-1-1v-2H4v2l1 1-1 1v2h2v-2l1-1zm9 2h-6v-2h6v2zm4-4h-2v2h2v-2zm0-4h-2v2h2V7z"/>
-                  </svg>
-                  <span>After dragging to Applications, open Terminal and run:</span>
-                </p>
-                <div class="relative group">
-                  <div class="bg-black rounded-lg p-3 sm:p-4 pr-12 sm:pr-14 font-mono text-xs sm:text-sm md:text-base text-green-400 overflow-x-auto border border-gray-800">
-                    <code>{{ xattrCommand }}</code>
-                  </div>
-                  <button 
-                    @click="copyToClipboard(xattrCommand, 'xattr')"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700"
-                    :class="copiedStates['xattr'] ? 'bg-green-600 hover:bg-green-600' : ''"
-                  >
-                    <svg v-if="!copiedStates['xattr']" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <svg v-else class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </button>
+            <!-- Manual Download Tab -->
+            <div v-if="activeTab === 'manual'" class="text-left">
+              <!-- Step 1: Download -->
+              <div class="mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">1</span>
+                  <span class="text-white font-medium">Download the DMG file</span>
                 </div>
-              </div>
-              <p class="text-red-100 text-xs sm:text-sm">
-                💡 <strong>Pro Tip:</strong> Use the curl installation command below to skip this step entirely! It automatically removes quarantine attributes.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Download Section -->
-      <div class="max-w-2xl mx-auto mt-8 px-4 sm:px-0">
-        <div class="card bg-gray-900/50 border-2 border-blue-500/30 backdrop-blur-xl hover:border-blue-500/50 transition-all duration-300">
-          <div class="text-center">
-            <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
-              Ready to protect your eyes?
-            </h3>
-            <p class="text-sm sm:text-base text-gray-400 mb-6">
-              Download EyeBreak v2.3.0 for macOS 14.0+
-            </p>
-            
-            <!-- Installation Methods -->
-            <div class="mb-8">
-              <h4 class="font-semibold text-white text-base sm:text-lg mb-4">Choose Your Installation Method:</h4>
-              
-              <!-- Method 1: Recommended Curl Install -->
-              <div class="bg-green-900/20 border-2 border-green-600/40 rounded-xl p-4 sm:p-6 mb-4">
-                <div class="flex items-center justify-center gap-2 mb-3">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                  <span class="text-green-400 font-bold text-base sm:text-lg">Recommended: One-Command Install</span>
-                </div>
-                <p class="text-gray-300 text-xs sm:text-sm mb-4">
-                  Automatically downloads, removes quarantine, and opens the DMG
-                </p>
-                <div class="relative group">
-                  <div class="bg-gray-950 rounded-lg p-3 sm:p-4 pr-12 sm:pr-14 font-mono text-xs sm:text-sm text-green-400 overflow-x-auto border border-gray-800 text-left">
-                    <code class="break-all">{{ curlCommand }}</code>
-                  </div>
-                  <button 
-                    @click="copyToClipboard(curlCommand, 'curl')"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700"
-                    :class="copiedStates['curl'] ? 'bg-green-600 hover:bg-green-600' : ''"
-                  >
-                    <svg v-if="!copiedStates['curl']" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <svg v-else class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </button>
-                </div>
-                <p class="text-green-300 text-xs sm:text-sm mt-3 font-medium">
-                  ✨ No extra steps needed! Just drag to Applications and launch.
-                </p>
-              </div>
-
-              <!-- Method 2: Manual Download -->
-              <div class="bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 sm:p-6">
-                <div class="flex items-center justify-center gap-2 mb-3">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <button
+                  @click="downloadDMG"
+                  class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                   </svg>
-                  <span class="text-blue-400 font-bold text-base sm:text-lg">Manual Download</span>
+                  Download EyeBreak-v2.3.0.dmg
+                </button>
+              </div>
+
+              <!-- Step 2: Install -->
+              <div class="mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">2</span>
+                  <span class="text-white font-medium">Open DMG and drag to Applications</span>
                 </div>
-                <p class="text-gray-400 text-xs sm:text-sm mb-4">
-                  Download the DMG file directly from GitHub
+                <p class="text-gray-400 text-sm ml-10">
+                  Double-click the downloaded file and drag EyeBreak to your Applications folder.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center mb-4">
-                  <button @click="downloadDMG" class="btn-primary w-full sm:w-auto">
-                    <span class="flex items-center justify-center gap-2">
-                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                      </svg>
-                      <span>Download DMG</span>
-                    </span>
-                  </button>
-                  <button @click="viewReleases" class="btn-secondary w-full sm:w-auto">
-                    <span class="flex items-center justify-center gap-2">
-                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/>
-                      </svg>
-                      <span>All Releases</span>
-                    </span>
-                  </button>
+              </div>
+
+              <!-- Step 3: Remove Quarantine -->
+              <div class="mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</span>
+                  <span class="text-white font-medium">Remove macOS quarantine</span>
+                  <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full">Required</span>
                 </div>
-                <div class="bg-orange-900/20 border border-orange-600/30 rounded-lg p-3">
-                  <p class="text-orange-200 text-xs sm:text-sm font-medium flex items-start gap-2">
-                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                <p class="text-gray-400 text-sm ml-10 mb-3">
+                  Open Terminal and run this command to allow the app to open:
+                </p>
+                <div class="relative group ml-10">
+                  <div class="bg-black rounded-lg p-3 pr-14 font-mono text-sm text-amber-400 overflow-x-auto border border-gray-800">
+                    <code>{{ xattrCommand }}</code>
+                  </div>
+                  <button
+                    @click="copyToClipboard(xattrCommand, 'xattr')"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                    :class="copiedStates['xattr'] ? 'bg-green-600 hover:bg-green-600' : ''"
+                  >
+                    <svg v-if="!copiedStates['xattr']" class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <span>Remember: After dragging to Applications, you MUST run the xattr command in Terminal (see Step 4 above)</span>
-                  </p>
+                    <svg v-else class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
                 </div>
               </div>
-            </div>
 
-            <!-- Requirements -->
-            <div class="mt-8 pt-6 border-t border-gray-700/50">
-              <h4 class="font-semibold text-white mb-4">System Requirements</h4>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                <div class="flex items-center justify-center gap-2">
-                  <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
-                  </svg>
-                  <span class="text-gray-300">macOS 14.0+</span>
+              <!-- Step 4: Launch -->
+              <div>
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">4</span>
+                  <span class="text-white font-medium">Launch EyeBreak</span>
                 </div>
-                <div class="flex items-center justify-center gap-2">
-                  <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                  <span class="text-gray-300">Universal Binary</span>
-                </div>
-                <div class="flex items-center justify-center gap-2">
-                  <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.56 2.62l1.45 1.45C23.16 18.16 24 16.68 24 15c0-2.64-2.05-4.78-4.65-4.96zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2L21 20.73 4.27 4 3 5.27zM7.73 10l8 8H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h1.73z"/>
-                  </svg>
-                  <span class="text-gray-400">~10 MB</span>
-                </div>
+                <p class="text-gray-400 text-sm ml-10">
+                  Open EyeBreak from your Applications folder and start protecting your eyes!
+                </p>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- All Releases Link -->
+        <a
+          href="https://github.com/cheat2001/eyebreak/releases"
+          target="_blank"
+          class="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors mt-6"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          View all releases on GitHub
+        </a>
       </div>
     </div>
   </section>

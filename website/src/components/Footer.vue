@@ -18,7 +18,7 @@ interface Link {
 const quickLinks: Link[] = [
   { text: 'Home', route: '/' },
   { text: 'Features', href: '#features' },
-  { text: 'Screenshots', href: '#screenshots' },
+  { text: 'Blog', route: '/blog' },
   { text: 'Installation', href: '#installation' },
   { text: 'Documentation', href: '#documentation' }
 ]

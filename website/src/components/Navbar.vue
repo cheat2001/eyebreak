@@ -73,9 +73,6 @@ const navigateToBlog = () => {
           <button @click="scrollToSection('features')" class="nav-link">
             Features
           </button>
-          <button @click="scrollToSection('screenshots')" class="nav-link">
-            Screenshots
-          </button>
           <button @click="navigateToReleases" class="nav-link">
             Releases
           </button>
@@ -113,9 +110,6 @@ const navigateToBlog = () => {
         <div class="flex flex-col gap-4">
           <button @click="scrollToSection('features')" class="text-gray-300 hover:text-white transition-colors text-left">
             Features
-          </button>
-          <button @click="scrollToSection('screenshots')" class="text-gray-300 hover:text-white transition-colors text-left">
-            Screenshots
           </button>
           <button @click="navigateToReleases" class="text-gray-300 hover:text-white transition-colors text-left">
             Releases

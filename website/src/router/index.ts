@@ -49,7 +49,7 @@ const router = createRouter({
         behavior: 'smooth'
       }
     } else {
-      return { top: 0 }
+      return { top: 0, behavior: 'smooth' }
     }
   }
 })
