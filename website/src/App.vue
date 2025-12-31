@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
+import AIChatBot from './components/AIChatBot.vue'
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import Navbar from './components/Navbar.vue'
         <component :is="Component" />
       </Transition>
     </RouterView>
+    <AIChatBot />
   </div>
 </template>
 
