@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+// Applies .bounce.byLayer symbolEffect only on macOS 15+, falls back to no-op on 14.
+private struct BounceRepeatingModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content.symbolEffect(.bounce.byLayer, options: .repeating)
+        } else {
+            content
+        }
+    }
+}
+
 struct MenuBarView: View {
     @EnvironmentObject var timerManager: BreakTimerManager
     @EnvironmentObject var settings: AppSettings
@@ -234,7 +245,7 @@ struct MenuBarView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .symbolEffect(.bounce.byLayer, options: .repeating)
+                        .modifier(BounceRepeatingModifier())
                     
                     Text("\(seconds)s until break")
                         .font(.system(.title3, design: .monospaced))
@@ -353,7 +364,7 @@ struct MenuBarView: View {
                     .professionalButtonStyle(color: .green)
                 }
             } else if case .paused = timerManager.state {
-                Button(action: timerManager.resume) {
+                Button(action: { timerManager.resume() }) {
                     HStack {
                         Image(systemName: "play.circle.fill")
                             .font(.title3)

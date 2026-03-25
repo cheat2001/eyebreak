@@ -78,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.setActivationPolicy(.accessory)
             
             // Verify status bar is still visible after mode change
-            if let bar = self.statusBar, let item = bar.statusItem {
+            if let bar = self.statusBar, let _ = bar.statusItem {
             }
         }
         

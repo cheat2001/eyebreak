@@ -8,6 +8,9 @@
 import Foundation
 import Combine
 import AppKit
+import OSLog
+
+private let log = Logger(subsystem: "com.eyebreak.app", category: "BreakTimerManager")
 
 /// Manages the core timer logic for work/break cycles
 class BreakTimerManager: ObservableObject {
@@ -26,6 +29,7 @@ class BreakTimerManager: ObservableObject {
     private var timer: Timer?
     private var remainingSeconds: Int = 0
     private var idleDetector: IdleDetector?
+    private var presentationDetector: PresentationDetector?
     private var cancellables = Set<AnyCancellable>()
     private var wasWorkingBeforePause = false
     private var isForcedBreak = false // Flag to bypass Smart Schedule during forced breaks
@@ -34,6 +38,7 @@ class BreakTimerManager: ObservableObject {
     
     private init() {
         setupIdleDetection()
+        setupPresentationDetection()
         setupWorkspaceNotifications()
     }
     
@@ -124,8 +129,9 @@ class BreakTimerManager: ObservableObject {
     }
     
     /// Pause the timer
-    func pause() {
+    func pause(reason: String = "manual") {
         guard state.isActive else { return }
+        log.info("Timer paused — reason: \(reason), state: \(String(describing: self.state))")
         
         let wasWorking: Bool
         switch state {
@@ -144,8 +150,9 @@ class BreakTimerManager: ObservableObject {
     }
     
     /// Resume from paused state
-    func resume() {
+    func resume(reason: String = "manual") {
         guard case .paused(let wasWorking, let seconds) = state else { return }
+        log.info("Timer resumed — reason: \(reason)")
         
         remainingSeconds = seconds
         if wasWorking {
@@ -174,6 +181,11 @@ class BreakTimerManager: ObservableObject {
         // Start idle detection if enabled
         if settings.idleDetectionEnabled {
             idleDetector?.start()
+        }
+
+        // Start presentation detection if either flag is enabled
+        if settings.pauseWhenSharing || settings.pauseWhenWatchingMedia {
+            presentationDetector?.start()
         }
     }
     
@@ -302,15 +314,33 @@ class BreakTimerManager: ObservableObject {
             
             if isIdle && self.state.isActive {
                 // User went idle, pause timer
-                self.pause()
+                self.pause(reason: "idle")
                 NotificationManager.shared.sendIdlePausedNotification()
             } else if !isIdle, case .paused = self.state {
                 // User returned, resume timer
-                self.resume()
+                self.resume(reason: "idle ended")
             }
         }
     }
     
+    // MARK: - Presentation Detection Setup
+
+    private func setupPresentationDetection() {
+        presentationDetector = PresentationDetector()
+
+        presentationDetector?.onPresentationStateChanged = { [weak self] isPresenting in
+            guard let self = self else { return }
+
+            if isPresenting && self.state.isActive {
+                // User started presenting — pause the timer
+                self.pause(reason: "presenting")
+            } else if !isPresenting, case .paused = self.state {
+                // Presentation ended — resume the timer
+                self.resume(reason: "presentation ended")
+            }
+        }
+    }
+
     // MARK: - Screen Lock and Sleep Handling
     
     /// Sets up system notifications to automatically pause/resume timer during sleep and screen lock
@@ -318,14 +348,14 @@ class BreakTimerManager: ObservableObject {
         // Mac sleep events
         NotificationCenter.default.publisher(for: NSWorkspace.willSleepNotification)
             .sink { [weak self] _ in
-                self?.pause()
+                self?.pause(reason: "system sleep")
             }
             .store(in: &cancellables)
-        
+
         NotificationCenter.default.publisher(for: NSWorkspace.didWakeNotification)
             .sink { [weak self] _ in
                 if case .paused = self?.state {
-                    self?.resume()
+                    self?.resume(reason: "system wake")
                 }
             }
             .store(in: &cancellables)
@@ -338,35 +368,35 @@ class BreakTimerManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.pause()
+            self?.pause(reason: "screen locked")
         }
-        
+
         notificationCenter.addObserver(
             forName: NSNotification.Name("com.apple.screenIsUnlocked"),
             object: nil,
             queue: .main
         ) { [weak self] _ in
             if case .paused = self?.state {
-                self?.resume()
+                self?.resume(reason: "screen unlocked")
             }
         }
-        
+
         // Screen saver events (treated same as screen lock)
         notificationCenter.addObserver(
             forName: NSNotification.Name("com.apple.screensaver.didstart"),
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.pause()
+            self?.pause(reason: "screensaver started")
         }
-        
+
         notificationCenter.addObserver(
             forName: NSNotification.Name("com.apple.screensaver.didstop"),
             object: nil,
             queue: .main
         ) { [weak self] _ in
             if case .paused = self?.state {
-                self?.resume()
+                self?.resume(reason: "screensaver stopped")
             }
         }
     }

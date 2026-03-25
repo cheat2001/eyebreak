@@ -423,7 +423,7 @@ struct GeneralSettingsView: View {
                 Toggle("Enable Sound Effects", isOn: $settings.soundEnabled)
                 
                 Toggle("Idle Detection", isOn: $settings.idleDetectionEnabled)
-                
+
                 if settings.idleDetectionEnabled {
                     Picker("Idle Threshold", selection: $settings.idleThresholdMinutes) {
                         Text("3 minutes").tag(3)
@@ -432,6 +432,12 @@ struct GeneralSettingsView: View {
                         Text("15 minutes").tag(15)
                     }
                 }
+
+                Toggle("Pause When Screen Sharing", isOn: $settings.pauseWhenSharing)
+                    .help("Automatically pause reminders while sharing your screen in Teams, Zoom, Slack, etc.")
+
+                Toggle("Pause When Watching Media", isOn: $settings.pauseWhenWatchingMedia)
+                    .help("Automatically pause reminders when a video player is keeping the display awake (YouTube, Netflix, VLC, etc.)")
             } header: {
                 SectionHeaderView(title: "General", icon: "gearshape.fill", color: .gray)
             }
