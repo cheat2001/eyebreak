@@ -57,30 +57,33 @@ const scrollToTop = () => {
 </script>
 
 <template>
-  <footer class="bg-gray-950 border-t border-gray-800/50 text-white py-16 px-4">
-    <div class="container mx-auto max-w-7xl">
+  <footer class="relative overflow-hidden border-t border-white/10 bg-slate-950 px-4 py-16 text-white">
+    <div class="absolute inset-0 aurora-mesh opacity-35"></div>
+    <div class="absolute inset-0 bg-slate-950/72"></div>
+
+    <div class="container relative z-10 mx-auto max-w-7xl">
       <!-- Main Footer Content -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
         <!-- Brand Section -->
-        <div>
+        <div class="lg:pr-8">
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
-              <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div class="grid h-12 w-12 place-items-center rounded-lg bg-cyan-300 text-slate-950 shadow-xl shadow-cyan-950/30">
+              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
               </svg>
             </div>
-            <h3 class="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">EyeBreak</h3>
+            <h3 class="text-2xl font-black text-white">EyeBreak</h3>
           </div>
-          <p class="text-gray-400 mb-6 leading-relaxed">
-            Your eyes deserve a break. A minimalistic macOS app for healthier screen time habits.
+          <p class="text-slate-400 mb-6 leading-relaxed">
+            Screen care for people who spend serious time at their Mac. Quiet reminders, healthy rhythms, and zero data collection.
           </p>
           <div class="flex gap-4">
             <a
               :href="config.github.url"
               target="_blank"
-              class="group w-12 h-12 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-gray-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-1"
+              class="group flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-cyan-300/10"
             >
-              <svg class="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <svg class="w-6 h-6 text-slate-400 group-hover:text-cyan-100 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
               </svg>
             </a>
@@ -89,21 +92,21 @@ const scrollToTop = () => {
 
         <!-- Quick Links -->
         <div>
-          <h4 class="text-lg font-semibold mb-6 text-white">Quick Links</h4>
+          <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-500 mb-6">Quick Links</h4>
           <ul class="space-y-3">
             <li v-for="link in quickLinks" :key="link.text">
               <a
                 v-if="link.href || link.external"
                 :href="link.href"
                 :target="link.external ? '_blank' : undefined"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
+                class="footer-link"
               >
                 {{ link.text }}
               </a>
               <button
                 v-else
                 @click="handleLinkClick(link)"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+                class="footer-link text-left"
               >
                 {{ link.text }}
               </button>
@@ -113,21 +116,21 @@ const scrollToTop = () => {
 
         <!-- Resources -->
         <div>
-          <h4 class="text-lg font-semibold mb-6 text-white">Resources</h4>
+          <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-500 mb-6">Resources</h4>
           <ul class="space-y-3">
             <li v-for="link in resources" :key="link.text">
               <a
                 v-if="link.href || link.external"
                 :href="link.href"
                 :target="link.external ? '_blank' : undefined"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
+                class="footer-link"
               >
                 {{ link.text }}
               </a>
               <button
                 v-else
                 @click="handleLinkClick(link)"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+                class="footer-link text-left"
               >
                 {{ link.text }}
               </button>
@@ -137,21 +140,21 @@ const scrollToTop = () => {
 
         <!-- Documentation -->
         <div>
-          <h4 class="text-lg font-semibold mb-6 text-white">Documentation</h4>
+          <h4 class="text-sm font-black uppercase tracking-[0.18em] text-slate-500 mb-6">Documentation</h4>
           <ul class="space-y-3">
             <li v-for="link in docs" :key="link.text">
               <a
                 v-if="link.href || link.external"
                 :href="link.href"
                 :target="link.external ? '_blank' : undefined"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block cursor-pointer"
+                class="footer-link"
               >
                 {{ link.text }}
               </a>
               <button
                 v-else
                 @click="handleLinkClick(link)"
-                class="text-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block text-left"
+                class="footer-link text-left"
               >
                 {{ link.text }}
               </button>
@@ -161,48 +164,48 @@ const scrollToTop = () => {
       </div>
 
       <!-- Divider -->
-      <div class="border-t border-gray-800/50 my-12"></div>
+      <div class="border-t border-white/10 my-12"></div>
 
       <!-- Support Section -->
       <div id="support" class="mb-12">
-        <div class="max-w-3xl mx-auto text-center">
+        <div class="mx-auto max-w-3xl rounded-lg border border-white/10 bg-white/[0.04] p-8 text-center shadow-2xl shadow-black/20 backdrop-blur-2xl">
           <div class="inline-flex items-center gap-2 mb-4">
-            <svg class="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-fuchsia-300" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-            <h4 class="text-xl font-semibold text-white">Support EyeBreak</h4>
+            <h4 class="text-xl font-black text-white">Support EyeBreak</h4>
           </div>
-          <p class="text-gray-400 mb-6 leading-relaxed">
+          <p class="text-slate-400 mb-6 leading-relaxed">
             EyeBreak is free and open-source. If it helps protect your eyes, consider supporting the project to keep it alive and thriving.
           </p>
           <div class="flex flex-wrap justify-center gap-4">
             <!-- PayPal (International) -->
             <button
               @click="showDonateModal = true"
-              class="group inline-flex items-center gap-3 px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 text-blue-400 rounded-lg transition-all duration-300 hover:-translate-y-1"
+              class="group inline-flex items-center gap-3 rounded-lg border border-cyan-300/20 bg-cyan-300/10 px-6 py-3 text-cyan-100 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/15"
             >
               <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
               </svg>
               <div class="text-left">
                 <div class="font-semibold">PayPal</div>
-                <div class="text-xs text-gray-500">International</div>
+                <div class="text-xs text-slate-500">International</div>
               </div>
             </button>
             
             <!-- KHQR (Cambodia Local) -->
             <button
               @click="showKHQRModal = true"
-              class="group inline-flex items-center gap-3 px-6 py-3 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 hover:border-green-500/50 text-green-400 rounded-lg transition-all duration-300 hover:-translate-y-1"
+              class="group inline-flex items-center gap-3 rounded-lg border border-lime-300/20 bg-lime-300/10 px-6 py-3 text-lime-100 transition-all duration-300 hover:-translate-y-1 hover:border-lime-300/40 hover:bg-lime-300/15"
             >
               <img src="/khqr_logo.png" alt="KHQR" class="w-6 h-6 object-contain" />
               <div class="text-left">
                 <div class="font-semibold">KHQR</div>
-                <div class="text-xs text-gray-500">Cambodia 🇰🇭</div>
+                <div class="text-xs text-slate-500">Cambodia</div>
               </div>
             </button>
           </div>
-          <p class="text-xs text-gray-500 mt-4">
+          <p class="text-xs text-slate-500 mt-4">
             Every contribution helps keep EyeBreak free and ad-free for everyone.
           </p>
         </div>
@@ -329,22 +332,22 @@ const scrollToTop = () => {
       </Teleport>
 
       <!-- Divider -->
-      <div class="border-t border-gray-800/50 my-12"></div>
+      <div class="border-t border-white/10 my-12"></div>
 
       <!-- Bottom Footer -->
       <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="text-gray-400 text-sm">
+        <div class="text-slate-400 text-sm">
           <p>&copy; {{ currentYear }} EyeBreak. Released under the MIT License.</p>
         </div>
 
-        <div class="flex items-center gap-6 text-sm text-gray-400">
+        <div class="flex items-center gap-6 text-sm text-slate-400">
           <button
             @click="router.push('/privacy')"
             class="hover:text-white transition-colors"
           >
             Privacy Policy
           </button>
-          <span>•</span>
+          <span class="text-slate-700">/</span>
           <a
             :href="`${config.github.url}/blob/main/LICENSE`"
             target="_blank"
@@ -352,7 +355,7 @@ const scrollToTop = () => {
           >
             MIT License
           </a>
-          <span>•</span>
+          <span class="text-slate-700">/</span>
           <button
             @click="scrollToTop"
             class="hover:text-white transition-colors flex items-center gap-2 group"
@@ -365,8 +368,8 @@ const scrollToTop = () => {
 
       <!-- Version Badge -->
       <div class="mt-12 text-center">
-        <span class="inline-block px-6 py-3 bg-gray-800/50 border border-gray-700 backdrop-blur-sm rounded-full text-sm text-gray-400">
-          v{{ config.app.version }} • macOS {{ config.requirements.macOSVersion }} • Universal Binary
+        <span class="inline-block rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm text-slate-400 backdrop-blur-sm">
+          v{{ config.app.version }} / macOS {{ config.requirements.macOSVersion }} / Universal Binary
         </span>
       </div>
     </div>
@@ -376,6 +379,10 @@ const scrollToTop = () => {
 <style scoped>
 a {
   text-decoration: none;
+}
+
+.footer-link {
+  @apply inline-block cursor-pointer text-slate-400 transition-all hover:translate-x-1 hover:text-white;
 }
 
 .modal-enter-active,

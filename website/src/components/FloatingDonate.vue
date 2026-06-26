@@ -39,7 +39,7 @@ onUnmounted(() => {
   <Transition name="fade">
     <div
       v-if="isVisible"
-      class="fixed bottom-8 right-8 z-40"
+      class="fixed bottom-8 right-8 z-40 hidden sm:block"
       @mouseenter="showTooltip = true"
       @mouseleave="showTooltip = false"
     >
@@ -47,25 +47,26 @@ onUnmounted(() => {
       <Transition name="tooltip">
         <div
           v-if="showTooltip"
-          class="absolute bottom-full right-0 mb-3 px-4 py-2 bg-gray-900 border border-gray-700 text-white text-sm rounded-lg shadow-xl whitespace-nowrap"
+          class="absolute bottom-full right-0 mb-3 whitespace-nowrap rounded-lg border border-white/10 bg-slate-950/90 px-4 py-2 text-sm font-semibold text-white shadow-xl backdrop-blur-xl"
         >
-          Support EyeBreak ❤️
-          <div class="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 border-r border-b border-gray-700"></div>
+          Support EyeBreak
+          <div class="absolute bottom-0 right-6 h-2 w-2 translate-y-1/2 rotate-45 border-b border-r border-white/10 bg-slate-950"></div>
         </div>
       </Transition>
 
       <!-- Donate Button -->
       <a
         href="#support"
-        class="group flex items-center justify-center w-14 h-14 bg-gradient-to-br from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-full shadow-lg hover:shadow-pink-500/50 transition-all duration-300 hover:scale-110 animate-pulse-slow"
+        class="group flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200/30 bg-cyan-300 text-slate-950 shadow-lg shadow-cyan-950/30 transition-all duration-300 hover:scale-110 hover:bg-cyan-200"
         @click.prevent="scrollToSupport"
+        aria-label="Support EyeBreak"
       >
-        <svg class="w-7 h-7 text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
 
         <!-- Ripple Effect -->
-        <span class="absolute inset-0 rounded-full bg-pink-400 opacity-0 group-hover:opacity-20 group-hover:animate-ping"></span>
+        <span class="absolute inset-0 rounded-full bg-cyan-200 opacity-0 group-hover:opacity-20 group-hover:animate-ping"></span>
       </a>
     </div>
   </Transition>

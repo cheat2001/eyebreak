@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 
 const router = useRouter()
@@ -97,84 +96,75 @@ const navigateToPost = (slug: string) => {
 
 const getCategoryColor = (category: string): string => {
   const colors: Record<string, string> = {
-    'Eye Health': 'bg-blue-600/20 text-blue-400 border-blue-500/30',
-    'Digital Wellness': 'bg-purple-600/20 text-purple-400 border-purple-500/30',
-    'Productivity': 'bg-green-600/20 text-green-400 border-green-500/30'
+    'Eye Health': 'bg-cyan-300/10 text-cyan-100 border-cyan-300/20',
+    'Digital Wellness': 'bg-fuchsia-300/10 text-fuchsia-100 border-fuchsia-300/20',
+    'Productivity': 'bg-lime-300/10 text-lime-100 border-lime-300/20'
   }
-  return colors[category] || 'bg-gray-600/20 text-gray-400 border-gray-500/30'
+  return colors[category] || 'bg-slate-600/20 text-slate-300 border-slate-500/30'
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-950">
-    <Navbar />
+  <div class="min-h-screen bg-slate-950">
+    <main class="relative overflow-hidden px-4 pb-20 pt-32">
+      <div class="absolute inset-0 aurora-mesh opacity-45"></div>
+      <div class="absolute inset-0 bg-slate-950/70"></div>
+      <div class="grid-paper absolute inset-0 opacity-30"></div>
 
-    <main class="pt-24 pb-20 px-4">
-      <div class="container mx-auto max-w-5xl">
-        <!-- Header -->
-        <div class="text-center mb-16">
-          <div class="inline-flex items-center gap-3 mb-4">
-            <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-            </svg>
-            <h1 class="section-title">Blog</h1>
+      <div class="container relative z-10 mx-auto max-w-6xl">
+        <div class="mb-16 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+          <div>
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+              </svg>
+              Eye health notes
+            </div>
+            <h1 class="text-balance text-4xl font-black text-white md:text-6xl">
+              Practical writing for healthier screen time.
+            </h1>
           </div>
-          <p class="section-subtitle">
-            Tips and insights for healthier screen time habits
+          <p class="max-w-2xl text-lg leading-8 text-slate-400 lg:justify-self-end">
+            Short, useful guides about eye strain, focus habits, hydration, remote work, and making long screen days easier on your body.
           </p>
         </div>
 
-        <!-- Blog Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <article
-            v-for="post in blogPosts"
+            v-for="(post, index) in blogPosts"
             :key="post.slug"
             @click="navigateToPost(post.slug)"
-            class="group card cursor-pointer hover:-translate-y-1"
+            class="group cursor-pointer rounded-lg border border-white/10 bg-white/[0.04] p-6 shadow-xl shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.06]"
+            :style="{ '--reveal-delay': `${(index % 2) * 80}ms` }"
           >
-            <!-- Category Badge -->
-            <div class="mb-4">
-              <span :class="['px-3 py-1 text-xs font-semibold rounded-full border', getCategoryColor(post.category)]">
+            <div class="mb-5">
+              <span :class="['rounded-full border px-3 py-1 text-xs font-semibold', getCategoryColor(post.category)]">
                 {{ post.category }}
               </span>
             </div>
 
-            <!-- Title -->
-            <h2 class="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+            <h2 class="text-2xl font-black text-white transition-colors group-hover:text-cyan-100">
               {{ post.title }}
             </h2>
 
-            <!-- Excerpt -->
-            <p class="text-gray-400 mb-4 leading-relaxed">
+            <p class="mt-4 leading-7 text-slate-400">
               {{ post.excerpt }}
             </p>
 
-            <!-- Meta -->
-            <div class="flex items-center justify-between text-sm text-gray-500">
+            <div class="mt-6 flex items-center justify-between gap-4 border-t border-white/10 pt-5 text-sm text-slate-500">
               <span>{{ post.date }}</span>
-              <span class="flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                {{ post.readTime }}
-              </span>
+              <span>{{ post.readTime }}</span>
             </div>
 
-            <!-- Read More Arrow -->
-            <div class="mt-4 flex items-center gap-2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span class="text-sm font-medium">Read more</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+            <div class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-cyan-100 opacity-80 transition-all group-hover:translate-x-1 group-hover:opacity-100">
+              Read article
+              <span aria-hidden="true">-></span>
             </div>
           </article>
         </div>
 
-        <!-- Coming Soon Note -->
-        <div class="mt-16 text-center">
-          <p class="text-gray-500">
-            More articles coming soon. Stay tuned for more eye health tips!
-          </p>
+        <div class="mt-16 rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-slate-400">
+          More articles coming soon. Stay tuned for more eye health tips.
         </div>
       </div>
     </main>

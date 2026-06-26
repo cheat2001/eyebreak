@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, computed } from 'vue'
-import { config } from '../config'
 
 interface Message {
   role: 'user' | 'assistant' | 'system'
@@ -15,139 +14,7 @@ const messages = ref<Message[]>([])
 const chatContainer = ref<HTMLElement | null>(null)
 const inputRef = ref<HTMLInputElement | null>(null)
 const hasUnread = ref(false)
-
-// EyeBreak AI System Prompt with comprehensive knowledge
-const SYSTEM_PROMPT = `You are EyeBreak AI, the official AI assistant for EyeBreak - a minimalist, privacy-first macOS menu bar application designed to reduce digital eye strain.
-
-## Your Identity
-- You are EyeBreak AI, NOT Groq AI, ChatGPT, or any other AI
-- You were created by the EyeBreak team to help users
-- Be friendly, helpful, and knowledgeable about eye health and the EyeBreak app
-- Keep responses concise but informative (2-4 sentences when possible)
-- Use a warm, supportive tone focused on eye health
-
-## About EyeBreak
-EyeBreak is a free, open-source macOS app (v${config.app.version}) that implements the scientifically-backed 20-20-20 rule:
-- Every 20 minutes of screen time
-- Look at something 20 feet away (about 6 meters)
-- For 20 seconds
-
-This gives your eye muscles a chance to relax and reduces eye strain, headaches, dry eyes, and neck pain.
-
-## Requirements
-- macOS 14.0 (Sonoma) or later
-- Xcode 15.0+ (for building from source)
-- Swift 5.9+
-
-## Installation
-1. Download from: ${config.site.downloadUrl}
-2. Remove quarantine (unsigned app): xattr -cr EyeBreak-v${config.app.version}.dmg
-3. Open DMG and drag to Applications
-4. Launch and look for the eye icon in menu bar
-
-## Key Features
-### Core Features
-- Menu bar integration with eye icon
-- Smart timer system with customizable intervals
-- Screen blur during breaks (requires Screen Recording permission)
-- Pre-break notifications (30-second warning)
-- Automatic idle detection - pauses when you're away
-- Beautiful SwiftUI interface
-
-### Customization (v2.0+)
-- Pomodoro Mode: 25/5 work/break cycles
-- Sound effects: Optional audio cues
-- Multiple break styles: Blur, notification only, or guided eye exercises
-- Flexible intervals: 10-60 minutes
-- Theme customization: Default, Random (20 palettes), or Custom
-- Custom icons: 16 professional SF Symbols
-
-### Smart Schedule (v2.1+)
-- Work hours management (e.g., 9 AM - 5 PM)
-- Active days selection
-- 5 Quick presets: Standard Work, Flexible, Early Bird, Night Owl, 24/7
-- Auto-start timer on app launch
-- Launch at login
-
-### Water Reminders (v2.1+)
-- Blur screen or ambient pop-up styles
-- 30min to 2 hour intervals
-- 8 preset encouraging messages
-- Full theme support
-
-### v2.3.0 Features
-- Menu bar timer display with live countdown
-- Dynamic state icons (active, paused, break)
-- Enhanced floating break window
-- Polished UI with gradients and spring animations
-
-## Keyboard Shortcuts
-- Cmd+Shift+S: Start timer
-- Cmd+Shift+X: Stop timer
-- Cmd+Shift+B: Take break now
-- Cmd+Shift+R: Show ambient reminder
-- Cmd+Shift+W: Show water reminder
-- Cmd+Shift+O: Open settings
-
-## Permissions
-- Screen Recording: Required for blur mode (System Settings > Privacy & Security > Screen Recording)
-- Notifications: For break reminders
-
-## Privacy
-- Zero data collection - everything stays on your Mac
-- No internet required - works completely offline
-- No analytics, no tracking
-- Open source under MIT License
-
-## Statistics & Insights
-- Daily break tracking with charts
-- 7-day and 30-day history
-- Completion rate percentage
-- Streak counter for consecutive days
-- Smart insights and recommendations
-
-## Troubleshooting
-### Screen blur not working
-- Grant Screen Recording permission in System Settings
-- Restart app after granting permission
-
-### Notifications not appearing
-- Check System Settings > Notifications > EyeBreak
-- Enable "Allow Notifications"
-
-### Timer not pausing when idle
-- Enable idle detection in Settings
-- Adjust idle threshold if needed
-
-### App not in Dock
-- Intentional! EyeBreak is a menu bar app only (LSUIElement)
-
-## Support
-- GitHub: ${config.github.url}
-- Issues: ${config.github.url}/issues
-- Discussions: ${config.github.url}/discussions
-- Documentation: ${config.github.url}/blob/main/docs/FAQ.md
-
-## Common Questions to Handle
-- What is EyeBreak? - Explain the app and 20-20-20 rule
-- How to install? - Provide download link and quarantine removal steps
-- Is it free? - Yes, MIT licensed, free forever
-- Does it collect data? - No, completely private and offline
-- What macOS version? - 14.0 (Sonoma) or later
-- Who are you? - You are EyeBreak AI, the official assistant
-- How to customize? - Explain settings options
-- Pomodoro mode? - Explain 25/5 cycles
-- Water reminders? - Explain hydration feature
-
-## Response Guidelines
-1. Always identify as EyeBreak AI when asked who you are
-2. Focus on eye health, the 20-20-20 rule, and app features
-3. Be helpful with installation and troubleshooting
-4. Recommend the app for eye strain concerns
-5. Provide accurate version numbers and links
-6. If asked about unrelated topics, politely redirect to EyeBreak and eye health
-7. Never claim to be Groq, GPT, Claude, or any other AI system
-8. Keep responses friendly and concise`
+const chatApiUrl = import.meta.env.VITE_CHAT_API_URL
 
 // Create greeting message function (fresh timestamp each time)
 const createGreetingMessage = (): Message => ({
@@ -207,30 +74,22 @@ const sendMessage = async () => {
   isLoading.value = true
 
   try {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY
-
-    if (!apiKey) {
-      throw new Error('API key not configured')
+    if (!chatApiUrl) {
+      throw new Error('Chat API URL not configured')
     }
 
-    // Prepare messages for API (exclude timestamps)
-    const apiMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...messages.value.map(m => ({ role: m.role, content: m.content }))
-    ]
+    const apiMessages = messages.value
+      .filter(message => message.role !== 'system')
+      .map(message => ({
+        role: message.role,
+        content: message.content
+      }))
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch(chatApiUrl, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: apiMessages,
-        temperature: 0.7,
-        max_tokens: 1024,
-        top_p: 0.9
+        messages: apiMessages
       })
     })
 
@@ -240,7 +99,7 @@ const sendMessage = async () => {
     }
 
     const data = await response.json()
-    const assistantContent = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.'
+    const assistantContent = data.content || 'Sorry, I could not generate a response.'
 
     const assistantMessage: Message = {
       role: 'assistant',
@@ -256,9 +115,7 @@ const sendMessage = async () => {
     console.error('Chat error:', error)
     const errorMessage: Message = {
       role: 'assistant',
-      content: error instanceof Error && error.message === 'API key not configured'
-        ? 'EyeBreak AI is currently unavailable. Please check back later or visit our GitHub for support.'
-        : 'Sorry, I encountered an issue. Please try again or visit our GitHub for support.',
+      content: 'Sorry, I encountered an issue. Please try again or visit our GitHub for support.',
       timestamp: new Date()
     }
     messages.value.push(errorMessage)
@@ -295,41 +152,41 @@ const showQuickActions = computed(() => messages.value.length <= 1)
 </script>
 
 <template>
-  <div class="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
+  <div class="fixed bottom-4 left-4 z-50 sm:bottom-6 sm:left-6">
     <!-- Chat Window -->
     <Transition name="chat">
       <div
         v-if="isOpen"
-        class="fixed inset-4 sm:absolute sm:inset-auto sm:bottom-20 sm:left-0 sm:w-[380px] sm:h-[520px] bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        class="fixed inset-x-3 bottom-3 top-20 flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950 shadow-2xl shadow-black/50 sm:absolute sm:inset-auto sm:bottom-20 sm:left-0 sm:h-[540px] sm:w-[390px]"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 border-b border-blue-500/30">
+        <div class="flex items-center justify-between border-b border-white/10 bg-slate-900 px-4 py-3">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-cyan-300 text-slate-950 shadow-lg shadow-cyan-950/30">
+              <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
               </svg>
             </div>
             <div>
-              <h3 class="font-semibold text-white text-sm">EyeBreak AI</h3>
-              <p class="text-xs text-blue-100/80">Your eye health assistant</p>
+              <h3 class="text-sm font-black text-white">EyeBreak AI</h3>
+              <p class="text-xs font-medium text-slate-400">Eye health assistant</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
             <button
               @click="clearChat"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              class="rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
               title="Clear chat"
             >
-              <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
             <button
               @click="toggleChat"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              class="rounded-lg p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
             >
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
@@ -339,7 +196,7 @@ const showQuickActions = computed(() => messages.value.length <= 1)
         <!-- Messages -->
         <div
           ref="chatContainer"
-          class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+          class="flex-1 space-y-4 overflow-y-auto bg-slate-950 p-4 scroll-smooth"
         >
           <template v-for="(message, index) in messages" :key="index">
             <div
@@ -353,13 +210,13 @@ const showQuickActions = computed(() => messages.value.length <= 1)
               <div
                 :class="[
                   'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-                  message.role === 'user' ? 'bg-gray-700' : 'bg-blue-600'
+                  message.role === 'user' ? 'bg-slate-700 text-slate-200' : 'bg-cyan-300 text-slate-950'
                 ]"
               >
-                <svg v-if="message.role === 'assistant'" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <svg v-if="message.role === 'assistant'" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
-                <svg v-else class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
               </div>
@@ -369,15 +226,15 @@ const showQuickActions = computed(() => messages.value.length <= 1)
                 :class="[
                   'max-w-[85%] sm:max-w-[75%] rounded-xl px-4 py-2.5',
                   message.role === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-100 border border-gray-700'
+                    ? 'bg-cyan-300 text-slate-950'
+                    : 'border border-white/10 bg-slate-900 text-slate-100'
                 ]"
               >
                 <p class="text-sm whitespace-pre-wrap leading-relaxed break-words">{{ message.content }}</p>
                 <p
                   :class="[
                     'text-xs mt-1',
-                    message.role === 'user' ? 'text-blue-200/70' : 'text-gray-500'
+                    message.role === 'user' ? 'text-slate-700' : 'text-slate-500'
                   ]"
                 >
                   {{ formatTime(message.timestamp) }}
@@ -388,29 +245,29 @@ const showQuickActions = computed(() => messages.value.length <= 1)
 
           <!-- Loading indicator -->
           <div v-if="isLoading" class="flex gap-3">
-            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-300 text-slate-950">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
               </svg>
             </div>
-            <div class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3">
+            <div class="rounded-xl border border-white/10 bg-slate-900 px-4 py-3">
               <div class="flex gap-1.5">
-                <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
-                <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
-                <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+                <span class="h-2 w-2 animate-bounce rounded-full bg-cyan-300" style="animation-delay: 0ms"></span>
+                <span class="h-2 w-2 animate-bounce rounded-full bg-cyan-300" style="animation-delay: 150ms"></span>
+                <span class="h-2 w-2 animate-bounce rounded-full bg-cyan-300" style="animation-delay: 300ms"></span>
               </div>
             </div>
           </div>
 
           <!-- Quick Actions -->
           <div v-if="showQuickActions && !isLoading" class="mt-4">
-            <p class="text-xs text-gray-500 mb-2">Quick questions:</p>
+            <p class="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Quick questions</p>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="action in quickActions"
                 :key="action.label"
                 @click="sendQuickAction(action.query)"
-                class="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 text-gray-300 rounded-full transition-colors"
+                class="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 transition-colors hover:bg-cyan-300/15"
               >
                 {{ action.label }}
               </button>
@@ -419,7 +276,7 @@ const showQuickActions = computed(() => messages.value.length <= 1)
         </div>
 
         <!-- Input -->
-        <div class="p-3 border-t border-gray-800 bg-gray-900/80">
+        <div class="border-t border-white/10 bg-slate-900 p-3">
           <div class="flex gap-2">
             <input
               ref="inputRef"
@@ -427,20 +284,20 @@ const showQuickActions = computed(() => messages.value.length <= 1)
               @keydown="handleKeydown"
               type="text"
               placeholder="Ask about EyeBreak..."
-              class="flex-1 px-4 py-2.5 bg-gray-800 border border-gray-700 focus:border-blue-500 rounded-xl text-sm text-white placeholder-gray-500 outline-none transition-colors"
+              class="min-w-0 flex-1 rounded-xl border border-white/10 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-cyan-300/70"
               :disabled="isLoading"
             />
             <button
               @click="sendMessage"
               :disabled="!userInput.trim() || isLoading"
-              class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+              class="rounded-xl bg-cyan-300 px-4 py-2.5 text-slate-950 transition-colors hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
               </svg>
             </button>
           </div>
-          <p class="text-[10px] text-gray-600 mt-2 text-center">
+          <p class="mt-2 text-center text-[10px] text-slate-600">
             Powered by EyeBreak AI
           </p>
         </div>
@@ -451,22 +308,23 @@ const showQuickActions = computed(() => messages.value.length <= 1)
     <button
       @click="toggleChat"
       :class="[
-        'group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center',
+        'group relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110 sm:h-14 sm:w-14',
         isOpen
-          ? 'bg-gray-800 hover:bg-gray-700'
-          : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600'
+          ? 'border border-white/10 bg-slate-900 text-white hover:bg-slate-800'
+          : 'bg-cyan-300 text-slate-950 hover:bg-cyan-200'
       ]"
+      aria-label="Chat with EyeBreak AI"
     >
       <!-- Unread indicator -->
       <span
         v-if="hasUnread && !isOpen"
-        class="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse"
+        class="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-lime-300 sm:h-4 sm:w-4"
       ></span>
 
       <!-- Icon -->
       <svg
         v-if="!isOpen"
-        class="w-6 h-6 sm:w-7 sm:h-7 text-white"
+        class="h-6 w-6 sm:h-7 sm:w-7"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -475,7 +333,7 @@ const showQuickActions = computed(() => messages.value.length <= 1)
       </svg>
       <svg
         v-else
-        class="w-6 h-6 sm:w-7 sm:h-7 text-white"
+        class="h-6 w-6 sm:h-7 sm:w-7"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -486,7 +344,7 @@ const showQuickActions = computed(() => messages.value.length <= 1)
       <!-- Tooltip (hidden on mobile) -->
       <span
         v-if="!isOpen"
-        class="hidden sm:block absolute left-full ml-3 px-3 py-1.5 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none"
+        class="pointer-events-none absolute left-full ml-3 hidden whitespace-nowrap rounded-lg border border-white/10 bg-slate-950 px-3 py-1.5 text-sm text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 sm:block"
       >
         Chat with EyeBreak AI
       </span>
@@ -497,7 +355,7 @@ const showQuickActions = computed(() => messages.value.length <= 1)
 <style scoped>
 .chat-enter-active,
 .chat-leave-active {
-  transition: all 0.3s ease;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .chat-enter-from,
@@ -516,11 +374,11 @@ const showQuickActions = computed(() => messages.value.length <= 1)
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: rgba(34, 211, 238, 0.28);
   border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: rgba(34, 211, 238, 0.45);
 }
 </style>

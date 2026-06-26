@@ -277,195 +277,138 @@ function scrollToTop() {
 </script>
 
 <template>
-  <div class="releases-page">
-    <section id="releases" class="py-24 px-4 bg-gray-950 relative overflow-hidden">
-    <!-- Background effects -->
-    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl"></div>
-    
-    <div class="container mx-auto max-w-6xl relative z-10">
-      <!-- Section Header -->
-      <div class="text-center mb-16">
-        <div class="inline-flex items-center gap-3 mb-4">
-          <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          <h2 class="section-title">Release History</h2>
-        </div>
-        <p class="section-subtitle">
-          Track our journey of continuous improvement
-        </p>
-      </div>
+  <div class="min-h-screen bg-slate-950">
+    <section id="releases" class="relative overflow-hidden px-4 pb-20 pt-32">
+      <div class="absolute inset-0 aurora-mesh opacity-35"></div>
+      <div class="absolute inset-0 bg-slate-950/76"></div>
+      <div class="grid-paper absolute inset-0 opacity-25"></div>
 
-      <!-- Timeline -->
-      <div class="relative">
-        <!-- Vertical line -->
-        <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/50 via-purple-500/50 to-transparent hidden md:block"></div>
-
-        <!-- Releases -->
-        <div class="space-y-12">
-          <div
-            v-for="(release, index) in releases"
-            :key="release.version"
-            class="relative"
-          >
-            <!-- Timeline dot -->
-            <div class="absolute left-8 top-8 w-4 h-4 bg-blue-500 rounded-full border-4 border-gray-950 hidden md:block"></div>
-
-            <!-- Release card -->
-            <div class="md:ml-20 card hover:border-blue-500/30 transition-all duration-300">
-              <!-- Header -->
-              <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-                <div>
-                  <div class="flex items-center gap-3 mb-2">
-                    <h3 class="text-3xl font-bold text-white">
-                      v{{ release.version }}
-                    </h3>
-                    <span
-                      v-if="release.badge"
-                      class="px-3 py-1 rounded-full text-sm font-semibold"
-                      :class="release.badge === 'Latest' 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                        : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'"
-                    >
-                      {{ release.badge }}
-                    </span>
-                  </div>
-                  <h4 class="text-xl text-gray-300 mb-1">{{ release.title }}</h4>
-                  <p class="text-gray-500 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
-                    </svg>
-                    {{ release.date }}
-                  </p>
-                </div>
-                
-                <!-- Download button for latest -->
-                <a
-                  v-if="index === 0"
-                  href="https://github.com/cheat2001/eyebreak/releases/latest"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="btn-primary"
-                >
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
-                  </svg>
-                  Download
-                </a>
-              </div>
-
-              <!-- Features -->
-              <div class="space-y-6">
-                <div
-                  v-for="feature in release.features"
-                  :key="feature.title"
-                  class="space-y-3"
-                >
-                  <h5 class="text-lg font-semibold text-white flex items-center gap-2">
-                    {{ feature.title }}
-                  </h5>
-                  <ul class="space-y-2 ml-4">
-                    <li
-                      v-for="item in feature.items"
-                      :key="item"
-                      class="text-gray-400 flex items-start gap-3"
-                    >
-                      <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                      </svg>
-                      <span>{{ item }}</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <!-- Improvements -->
-                <div v-if="release.improvements" class="pt-4 border-t border-gray-800">
-                  <h5 class="text-lg font-semibold text-blue-400 mb-3">🔄 Improvements</h5>
-                  <ul class="space-y-2 ml-4">
-                    <li
-                      v-for="item in release.improvements"
-                      :key="item"
-                      class="text-gray-400 flex items-start gap-3"
-                    >
-                      <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                      </svg>
-                      <span>{{ item }}</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <!-- Bug Fixes -->
-                <div v-if="release.bugFixes" class="pt-4 border-t border-gray-800">
-                  <h5 class="text-lg font-semibold text-yellow-400 mb-3">🐛 Bug Fixes</h5>
-                  <ul class="space-y-2 ml-4">
-                    <li
-                      v-for="item in release.bugFixes"
-                      :key="item"
-                      class="text-gray-400 flex items-start gap-3"
-                    >
-                      <svg class="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/>
-                      </svg>
-                      <span>{{ item }}</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- View full notes -->
-              <div class="mt-6 pt-6 border-t border-gray-800">
-                <a
-                  :href="`https://github.com/cheat2001/eyebreak/releases/tag/v${release.version}`"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-2"
-                >
-                  View full release notes
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
-                  </svg>
-                </a>
-              </div>
+      <div class="container relative z-10 mx-auto max-w-6xl">
+        <div class="mb-16 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+          <div>
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/10 px-4 py-2 text-sm font-semibold text-lime-100">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+              Release history
             </div>
+            <h1 class="text-balance text-4xl font-black text-white md:text-6xl">
+              Every version, every healthier detail.
+            </h1>
+          </div>
+          <p class="max-w-2xl text-lg leading-8 text-slate-400 lg:justify-self-end">
+            EyeBreak keeps evolving with better reminders, cleaner controls, deeper privacy, and smoother macOS polish.
+          </p>
+        </div>
+
+        <div class="relative">
+          <div class="absolute bottom-0 left-4 top-0 hidden w-px bg-gradient-to-b from-cyan-300/50 via-fuchsia-300/20 to-transparent md:block"></div>
+
+          <div class="space-y-8">
+            <article
+              v-for="(release, index) in releases"
+              :key="release.version"
+              class="relative md:pl-12"
+            >
+              <div class="absolute left-2 top-7 hidden h-5 w-5 rounded-full border-4 border-slate-950 bg-cyan-300 md:block"></div>
+
+              <div class="rounded-lg border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl transition-all duration-300 hover:border-cyan-300/30 sm:p-8">
+                <div class="mb-7 flex flex-wrap items-start justify-between gap-4">
+                  <div class="min-w-0">
+                    <div class="mb-3 flex flex-wrap items-center gap-3">
+                      <h2 class="text-3xl font-black text-white">v{{ release.version }}</h2>
+                      <span
+                        v-if="release.badge"
+                        class="rounded-full border px-3 py-1 text-sm font-bold"
+                        :class="release.badge === 'Latest'
+                          ? 'border-lime-300/20 bg-lime-300/10 text-lime-100'
+                          : 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100'"
+                      >
+                        {{ release.badge }}
+                      </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-200">{{ release.title }}</h3>
+                    <p class="mt-2 text-sm font-medium text-slate-500">{{ release.date }}</p>
+                  </div>
+
+                  <a
+                    v-if="index === 0"
+                    href="https://github.com/cheat2001/eyebreak/releases/latest"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-primary inline-flex items-center justify-center gap-2"
+                  >
+                    Download
+                  </a>
+                </div>
+
+                <div class="grid gap-6 lg:grid-cols-2">
+                  <div
+                    v-for="feature in release.features"
+                    :key="feature.title"
+                    class="rounded-lg border border-white/10 bg-slate-950/45 p-5"
+                  >
+                    <h4 class="mb-4 font-bold text-white">{{ feature.title }}</h4>
+                    <ul class="space-y-3">
+                      <li
+                        v-for="item in feature.items"
+                        :key="item"
+                        class="flex items-start gap-3 text-sm leading-6 text-slate-400"
+                      >
+                        <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-cyan-300"></span>
+                        <span>{{ item }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div v-if="release.improvements || release.bugFixes" class="mt-6 grid gap-5 lg:grid-cols-2">
+                  <div v-if="release.improvements" class="rounded-lg border border-cyan-300/15 bg-cyan-300/5 p-5">
+                    <h4 class="mb-3 font-bold text-cyan-100">Improvements</h4>
+                    <ul class="space-y-2">
+                      <li v-for="item in release.improvements" :key="item" class="text-sm leading-6 text-slate-400">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div v-if="release.bugFixes" class="rounded-lg border border-amber-300/15 bg-amber-300/5 p-5">
+                    <h4 class="mb-3 font-bold text-amber-100">Bug fixes</h4>
+                    <ul class="space-y-2">
+                      <li v-for="item in release.bugFixes" :key="item" class="text-sm leading-6 text-slate-400">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="mt-6 border-t border-white/10 pt-6">
+                  <a
+                    :href="`https://github.com/cheat2001/eyebreak/releases/tag/v${release.version}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 text-sm font-bold text-cyan-100 transition-transform hover:translate-x-1"
+                  >
+                    View full release notes
+                    <span aria-hidden="true">-></span>
+                  </a>
+                </div>
+              </div>
+            </article>
           </div>
         </div>
-      </div>
 
-      <!-- Back to top -->
-      <div class="mt-16 text-center">
-        <button
-          @click="scrollToTop"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-        >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M7 14l5-5 5 5z"/>
-          </svg>
-          Back to Top
-        </button>
+        <div class="mt-16 text-center">
+          <button
+            @click="scrollToTop"
+            class="rounded-full border border-white/10 bg-white/5 px-6 py-3 font-bold text-white transition-colors hover:bg-white/10"
+          >
+            Back to top
+          </button>
+        </div>
       </div>
-    </div>
     </section>
 
     <Footer />
   </div>
 </template>
-
-<style scoped>
-.section-title {
-  @apply text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent;
-}
-
-.section-subtitle {
-  @apply text-xl text-gray-400 max-w-2xl mx-auto;
-}
-
-.card {
-  @apply bg-gradient-to-br from-gray-900/80 to-gray-800/50 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm;
-}
-
-.btn-primary {
-  @apply inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25;
-}
-</style>

@@ -86,70 +86,110 @@ const features: Feature[] = [
     color: 'from-lime-400 to-lime-600'
   }
 ]
+
+const primaryFeature = features[0] as Feature
+const spotlightFeatures = features.slice(1, 7)
+const compactFeatures = features.slice(7)
 </script>
 
 <template>
-  <section id="features" class="py-24 px-4 bg-gray-950 relative overflow-hidden">
-    <!-- Background glow effects -->
-    <div class="absolute top-0 left-1/3 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-1/3 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl"></div>
-    
+  <section id="features" class="relative overflow-hidden bg-slate-950 px-4 py-24">
+    <div class="grid-paper absolute inset-0 opacity-40"></div>
+    <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent"></div>
+
     <div class="container mx-auto max-w-7xl relative z-10">
-      <!-- Section Header -->
-      <div class="text-center mb-20">
-        <div class="inline-flex items-center gap-3 mb-4">
-          <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-          </svg>
-          <h2 class="section-title">Powerful Features</h2>
+      <div data-reveal class="mb-16 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+        <div>
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            Designed for daily use
+          </div>
+          <h2 class="text-balance text-4xl font-black text-white md:text-6xl">
+            Gentle habits, built like a serious desktop tool.
+          </h2>
         </div>
-        <p class="section-subtitle">
-          Everything you need for healthy screen time habits
+        <p class="max-w-2xl text-lg leading-8 text-slate-400 lg:justify-self-end">
+          EyeBreak combines the essentials of eye care with thoughtful controls: reminders that respect your schedule, visuals that feel native to macOS, and privacy that never needs a network connection.
         </p>
       </div>
 
-      <!-- Features Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid gap-6 lg:grid-cols-3">
+        <div data-reveal class="rounded-lg border border-white/10 bg-white/[0.04] p-6 shadow-2xl shadow-black/20 lg:col-span-1 lg:row-span-2">
+          <div class="mb-8 grid h-20 w-20 place-items-center rounded-lg bg-gradient-to-br from-cyan-300 to-lime-300 text-slate-950 shadow-xl shadow-cyan-950/30">
+            <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
+              <path :d="primaryFeature.iconPath" />
+            </svg>
+          </div>
+          <h3 class="text-3xl font-black text-white">{{ primaryFeature.title }}</h3>
+          <p class="mt-4 text-lg leading-8 text-slate-300">{{ primaryFeature.description }}</p>
+
+          <div class="mt-10 space-y-4">
+            <div class="flex items-center justify-between rounded-lg bg-slate-950/70 p-4">
+              <span class="text-sm font-medium text-slate-400">Work interval</span>
+              <span class="text-lg font-black text-white">20 min</span>
+            </div>
+            <div class="flex items-center justify-between rounded-lg bg-slate-950/70 p-4">
+              <span class="text-sm font-medium text-slate-400">Look away</span>
+              <span class="text-lg font-black text-cyan-200">20 sec</span>
+            </div>
+            <div class="flex items-center justify-between rounded-lg bg-slate-950/70 p-4">
+              <span class="text-sm font-medium text-slate-400">Distance cue</span>
+              <span class="text-lg font-black text-lime-200">20 ft</span>
+            </div>
+          </div>
+        </div>
+
         <div
-          v-for="(feature, index) in features"
-          :key="index"
-          class="group card hover:-translate-y-1"
+          v-for="(feature, index) in spotlightFeatures"
+          :key="feature.title"
+          data-reveal
+          class="group rounded-lg border border-white/10 bg-white/[0.035] p-6 shadow-xl shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.06]"
+          :style="{ '--reveal-delay': `${(index % 3) * 80}ms` }"
         >
-          <!-- Icon with Gradient Background -->
-          <div class="mb-5">
+          <div class="mb-5 flex items-center justify-between">
             <div 
-              class="w-16 h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 relative"
+              class="relative flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-105"
               :class="feature.color"
             >
-              <div class="absolute inset-0 rounded-2xl bg-white/10 group-hover:bg-white/20 transition-colors"></div>
-              <svg class="w-8 h-8 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
+              <div class="absolute inset-0 rounded-lg bg-white/10 transition-colors group-hover:bg-white/20"></div>
+              <svg class="relative z-10 h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path :d="feature.iconPath" />
               </svg>
             </div>
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">0{{ index + 2 }}</span>
           </div>
 
-          <!-- Feature Title -->
-          <h3 class="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+          <h3 class="mb-3 text-xl font-bold text-white transition-colors group-hover:text-cyan-200">
             {{ feature.title }}
           </h3>
 
-          <!-- Feature Description -->
-          <p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+          <p class="leading-relaxed text-slate-400 transition-colors group-hover:text-slate-300">
             {{ feature.description }}
           </p>
         </div>
       </div>
 
-      <!-- Additional Info -->
-      <div class="mt-20 text-center">
-        <div class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-green-500/30 rounded-full backdrop-blur-sm">
-          <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+      <div data-reveal class="mt-8 grid gap-4 rounded-lg border border-white/10 bg-slate-900/45 p-4 backdrop-blur-xl md:grid-cols-3">
+        <div
+          v-for="feature in compactFeatures"
+          :key="feature.title"
+          class="flex items-center gap-3 rounded-lg bg-slate-950/60 px-4 py-3"
+        >
+          <div class="h-2.5 w-2.5 rounded-full bg-cyan-300"></div>
+          <span class="text-sm font-semibold text-slate-300">{{ feature.title }}</span>
+        </div>
+      </div>
+
+      <div data-reveal class="mt-14 text-center">
+        <div class="inline-flex items-center gap-3 rounded-full border border-lime-300/20 bg-lime-300/10 px-8 py-4 text-lime-100 backdrop-blur-sm">
+          <svg class="w-6 h-6 text-lime-300" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
           </svg>
-          <span class="text-white font-semibold text-lg">100% Free & Open Source</span>
+          <span class="text-lg font-semibold">100% free, open source, and local-first</span>
         </div>
       </div>
     </div>
   </section>
 </template>
-

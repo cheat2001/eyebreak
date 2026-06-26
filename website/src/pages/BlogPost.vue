@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 
 const route = useRoute()
@@ -144,19 +143,19 @@ const currentPost = computed(() => {
 
 const getCategoryColor = (category: string): string => {
   const colors: Record<string, string> = {
-    'Eye Health': 'bg-blue-600/20 text-blue-400 border-blue-500/30',
-    'Digital Wellness': 'bg-purple-600/20 text-purple-400 border-purple-500/30',
-    'Productivity': 'bg-green-600/20 text-green-400 border-green-500/30'
+    'Eye Health': 'bg-cyan-300/10 text-cyan-100 border-cyan-300/20',
+    'Digital Wellness': 'bg-fuchsia-300/10 text-fuchsia-100 border-fuchsia-300/20',
+    'Productivity': 'bg-lime-300/10 text-lime-100 border-lime-300/20'
   }
-  return colors[category] || 'bg-gray-600/20 text-gray-400 border-gray-500/30'
+  return colors[category] || 'bg-slate-600/20 text-slate-300 border-slate-500/30'
 }
 
 const formatContent = (text: string): string => {
   // Convert markdown-style headers and lists to HTML
   return text
-    .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-white mt-8 mb-4">$1</h2>')
+    .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-black text-white mt-10 mb-4">$1</h2>')
     .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white">$1</strong>')
-    .replace(/\n- /g, '</p><p class="text-gray-300 leading-relaxed mb-2 pl-4">• ')
+    .replace(/\n- /g, '</p><p class="text-slate-300 leading-relaxed mb-2 pl-4">- ')
     .replace(/\\n/g, '<br>')
 }
 
@@ -283,15 +282,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-950">
-    <Navbar />
+  <div class="min-h-screen bg-slate-950">
+    <main class="relative overflow-hidden px-4 pb-20 pt-32">
+      <div class="absolute inset-0 aurora-mesh opacity-35"></div>
+      <div class="absolute inset-0 bg-slate-950/78"></div>
+      <div class="grid-paper absolute inset-0 opacity-25"></div>
 
-    <main class="pt-24 pb-20 px-4">
-      <div class="container mx-auto max-w-3xl">
+      <div class="container relative z-10 mx-auto max-w-3xl">
         <!-- Back Button -->
         <button
           @click="goBack"
-          class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          class="mb-8 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -303,18 +304,18 @@ onUnmounted(() => {
           <!-- Article Header -->
           <header class="mb-12">
             <div class="mb-4">
-              <span :class="['px-3 py-1 text-xs font-semibold rounded-full border', getCategoryColor(currentPost.category)]">
+              <span :class="['rounded-full border px-3 py-1 text-xs font-semibold', getCategoryColor(currentPost.category)]">
                 {{ currentPost.category }}
               </span>
             </div>
 
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+            <h1 class="text-balance mb-6 text-4xl font-black leading-tight text-white md:text-6xl">
               {{ currentPost.title }}
             </h1>
 
-            <div class="flex items-center gap-4 text-gray-400">
+            <div class="flex flex-wrap items-center gap-4 text-slate-400">
               <span>{{ currentPost.date }}</span>
-              <span>•</span>
+              <span class="text-slate-700">/</span>
               <span class="flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -325,7 +326,7 @@ onUnmounted(() => {
           </header>
 
           <!-- Article Content -->
-          <article class="prose prose-invert max-w-none">
+          <article class="max-w-none rounded-lg border border-white/10 bg-slate-900/60 p-6 shadow-2xl shadow-black/20 backdrop-blur-2xl sm:p-8">
             <div
               v-for="(paragraph, index) in currentPost.content"
               :key="index"
@@ -333,7 +334,7 @@ onUnmounted(() => {
             >
               <p
                 v-if="!paragraph.startsWith('##')"
-                class="text-gray-300 leading-relaxed text-lg"
+                class="text-lg leading-8 text-slate-300"
                 v-html="formatContent(paragraph)"
               />
               <div v-else v-html="formatContent(paragraph)" />
@@ -341,10 +342,10 @@ onUnmounted(() => {
           </article>
 
           <!-- Share / CTA Section -->
-          <div class="mt-16 pt-8 border-t border-gray-800">
-            <div class="card text-center">
-              <h3 class="text-xl font-bold text-white mb-3">Ready to protect your eyes?</h3>
-              <p class="text-gray-400 mb-6">
+          <div class="mt-16 border-t border-white/10 pt-8">
+            <div class="rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-8 text-center">
+              <h3 class="mb-3 text-2xl font-black text-white">Ready to protect your eyes?</h3>
+              <p class="mb-6 text-slate-300">
                 Download EyeBreak and start taking care of your eye health today.
               </p>
               <button
@@ -360,8 +361,8 @@ onUnmounted(() => {
         <!-- Not Found -->
         <template v-else>
           <div class="text-center py-20">
-            <h1 class="text-4xl font-bold text-white mb-4">Post Not Found</h1>
-            <p class="text-gray-400 mb-8">The blog post you're looking for doesn't exist.</p>
+            <h1 class="mb-4 text-4xl font-black text-white">Post Not Found</h1>
+            <p class="mb-8 text-slate-400">The blog post you're looking for doesn't exist.</p>
             <button @click="goBack" class="btn-primary">
               Back to Blog
             </button>

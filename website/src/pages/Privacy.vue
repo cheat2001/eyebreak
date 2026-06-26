@@ -1,142 +1,99 @@
 <script setup lang="ts">
 import Footer from '../components/Footer.vue'
+
+const sections = [
+  {
+    title: 'Overview',
+    body: 'EyeBreak is a free, open-source macOS application designed to help you take regular breaks and maintain healthy screen time habits. We are committed to protecting your privacy and being transparent about our data practices.'
+  },
+  {
+    title: 'Data Collection',
+    body: 'EyeBreak does not collect, store, or transmit any personal data. The app operates entirely on your local machine.',
+    items: ['No analytics or tracking', 'No user accounts or registration', 'No internet connection required', 'All settings stored locally on your device']
+  },
+  {
+    title: 'Local Storage',
+    body: 'EyeBreak stores your preferences and settings locally on your Mac using standard macOS UserDefaults. This data never leaves your device and is deleted when you uninstall the app.',
+    items: ['Break timer preferences', 'Theme and customization choices', 'Schedule settings', 'Water reminder preferences', 'Launch at login preference']
+  },
+  {
+    title: 'Permissions',
+    body: 'EyeBreak requests macOS permissions only for app functionality, never for data collection.',
+    items: ['Screen Recording: optional idle detection', 'Notifications: break and water reminders', 'Accessibility: overlay windows during breaks']
+  },
+  {
+    title: 'Open Source',
+    body: 'EyeBreak is open-source software. You can review the complete source code on GitHub to verify our privacy claims.'
+  },
+  {
+    title: 'Third-Party Services',
+    body: 'EyeBreak does not integrate with any third-party services, APIs, or external servers.'
+  },
+  {
+    title: 'Updates',
+    body: 'Check for updates manually through GitHub releases. The app does not automatically check for updates or send any data during updates.'
+  },
+  {
+    title: 'Contact',
+    body: 'If you have questions about this Privacy Policy, please open an issue on our GitHub repository.'
+  }
+]
 </script>
 
 <template>
-  <div class="privacy-page bg-gray-950">
-    <div class="container mx-auto max-w-4xl px-4 py-24">
-      <div class="prose prose-invert max-w-none">
-        <h1 class="text-5xl font-bold mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Privacy Policy
-        </h1>
-        
-        <p class="text-xl text-gray-400 mb-12">
-          Last updated: October 26, 2025
-        </p>
+  <div class="min-h-screen bg-slate-950">
+    <main class="relative overflow-hidden px-4 pb-20 pt-32">
+      <div class="absolute inset-0 aurora-mesh opacity-35"></div>
+      <div class="absolute inset-0 bg-slate-950/78"></div>
+      <div class="grid-paper absolute inset-0 opacity-25"></div>
 
-        <div class="space-y-8 text-gray-300">
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Overview</h2>
-            <p class="leading-relaxed">
-              EyeBreak is a free, open-source macOS application designed to help you take regular breaks and maintain healthy screen time habits. We are committed to protecting your privacy and being transparent about our data practices.
-            </p>
-          </section>
+      <div class="container relative z-10 mx-auto max-w-5xl">
+        <header class="mb-14">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/10 px-4 py-2 text-sm font-semibold text-lime-100">
+            <span class="h-2 w-2 rounded-full bg-lime-300"></span>
+            Privacy-first by design
+          </div>
+          <h1 class="text-balance text-4xl font-black text-white md:text-6xl">Privacy Policy</h1>
+          <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-400">Last updated: October 26, 2025</p>
+        </header>
 
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Data Collection</h2>
-            <p class="leading-relaxed mb-4">
-              <strong class="text-white">EyeBreak does NOT collect, store, or transmit any personal data.</strong> The app operates entirely on your local machine.
-            </p>
-            <ul class="list-disc list-inside space-y-2 ml-4">
-              <li>No analytics or tracking</li>
-              <li>No user accounts or registration</li>
-              <li>No internet connection required</li>
-              <li>All settings stored locally on your device</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Local Storage</h2>
-            <p class="leading-relaxed">
-              EyeBreak stores your preferences and settings locally on your Mac using standard macOS UserDefaults. This includes:
-            </p>
-            <ul class="list-disc list-inside space-y-2 ml-4">
-              <li>Break timer preferences (interval, duration)</li>
-              <li>Theme and customization choices</li>
-              <li>Schedule settings (work hours, active days)</li>
-              <li>Water reminder preferences</li>
-              <li>Launch at login preference</li>
-            </ul>
-            <p class="leading-relaxed mt-4">
-              This data never leaves your device and is deleted when you uninstall the app.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Permissions</h2>
-            <p class="leading-relaxed mb-4">
-              EyeBreak requests the following macOS permissions:
-            </p>
-            <ul class="list-disc list-inside space-y-2 ml-4">
-              <li><strong class="text-white">Screen Recording:</strong> Only used to detect user activity (optional idle detection feature)</li>
-              <li><strong class="text-white">Notifications:</strong> To send break and water reminders</li>
-              <li><strong class="text-white">Accessibility:</strong> To show overlay windows during breaks</li>
-            </ul>
-            <p class="leading-relaxed mt-4">
-              These permissions are only used for the app's core functionality and never for data collection.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Open Source</h2>
-            <p class="leading-relaxed">
-              EyeBreak is open-source software. You can review the complete source code on 
-              <a href="https://github.com/cheat2001/eyebreak" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
-                GitHub
-              </a> to verify our privacy claims.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Third-Party Services</h2>
-            <p class="leading-relaxed">
-              EyeBreak does not integrate with any third-party services, APIs, or external servers.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Updates</h2>
-            <p class="leading-relaxed">
-              Check for updates manually through GitHub releases. The app does not automatically check for updates or send any data during updates.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Contact</h2>
-            <p class="leading-relaxed">
-              If you have questions about this Privacy Policy, please open an issue on our 
-              <a href="https://github.com/cheat2001/eyebreak/issues" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
-                GitHub repository
-              </a>.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-3xl font-bold text-white mb-4">Changes to This Policy</h2>
-            <p class="leading-relaxed">
-              We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date.
-            </p>
-          </section>
-        </div>
-
-        <div class="mt-16 p-6 bg-blue-600/10 border border-blue-500/30 rounded-xl">
-          <h3 class="text-2xl font-bold text-white mb-3">Summary</h3>
-          <p class="text-gray-300 leading-relaxed">
-            <strong class="text-blue-400">TL;DR:</strong> EyeBreak is completely private. We don't collect any data, track you, or require an internet connection. All your settings stay on your Mac. Period.
+        <div class="mb-10 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-6">
+          <h2 class="text-2xl font-black text-white">Short version</h2>
+          <p class="mt-3 leading-8 text-slate-300">
+            EyeBreak is completely private. We do not collect data, track you, or require an internet connection. Your settings stay on your Mac.
           </p>
         </div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+          <section
+            v-for="section in sections"
+            :key="section.title"
+            class="rounded-lg border border-white/10 bg-white/[0.04] p-6 shadow-xl shadow-black/10"
+          >
+            <h2 class="text-2xl font-black text-white">{{ section.title }}</h2>
+            <p class="mt-3 leading-8 text-slate-300">{{ section.body }}</p>
+            <ul v-if="section.items" class="mt-5 space-y-3">
+              <li v-for="item in section.items" :key="item" class="flex items-start gap-3 text-slate-400">
+                <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-cyan-300"></span>
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="mt-10 rounded-lg border border-white/10 bg-slate-900/70 p-6 text-slate-300">
+          Review the project on
+          <a href="https://github.com/cheat2001/eyebreak" target="_blank" rel="noopener noreferrer" class="font-bold text-cyan-100 hover:text-cyan-200">
+            GitHub
+          </a>
+          or open a
+          <a href="https://github.com/cheat2001/eyebreak/issues" target="_blank" rel="noopener noreferrer" class="font-bold text-cyan-100 hover:text-cyan-200">
+            privacy question
+          </a>.
+        </div>
       </div>
-    </div>
+    </main>
 
     <Footer />
   </div>
 </template>
-
-<style scoped>
-.prose {
-  color: #d1d5db;
-}
-
-.prose h1, .prose h2, .prose h3 {
-  margin-top: 2rem;
-}
-
-.prose p {
-  margin-bottom: 1rem;
-}
-
-.prose ul {
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-}
-</style>
