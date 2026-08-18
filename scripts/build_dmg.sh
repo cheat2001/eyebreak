@@ -45,14 +45,46 @@ if [ ! -d "$APP_PATH" ]; then
     exit 1
 fi
 
-# Sparkle refuses to install a bundle whose signature does not validate, so fail
-# loudly here rather than shipping an update that every client will reject.
+# Xcode signs the app and each embedded framework in separate operations. Under
+# the hardened runtime, dyld then refuses to map Sparkle.framework into the
+# process because the two independent ad-hoc signatures are not considered the
+# same team, and the app dies at launch with:
+#
+#   Library not loaded: @rpath/Sparkle.framework/Versions/B/Sparkle
+#   ... mapping process and mapped file (non-platform) have different Team IDs
+#
+# Re-signing the whole bundle in one pass produces a consistent set.
+echo -e "${BLUE}🔏 Re-signing bundle (inside-out)...${NC}"
+codesign --force --deep --sign - "$APP_PATH" 2>&1 | sed 's/^/   /'
+
+# Sparkle refuses to install a bundle whose signature does not validate.
 echo -e "${BLUE}🔏 Verifying code signature...${NC}"
 if ! codesign --verify --deep --strict "$APP_PATH" 2>&1; then
     echo -e "${RED}❌ Code signature does not validate${NC}"
     exit 1
 fi
 echo -e "${GREEN}✅ Signature validates${NC}"
+
+# A valid signature does NOT mean the app can start: the Team ID problem above
+# passes `codesign --verify --deep --strict` cleanly and still fails at dyld.
+# The only reliable check is to actually run the binary and look for a load
+# failure, so do that before shipping anything.
+echo -e "${BLUE}🚀 Smoke test: does it launch?...${NC}"
+LAUNCH_LOG="$(mktemp)"
+"$APP_PATH/Contents/MacOS/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")" \
+    > "$LAUNCH_LOG" 2>&1 &
+SMOKE_PID=$!
+sleep 5
+if grep -qE "Library not loaded|Symbol not found|dyld\[" "$LAUNCH_LOG"; then
+    echo -e "${RED}❌ App fails to launch:${NC}"
+    head -5 "$LAUNCH_LOG" | sed 's/^/   /'
+    kill $SMOKE_PID 2>/dev/null || true
+    rm -f "$LAUNCH_LOG"
+    exit 1
+fi
+kill $SMOKE_PID 2>/dev/null || true
+rm -f "$LAUNCH_LOG"
+echo -e "${GREEN}✅ Launches cleanly${NC}"
 
 echo -e "${BLUE}📦 Creating DMG installer...${NC}"
 
