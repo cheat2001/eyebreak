@@ -517,7 +517,7 @@ struct BreakSettingsView: View {
                         unit: "sec",
                         icon: "eye.slash",
                         color: .green,
-                        range: 10...60
+                        range: 10...120
                     ) { newValue in
                         settings.breakDurationSeconds = Int(newValue)
                     }
@@ -1294,11 +1294,82 @@ struct BreakSettingsView: View {
     }
 }
 
+// MARK: - Update Check Card
+
+/// "Check for Updates" control shown in About.
+/// Sparkle handles the whole flow: one click downloads the new build, replaces
+/// EyeBreak in place, and relaunches it.
+struct UpdateCheckCard: View {
+    @ObservedObject var updateChecker: UpdateChecker
+
+    private var lastCheckedText: String {
+        guard let date = updateChecker.lastUpdateCheckDate else {
+            return "Not checked yet"
+        }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return "Last checked \(formatter.localizedString(for: date, relativeTo: Date()))"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "arrow.down.circle.fill")
+                    .foregroundStyle(.blue)
+                Text("Updates")
+                    .font(.system(size: 14, weight: .semibold))
+
+                Spacer()
+
+                Text(lastCheckedText)
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+
+            Button {
+                updateChecker.checkForUpdates()
+            } label: {
+                Text("Check for Updates")
+            }
+            .disabled(!updateChecker.canCheckForUpdates)
+
+            Toggle(isOn: $updateChecker.automaticallyChecksForUpdates) {
+                Text("Check automatically")
+                    .font(.system(size: 12))
+            }
+            .toggleStyle(.switch)
+            .controlSize(.small)
+
+            Text("Updates install with one click — EyeBreak downloads the new version, replaces itself, and reopens. Every update is signature-verified before it is installed.")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.blue.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.blue.opacity(0.15), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 24)
+    }
+}
+
 // MARK: - About View
 
 struct AboutView: View {
+    @EnvironmentObject var settings: AppSettings
+    @StateObject private var updateChecker = UpdateChecker.shared
     @State private var isHoveringGithub = false
     @State private var isHoveringIssue = false
+
+    /// Read from the bundle so this never drifts from the shipped version.
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -1339,7 +1410,7 @@ struct AboutView: View {
                             )
                         )
 
-                    Text("Version 2.3")
+                    Text("Version \(appVersion)")
                         .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 12)
@@ -1347,6 +1418,8 @@ struct AboutView: View {
                         .background(Color.secondary.opacity(0.1))
                         .cornerRadius(8)
                 }
+
+                UpdateCheckCard(updateChecker: updateChecker)
 
                 // Description Card
                 VStack(alignment: .leading, spacing: 12) {
