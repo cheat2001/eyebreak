@@ -16,10 +16,48 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: '2.4.0',
+    date: 'August 18, 2026',
+    title: 'Automatic Updates',
+    badge: 'Latest',
+    features: [
+      {
+        title: '🔄 One-Click Automatic Updates',
+        items: [
+          'EyeBreak now checks for new versions and updates itself',
+          'One click downloads, installs and reopens on the new version',
+          'Every update is cryptographically signed and verified first',
+          'Turn it off or check manually in Settings → About',
+          'This is the last version you need to install by hand'
+        ]
+      },
+      {
+        title: '⏱️ Longer Breaks',
+        items: [
+          'Break duration can now be set up to 120 seconds, up from 60',
+          'Default stays at 20 seconds and existing settings are unchanged',
+          'Follows research suggesting breaks of 1–2 minutes are more effective'
+        ]
+      },
+      {
+        title: '⌨️ Keyboard Shortcut Permission',
+        items: [
+          'Detects when macOS resets the Accessibility permission after an update',
+          'Offers to restore it instead of leaving shortcuts silently broken',
+          'Timers and break reminders are unaffected either way'
+        ]
+      }
+    ],
+    bugFixes: [
+      'Release builds now report the correct version number',
+      'Fixed a code-signing problem that could prevent the app from launching',
+      'Homebrew install instructions now point at a cask that actually exists'
+    ]
+  },
+  {
     version: '2.3.0',
     date: 'December 6, 2025',
     title: 'Professional UI Polish Update',
-    badge: 'Latest',
     features: [
       {
         title: '📊 Menu Bar Timer Display',

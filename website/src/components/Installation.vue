@@ -5,8 +5,11 @@ import { config } from '../config'
 const copiedStates = ref<{ [key: string]: boolean }>({})
 const activeTab = ref<'terminal' | 'manual'>('terminal')
 
-const downloadUrl = 'https://github.com/cheat2001/eyebreak/releases/download/v2.3.0/EyeBreak-v2.3.0.dmg'
-const curlCommand = `curl -L ${downloadUrl} -o ~/Downloads/EyeBreak-v2.3.0.dmg && xattr -cr ~/Downloads/EyeBreak-v2.3.0.dmg && open ~/Downloads/EyeBreak-v2.3.0.dmg`
+// Derived from config.app.version so a release only needs updating in one place.
+const version = config.app.version
+const dmgName = `EyeBreak-v${version}.dmg`
+const downloadUrl = `${config.github.url}/releases/download/v${version}/${dmgName}`
+const curlCommand = `curl -L ${downloadUrl} -o ~/Downloads/${dmgName} && xattr -cr ~/Downloads/${dmgName} && open ~/Downloads/${dmgName}`
 const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
 
 const installSteps = [
@@ -143,7 +146,7 @@ const downloadDMG = () => {
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
               </svg>
-              Download EyeBreak-v2.3.0.dmg
+              Download {{ dmgName }}
             </button>
 
             <div class="mt-7 rounded-lg border border-amber-300/20 bg-amber-300/10 p-4">
