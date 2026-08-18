@@ -149,7 +149,7 @@ jobs:
           ## Homebrew Installation
 
           ```bash
-          brew install --cask eyebreak
+          brew install --cask cheat2001/tap/eyebreak
           ```
 
           ## SHA-256 Checksum

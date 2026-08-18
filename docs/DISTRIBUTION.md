@@ -93,7 +93,7 @@ git push -u origin main
 2. Users can now install with:
    ```bash
    brew tap YOUR_USERNAME/eyebreak
-   brew install --cask eyebreak
+   brew install --cask cheat2001/tap/eyebreak
    ```
 
 **Pros:**
@@ -206,7 +206,7 @@ A free, open-source macOS app to help you take care of your eyes.
 ### Homebrew
 \`\`\`bash
 brew tap YOUR_USERNAME/eyebreak
-brew install --cask eyebreak
+brew install --cask cheat2001/tap/eyebreak
 \`\`\`
 
 See [INSTALLATION.md](INSTALLATION.md) for more options.
@@ -240,7 +240,7 @@ If you like EyeBreak, please star ⭐ the repo!
 **Homebrew cask fails**
 - Make sure the ZIP file is publicly accessible
 - Update SHA256 hash in `eyebreak.rb`
-- Test with `brew install --cask --debug eyebreak`
+- Test with `brew install --cask --debug cheat2001/tap/eyebreak`
 
 **Build fails**
 - Ensure Xcode Command Line Tools are installed: `xcode-select --install`

@@ -20,7 +20,7 @@ EyeBreak is a free, open-source macOS app to help you take care of your eyes whi
 brew tap YOUR_USERNAME/eyebreak
 
 # Install EyeBreak
-brew install --cask eyebreak
+brew install --cask cheat2001/tap/eyebreak
 ```
 
 ### Method 3: Build from Source
@@ -100,5 +100,5 @@ brew upgrade eyebreak
 
 **Homebrew installation:**
 ```bash
-brew uninstall --cask eyebreak
+brew uninstall --cask cheat2001/tap/eyebreak
 ```
