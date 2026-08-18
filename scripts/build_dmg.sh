@@ -1,58 +1,69 @@
 #!/bin/bash
-
+#
 # EyeBreak - Create DMG Installer
-# This script builds the app and creates a .dmg file for distribution
+# Builds the Release app and packages it as a versioned .dmg
+#
+# Usage:
+#   ./scripts/build_dmg.sh            # version read from Info.plist
+#   EYEBREAK_VERSION=2.4.0 ./scripts/build_dmg.sh
+#
+# Safe to run on any machine and on CI: the build output path is derived from
+# an explicit -derivedDataPath rather than Xcode's per-machine DerivedData hash.
 
-set -e  # Exit on error
+set -euo pipefail
 
-# Colors for output
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+GREEN='\033[0;32m'; BLUE='\033[0;34m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 
-echo -e "${BLUE}🚀 Building EyeBreak for Release...${NC}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
 
-# Build the Release version
+INFO_PLIST="EyeBreak/Info.plist"
+DERIVED_DATA="$REPO_ROOT/build/DerivedData"
+APP_PATH="$DERIVED_DATA/Build/Products/Release/EyeBreak.app"
+
+# Version: explicit env wins, otherwise fall back to the bundle's own value.
+VERSION="${EYEBREAK_VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$INFO_PLIST")}"
+DMG_NAME="EyeBreak-v${VERSION}.dmg"
+DMG_PATH="$REPO_ROOT/$DMG_NAME"
+
+echo -e "${BLUE}🚀 Building EyeBreak ${VERSION} for Release...${NC}"
+
 xcodebuild -project EyeBreak.xcodeproj \
   -scheme EyeBreak \
   -configuration Release \
+  -derivedDataPath "$DERIVED_DATA" \
   clean build \
   CODE_SIGN_IDENTITY="-" \
-  CODE_SIGN_ENTITLEMENTS="" \
-  > build.log 2>&1
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Build failed! Check build.log for details${NC}"
-    exit 1
-fi
+  CODE_SIGNING_REQUIRED=YES \
+  CODE_SIGNING_ALLOWED=YES \
+  > build.log 2>&1 || { echo -e "${RED}❌ Build failed! See build.log${NC}"; tail -30 build.log; exit 1; }
 
 echo -e "${GREEN}✅ Build succeeded!${NC}"
 
-# Path to the built app
-BUILD_DIR="$HOME/Library/Developer/Xcode/DerivedData/EyeBreak-cmlrpdawzgvviwhfqhvjwymdisax/Build/Products/Release"
-APP_NAME="EyeBreak.app"
-APP_PATH="$BUILD_DIR/$APP_NAME"
-
-# Check if app exists
 if [ ! -d "$APP_PATH" ]; then
     echo -e "${RED}❌ App not found at: $APP_PATH${NC}"
     exit 1
 fi
 
+# Sparkle refuses to install a bundle whose signature does not validate, so fail
+# loudly here rather than shipping an update that every client will reject.
+echo -e "${BLUE}🔏 Verifying code signature...${NC}"
+if ! codesign --verify --deep --strict "$APP_PATH" 2>&1; then
+    echo -e "${RED}❌ Code signature does not validate${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✅ Signature validates${NC}"
+
 echo -e "${BLUE}📦 Creating DMG installer...${NC}"
 
-# Create a temporary directory for DMG contents
 DMG_TEMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$DMG_TEMP_DIR"' EXIT
 DMG_FINAL_DIR="$DMG_TEMP_DIR/EyeBreak"
 mkdir -p "$DMG_FINAL_DIR"
 
-# Copy the app to temp directory
 echo -e "${BLUE}📋 Copying app...${NC}"
 cp -R "$APP_PATH" "$DMG_FINAL_DIR/"
 
-# Create a README file for the DMG
 cat > "$DMG_FINAL_DIR/README.txt" << 'EOF'
 EyeBreak - Eye Care Reminder App
 ================================
@@ -98,53 +109,21 @@ If the app won't open:
 For more help: Check the project repository
 EOF
 
-# Create a symbolic link to Applications folder in the DMG
 ln -s /Applications "$DMG_FINAL_DIR/Applications"
 
-# DMG output name
-DMG_NAME="EyeBreak-Installer.dmg"
-DMG_PATH="$(pwd)/$DMG_NAME"
+rm -f "$DMG_PATH"
 
-# Remove old DMG if exists
-if [ -f "$DMG_PATH" ]; then
-    rm "$DMG_PATH"
-    echo -e "${YELLOW}🗑️  Removed old DMG${NC}"
-fi
-
-# Create the DMG
 echo -e "${BLUE}💿 Creating disk image...${NC}"
 hdiutil create -volname "EyeBreak" \
   -srcfolder "$DMG_FINAL_DIR" \
-  -ov \
-  -format UDZO \
-  "$DMG_PATH" \
-  > /dev/null 2>&1
+  -ov -format UDZO \
+  "$DMG_PATH" > /dev/null
 
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Failed to create DMG${NC}"
-    rm -rf "$DMG_TEMP_DIR"
-    exit 1
-fi
-
-# Cleanup
-rm -rf "$DMG_TEMP_DIR"
-
-# Get file size
 DMG_SIZE=$(du -h "$DMG_PATH" | cut -f1)
 
 echo ""
 echo -e "${GREEN}✅ DMG created successfully!${NC}"
-echo ""
 echo -e "${BLUE}📍 Location:${NC} $DMG_PATH"
 echo -e "${BLUE}📦 Size:${NC} $DMG_SIZE"
 echo ""
-echo -e "${YELLOW}📝 HOW TO INSTALL:${NC}"
-echo "  1. Double-click: $DMG_NAME"
-echo "  2. Drag EyeBreak to Applications folder"
-echo "  3. Eject the disk image"
-echo "  4. Open EyeBreak from Applications or Launchpad"
-echo ""
 echo -e "${GREEN}🎉 Ready to distribute!${NC}"
-echo ""
-echo -e "${BLUE}💡 TIP:${NC} You can share this DMG file with others."
-echo "     They just need to drag it to Applications to install."

@@ -151,3 +151,9 @@ build.log
 # IDE
 .vscode/
 .idea/
+
+# Release artifacts produced by scripts/build_dmg.sh and the release workflow
+appcast.xml
+EyeBreak-v*.zip
+sparkle/
+sparkle*.tar.xz

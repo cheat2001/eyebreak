@@ -8,28 +8,29 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
-    
+    runs-on: macos-latest
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
-    
+
+    - name: Show toolchain
+      run: xcodebuild -version
+
     - name: Build
       run: |
         xcodebuild clean build \
           -project EyeBreak.xcodeproj \
           -scheme EyeBreak \
+          -configuration Release \
+          -derivedDataPath ./build/DerivedData \
           -destination 'platform=macOS' \
-          CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
-    
+
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       if: success()
       with:
         name: EyeBreak-Build
-        path: build/Release/EyeBreak.app
+        path: build/DerivedData/Build/Products/Release/EyeBreak.app
         retention-days: 7

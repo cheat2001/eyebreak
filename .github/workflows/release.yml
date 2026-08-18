@@ -4,73 +4,156 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  # Manual trigger: builds and uploads the DMG as an artifact WITHOUT publishing
+  # a release, so the pipeline can be verified without cutting a tag.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to stamp into the build (e.g. 2.4.0)'
+        required: true
+        default: '0.0.0-test'
+
+# The repo default is read-only; creating a release needs write.
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
     name: Build and Create Release
-    runs-on: macos-14
-    
+    runs-on: macos-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
-      
-    - name: Get version from tag
+
+    - name: Show toolchain
+      run: |
+        sw_vers
+        xcodebuild -version
+
+    - name: Resolve version
       id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
-    - name: Build Release
       run: |
-        xcodebuild -project EyeBreak.xcodeproj \
-          -scheme EyeBreak \
-          -configuration Release \
-          -derivedDataPath ./DerivedData \
-          clean build \
-          CODE_SIGN_IDENTITY="-" \
-          CODE_SIGN_ENTITLEMENTS="" \
-          | xcpretty && exit ${PIPESTATUS[0]}
-      
-    - name: Create DMG
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/v}"
+        fi
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "Building version $VERSION"
+
+    - name: Stamp version into Info.plist
       run: |
-        chmod +x scripts/build_dmg.sh
-        ./scripts/build_dmg.sh
-      
+        VERSION="${{ steps.get_version.outputs.VERSION }}"
+        IFS='.' read -r MAJ MIN PAT <<< "${VERSION%%-*}"
+        BUILD=$(( 10#${MAJ:-0} * 10000 + 10#${MIN:-0} * 100 + 10#${PAT:-0} ))
+        /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" EyeBreak/Info.plist
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD" EyeBreak/Info.plist
+        echo "--- stamped ---"
+        /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" EyeBreak/Info.plist
+        /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" EyeBreak/Info.plist
+
+    - name: Build DMG
+      env:
+        EYEBREAK_VERSION: ${{ steps.get_version.outputs.VERSION }}
+      run: ./scripts/build_dmg.sh
+
+    - name: Verify DMG
+      run: |
+        DMG="EyeBreak-v${{ steps.get_version.outputs.VERSION }}.dmg"
+        test -f "$DMG" || { echo "::error::$DMG was not produced"; ls -la; exit 1; }
+        hdiutil verify "$DMG"
+        MP=$(mktemp -d)
+        hdiutil attach "$DMG" -mountpoint "$MP" -nobrowse -quiet
+        test -d "$MP/EyeBreak.app" || { echo "::error::EyeBreak.app missing from DMG"; exit 1; }
+        echo "Bundle version in DMG: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$MP/EyeBreak.app/Contents/Info.plist")"
+        hdiutil detach "$MP" -quiet
+
+    - name: Package ZIP for Sparkle
+      run: |
+        APP="build/DerivedData/Build/Products/Release/EyeBreak.app"
+        test -d "$APP" || { echo "::error::built app not found at $APP"; exit 1; }
+        ZIP="EyeBreak-v${{ steps.get_version.outputs.VERSION }}.zip"
+        # ditto preserves symlinks, permissions and the framework layout that
+        # a plain `zip` would flatten and break.
+        ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP"
+        echo "Created $ZIP ($(stat -f%z "$ZIP") bytes)"
+
+    - name: Fetch Sparkle signing tools
+      run: |
+        curl -sL -o sparkle.tar.xz https://github.com/sparkle-project/Sparkle/releases/download/2.9.6/Sparkle-2.9.6.tar.xz
+        mkdir -p sparkle && tar -xf sparkle.tar.xz -C sparkle
+        test -x sparkle/bin/sign_update || { echo "::error::sign_update not found"; exit 1; }
+
+    - name: Generate signed appcast
+      env:
+        EYEBREAK_VERSION: ${{ steps.get_version.outputs.VERSION }}
+      run: |
+        if [ -z "${{ secrets.SPARKLE_PRIVATE_KEY }}" ]; then
+          echo "::error::SPARKLE_PRIVATE_KEY secret is not set - auto-update cannot be signed"
+          exit 1
+        fi
+        KEY_FILE="$(mktemp)"
+        printf '%s' "${{ secrets.SPARKLE_PRIVATE_KEY }}" > "$KEY_FILE"
+        trap 'rm -f "$KEY_FILE"' EXIT
+        SPARKLE_PRIVATE_KEY_FILE="$KEY_FILE" \
+          ./scripts/make_appcast.sh "EyeBreak-v${EYEBREAK_VERSION}.zip" sparkle/bin/sign_update
+
+    - name: Verify appcast signature
+      run: |
+        ZIP="EyeBreak-v${{ steps.get_version.outputs.VERSION }}.zip"
+        SIG=$(python3 -c "import re,sys; print(re.search(r'sparkle:edSignature=\"([^\"]+)\"', open('appcast.xml').read()).group(1))")
+        KEY_FILE="$(mktemp)"
+        printf '%s' "${{ secrets.SPARKLE_PRIVATE_KEY }}" > "$KEY_FILE"
+        trap 'rm -f "$KEY_FILE"' EXIT
+        sparkle/bin/sign_update --verify "$ZIP" "$SIG" --ed-key-file "$KEY_FILE"
+        echo "✅ appcast signature verifies against the release ZIP"
+
     - name: Calculate checksums
       run: |
-        if [ -f "EyeBreak-${{ steps.get_version.outputs.VERSION }}.dmg" ]; then
-          shasum -a 256 "EyeBreak-${{ steps.get_version.outputs.VERSION }}.dmg" > checksums.txt
-        fi
-      
+        DMG="EyeBreak-v${{ steps.get_version.outputs.VERSION }}.dmg"
+        shasum -a 256 "$DMG" | tee checksums.txt
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: EyeBreak-DMG-${{ steps.get_version.outputs.VERSION }}
+        path: |
+          EyeBreak-v*.dmg
+          EyeBreak-v*.zip
+          appcast.xml
+          checksums.txt
+        retention-days: 14
+
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
       with:
         files: |
-          EyeBreak-*.dmg
+          EyeBreak-v*.dmg
+          EyeBreak-v*.zip
+          appcast.xml
           checksums.txt
         body: |
           ## What's Changed
-          
+
           See [CHANGELOG.md](CHANGELOG.md) for details.
-          
+
           ## Installation
-          
-          1. Download `EyeBreak-${{ steps.get_version.outputs.VERSION }}.dmg`
+
+          1. Download `EyeBreak-v${{ steps.get_version.outputs.VERSION }}.dmg`
           2. Open the DMG file
           3. Drag EyeBreak.app to your Applications folder
           4. Launch and enjoy! 👁️
-          
+
           ## Homebrew Installation
-          
+
           ```bash
           brew install --cask eyebreak
           ```
-          
+
           ## SHA-256 Checksum
-          
+
           See `checksums.txt` for verification.
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

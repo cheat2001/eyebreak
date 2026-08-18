@@ -9,14 +9,11 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: macos-14
+    runs-on: macos-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
       
     - name: Show Xcode version
       run: xcodebuild -version
@@ -29,8 +26,8 @@ jobs:
           -configuration Debug \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          | xcpretty && exit ${PIPESTATUS[0]}
+          CODE_SIGNING_ALLOWED=NO
+
       
     - name: Run tests (if any)
       run: |
@@ -41,7 +38,7 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
-          | xcpretty && exit ${PIPESTATUS[0]} || echo "No tests configured yet"
+          || echo "No tests configured yet"
       continue-on-error: true
       
     - name: Check for warnings
@@ -58,7 +55,7 @@ jobs:
 
   lint:
     name: SwiftLint
-    runs-on: macos-14
+    runs-on: macos-latest
     
     steps:
     - name: Checkout code
@@ -73,7 +70,7 @@ jobs:
 
   code-quality:
     name: Code Quality Checks
-    runs-on: macos-14
+    runs-on: macos-latest
     
     steps:
     - name: Checkout code
