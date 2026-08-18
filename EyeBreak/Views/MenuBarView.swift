@@ -353,7 +353,7 @@ struct MenuBarView: View {
                     .professionalButtonStyle(color: .green)
                 }
             } else if case .paused = timerManager.state {
-                Button(action: timerManager.resume) {
+                Button(action: { timerManager.resume() }) {
                     HStack {
                         Image(systemName: "play.circle.fill")
                             .font(.title3)

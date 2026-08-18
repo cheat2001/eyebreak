@@ -25,6 +25,12 @@ class AppSettings: ObservableObject {
     @AppStorage("sessionType") private var sessionTypeRaw: String = SessionType.standard.rawValue
     @AppStorage("idleDetectionEnabled") var idleDetectionEnabled: Bool = true
     @AppStorage("idleThresholdMinutes") var idleThresholdMinutes: Int = 5
+
+    // Meetings — opt-in. Someone who works remotely may be in calls most of the
+    // day, which is exactly when they still need break reminders, so this stays
+    // off unless the user asks for it.
+    @AppStorage("pauseDuringMeetings") var pauseDuringMeetings: Bool = false
+    @AppStorage("meetingPauseMode") private var meetingPauseModeRaw: String = MeetingPauseMode.screenSharing.rawValue
     @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
     @AppStorage("hasLaunchedBefore") var hasLaunchedBefore: Bool = false
     @AppStorage("autoStartTimer") var autoStartTimer: Bool = true // Auto-start timer when app launches
@@ -91,6 +97,11 @@ class AppSettings: ObservableObject {
         }
     }
     
+    var meetingPauseMode: MeetingPauseMode {
+        get { MeetingPauseMode(rawValue: meetingPauseModeRaw) ?? .screenSharing }
+        set { meetingPauseModeRaw = newValue.rawValue }
+    }
+
     var waterReminderStyle: WaterReminderStyle {
         get { WaterReminderStyle(rawValue: waterReminderStyleRaw) ?? .blurScreen }
         set { waterReminderStyleRaw = newValue.rawValue }
@@ -385,6 +396,8 @@ class AppSettings: ObservableObject {
         sessionType = .standard
         idleDetectionEnabled = true
         idleThresholdMinutes = 5
+        pauseDuringMeetings = false
+        meetingPauseMode = .screenSharing
         dailyBreakGoal = 24
     }
     

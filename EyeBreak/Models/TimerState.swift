@@ -13,7 +13,7 @@ enum TimerState: Equatable {
     case working(remainingSeconds: Int)  // Working period
     case preBreak(remainingSeconds: Int) // Warning period before break
     case breaking(remainingSeconds: Int) // Break period
-    case paused(wasWorking: Bool, remainingSeconds: Int) // Paused due to idle
+    case paused(wasWorking: Bool, remainingSeconds: Int) // Paused; see BreakTimerManager.pauseReasons
     
     var isActive: Bool {
         switch self {
@@ -43,6 +43,39 @@ enum TimerState: Equatable {
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+}
+
+/// Why the timer is currently paused.
+///
+/// Several independent sources can pause the timer — the user, going idle,
+/// the screen locking, a meeting starting. They overlap constantly in practice
+/// (you present, then step away, then come back), so the timer tracks the set
+/// of active reasons and only resumes once every one of them has cleared.
+/// Resuming on the first reason to clear would, for example, pop a break
+/// overlay up mid-presentation just because the screen had been unlocked.
+enum PauseReason: String, CaseIterable {
+    case manual
+    case idle
+    case systemSleep
+    case screenLocked
+    case screenSaver
+    case meeting
+
+    /// Whether the user should be able to override this by pressing Resume.
+    /// Automatic reasons re-assert themselves on the next poll, so only a
+    /// manual pause is meaningfully user-clearable.
+    var isUserClearable: Bool { self == .manual }
+
+    var displayText: String {
+        switch self {
+        case .manual:       return "Paused"
+        case .idle:         return "Paused - you're away"
+        case .systemSleep:  return "Paused - Mac was asleep"
+        case .screenLocked: return "Paused - screen locked"
+        case .screenSaver:  return "Paused - screen saver"
+        case .meeting:      return "Paused - you're in a meeting"
+        }
     }
 }
 

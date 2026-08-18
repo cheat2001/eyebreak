@@ -26,6 +26,12 @@ class BreakTimerManager: ObservableObject {
     private var timer: Timer?
     private var remainingSeconds: Int = 0
     private var idleDetector: IdleDetector?
+    private var meetingDetector: MeetingDetector?
+
+    /// Every reason the timer is currently paused for. The timer only resumes
+    /// once this is empty, so overlapping sources cannot resume on each other's
+    /// behalf (see PauseReason).
+    private(set) var pauseReasons: Set<PauseReason> = []
     private var cancellables = Set<AnyCancellable>()
     private var wasWorkingBeforePause = false
     private var isForcedBreak = false // Flag to bypass Smart Schedule during forced breaks
@@ -34,6 +40,7 @@ class BreakTimerManager: ObservableObject {
     
     private init() {
         setupIdleDetection()
+        setupMeetingDetection()
         setupWorkspaceNotifications()
     }
     
@@ -62,6 +69,8 @@ class BreakTimerManager: ObservableObject {
         timer = nil
         state = .idle
         idleDetector?.stop()
+        meetingDetector?.stop()
+        pauseReasons.removeAll()
         
         NotificationManager.shared.cancelAllNotifications()
     }
@@ -123,10 +132,16 @@ class BreakTimerManager: ObservableObject {
         }
     }
     
-    /// Pause the timer
-    func pause() {
+    /// Pause the timer, recording why.
+    ///
+    /// Safe to call repeatedly and while already paused: the reason is simply
+    /// added to the set. That matters because sources overlap — going idle
+    /// during a meeting must not discard the meeting reason.
+    func pause(reason: PauseReason = .manual) {
+        pauseReasons.insert(reason)
+
         guard state.isActive else { return }
-        
+
         let wasWorking: Bool
         switch state {
         case .working, .preBreak:
@@ -136,17 +151,29 @@ class BreakTimerManager: ObservableObject {
         default:
             wasWorking = true
         }
-        
+
         timer?.invalidate()
         timer = nil
         state = .paused(wasWorking: wasWorking, remainingSeconds: remainingSeconds)
         wasWorkingBeforePause = wasWorking
     }
-    
-    /// Resume from paused state
-    func resume() {
+
+    /// Clear one reason. The timer resumes only when no reasons remain, so
+    /// unlocking the screen cannot restart the timer while a meeting is still
+    /// in progress.
+    func resume(reason: PauseReason = .manual) {
+        pauseReasons.remove(reason)
+
+        // A manual Resume is an explicit instruction, so it also clears any
+        // automatic reason that is no longer true. Reasons that still hold
+        // will re-assert themselves on the next poll.
+        if reason == .manual {
+            pauseReasons.removeAll()
+        }
+
+        guard pauseReasons.isEmpty else { return }
         guard case .paused(let wasWorking, let seconds) = state else { return }
-        
+
         remainingSeconds = seconds
         if wasWorking {
             state = .working(remainingSeconds: remainingSeconds)
@@ -154,6 +181,15 @@ class BreakTimerManager: ObservableObject {
             state = .breaking(remainingSeconds: remainingSeconds)
         }
         startTimer()
+    }
+
+    /// The most relevant reason to show the user, when paused for several.
+    var primaryPauseReason: PauseReason? {
+        for reason in [PauseReason.meeting, .manual, .screenLocked, .screenSaver, .systemSleep, .idle]
+        where pauseReasons.contains(reason) {
+            return reason
+        }
+        return pauseReasons.first
     }
     
     // MARK: - Private Methods
@@ -175,6 +211,8 @@ class BreakTimerManager: ObservableObject {
         if settings.idleDetectionEnabled {
             idleDetector?.start()
         }
+
+        syncMeetingDetection()
     }
     
     private func tick() {
@@ -302,15 +340,41 @@ class BreakTimerManager: ObservableObject {
             
             if isIdle && self.state.isActive {
                 // User went idle, pause timer
-                self.pause()
+                self.pause(reason: .idle)
                 NotificationManager.shared.sendIdlePausedNotification()
-            } else if !isIdle, case .paused = self.state {
-                // User returned, resume timer
-                self.resume()
+            } else if !isIdle {
+                // User returned; only lifts the idle reason
+                self.resume(reason: .idle)
             }
         }
     }
     
+    // MARK: - Meeting Detection Setup
+
+    private func setupMeetingDetection() {
+        meetingDetector = MeetingDetector()
+        meetingDetector?.onMeetingStateChanged = { [weak self] isInMeeting in
+            guard let self else { return }
+            if isInMeeting {
+                self.pause(reason: .meeting)
+            } else {
+                self.resume(reason: .meeting)
+            }
+        }
+    }
+
+    /// Starts or stops meeting detection to match the current setting. Called
+    /// when the timer starts and whenever the setting is toggled, so enabling it
+    /// mid-session takes effect immediately.
+    func syncMeetingDetection() {
+        guard let detector = meetingDetector else { return }
+        if settings.pauseDuringMeetings {
+            if !detector.isRunning { detector.start() }
+        } else if detector.isRunning {
+            detector.stop()
+        }
+    }
+
     // MARK: - Screen Lock and Sleep Handling
     
     /// Sets up system notifications to automatically pause/resume timer during sleep and screen lock
@@ -318,15 +382,13 @@ class BreakTimerManager: ObservableObject {
         // Mac sleep events
         NotificationCenter.default.publisher(for: NSWorkspace.willSleepNotification)
             .sink { [weak self] _ in
-                self?.pause()
+                self?.pause(reason: .systemSleep)
             }
             .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: NSWorkspace.didWakeNotification)
             .sink { [weak self] _ in
-                if case .paused = self?.state {
-                    self?.resume()
-                }
+                self?.resume(reason: .systemSleep)
             }
             .store(in: &cancellables)
         
@@ -338,7 +400,7 @@ class BreakTimerManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.pause()
+            self?.pause(reason: .screenLocked)
         }
         
         notificationCenter.addObserver(
@@ -346,9 +408,7 @@ class BreakTimerManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            if case .paused = self?.state {
-                self?.resume()
-            }
+            self?.resume(reason: .screenLocked)
         }
         
         // Screen saver events (treated same as screen lock)
@@ -357,7 +417,7 @@ class BreakTimerManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.pause()
+            self?.pause(reason: .screenSaver)
         }
         
         notificationCenter.addObserver(
@@ -365,9 +425,7 @@ class BreakTimerManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            if case .paused = self?.state {
-                self?.resume()
-            }
+            self?.resume(reason: .screenSaver)
         }
     }
     

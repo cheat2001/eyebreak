@@ -423,7 +423,7 @@ struct GeneralSettingsView: View {
                 Toggle("Enable Sound Effects", isOn: $settings.soundEnabled)
                 
                 Toggle("Idle Detection", isOn: $settings.idleDetectionEnabled)
-                
+
                 if settings.idleDetectionEnabled {
                     Picker("Idle Threshold", selection: $settings.idleThresholdMinutes) {
                         Text("3 minutes").tag(3)
@@ -431,6 +431,27 @@ struct GeneralSettingsView: View {
                         Text("10 minutes").tag(10)
                         Text("15 minutes").tag(15)
                     }
+                }
+
+                Divider()
+
+                Toggle("Pause During Meetings", isOn: $settings.pauseDuringMeetings)
+                    .onChange(of: settings.pauseDuringMeetings) { _ in
+                        BreakTimerManager.shared.syncMeetingDetection()
+                    }
+
+                if settings.pauseDuringMeetings {
+                    Picker("When to pause", selection: $settings.meetingPauseMode) {
+                        ForEach(MeetingPauseMode.allCases) { mode in
+                            Text(mode.title).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.radioGroup)
+
+                    Text(settings.meetingPauseMode.explanation)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             } header: {
                 SectionHeaderView(title: "General", icon: "gearshape.fill", color: .gray)
