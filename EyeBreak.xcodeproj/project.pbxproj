@@ -18,6 +18,8 @@
 		A10000009 /* IdleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000008 /* IdleDetector.swift */; };
 		A1000000B /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000A /* NotificationManager.swift */; };
 		A1000000D /* ScreenBlurManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000C /* ScreenBlurManager.swift */; };
+		A10000071 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000070 /* UpdateChecker.swift */; };
+		A10000082 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A10000081 /* Sparkle */; };
 		A1000000F /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000E /* MenuBarView.swift */; };
 		A10000011 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010 /* SettingsView.swift */; };
 		A10000013 /* BreakOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000012 /* BreakOverlayView.swift */; };
@@ -42,6 +44,7 @@
 		A10000008 /* IdleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleDetector.swift; sourceTree = "<group>"; };
 		A1000000A /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		A1000000C /* ScreenBlurManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenBlurManager.swift; sourceTree = "<group>"; };
+		A10000070 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		A1000000E /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		A10000010 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A10000012 /* BreakOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakOverlayView.swift; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000082 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +92,7 @@
 				A10000008 /* IdleDetector.swift */,
 				A1000000A /* NotificationManager.swift */,
 				A1000000C /* ScreenBlurManager.swift */,
+				A10000070 /* UpdateChecker.swift */,
 				A1000001C /* AmbientReminderManager.swift */,
 			);
 			path = Managers;
@@ -163,6 +168,9 @@
 			);
 			name = EyeBreak;
 			productName = EyeBreak;
+			packageProductDependencies = (
+				A10000081 /* Sparkle */,
+			);
 			productReference = A1FFFFFF1 /* EyeBreak.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -191,6 +199,9 @@
 			);
 			mainGroup = A1FFFFEE1;
 			productRefGroup = A1FFFFFF0 /* Products */;
+			packageReferences = (
+				A10000080 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -226,6 +237,7 @@
 				A10000009 /* IdleDetector.swift in Sources */,
 				A1000000B /* NotificationManager.swift in Sources */,
 				A1000000D /* ScreenBlurManager.swift in Sources */,
+				A10000071 /* UpdateChecker.swift in Sources */,
 				A1000000F /* MenuBarView.swift in Sources */,
 				A10000011 /* SettingsView.swift in Sources */,
 				99A7D5142E9EA7AB00466080 /* FloatingBreakWindow.swift in Sources */,
@@ -528,6 +540,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000080 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000081 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000080 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1FFFFEE2 /* Project object */;
 }

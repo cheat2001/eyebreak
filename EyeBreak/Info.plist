@@ -32,6 +32,15 @@
 	<false/>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
+	<!-- Sparkle: one-click automatic updates -->
+	<key>SUFeedURL</key>
+	<string>https://github.com/cheat2001/eyebreak/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>Z7fgHTknajhMmlMUltgS5OMSosELhzt95wWaxHg73tc=</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>EyeBreak needs to detect user activity to pause the timer when you're away.</string>
 	<key>NSSystemExtensionUsageDescription</key>

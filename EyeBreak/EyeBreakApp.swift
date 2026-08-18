@@ -87,6 +87,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Sync launch at login status with settings
         LaunchAtLoginManager.shared.syncWithSettings(AppSettings.shared)
+
+        // Start Sparkle. It schedules its own background checks and, when an
+        // update is found, offers to install and relaunch in one click.
+        _ = UpdateChecker.shared
         
         // Start ambient reminders if enabled
         if AppSettings.shared.ambientRemindersEnabled {
