@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { config } from '../config'
 
 const copiedStates = ref<{ [key: string]: boolean }>({})
-const activeTab = ref<'terminal' | 'manual'>('terminal')
+const activeTab = ref<'terminal' | 'homebrew' | 'manual'>('terminal')
 
 // Derived from config.app.version so a release only needs updating in one place.
 const version = config.app.version
@@ -11,6 +11,7 @@ const dmgName = `EyeBreak-v${version}.dmg`
 const downloadUrl = `${config.github.url}/releases/download/v${version}/${dmgName}`
 const curlCommand = `curl -L ${downloadUrl} -o ~/Downloads/${dmgName} && xattr -cr ~/Downloads/${dmgName} && open ~/Downloads/${dmgName}`
 const xattrCommand = 'xattr -cr /Applications/EyeBreak.app'
+const brewCommand = 'brew install --cask cheat2001/tap/eyebreak'
 
 const installSteps = [
   'Download the DMG',
@@ -85,13 +86,20 @@ const downloadDMG = () => {
       </div>
 
       <div data-reveal style="--reveal-delay: 120ms" class="min-w-0 rounded-lg border border-white/10 bg-slate-900/80 shadow-2xl shadow-black/40 backdrop-blur-2xl">
-        <div class="grid grid-cols-2 border-b border-white/10 p-2">
+        <div class="grid grid-cols-3 border-b border-white/10 p-2">
           <button
             @click="activeTab = 'terminal'"
             class="rounded-lg px-4 py-3 text-sm font-bold transition-colors"
             :class="activeTab === 'terminal' ? 'bg-cyan-300 text-slate-950' : 'text-slate-400 hover:bg-white/5 hover:text-white'"
           >
             Terminal
+          </button>
+          <button
+            @click="activeTab = 'homebrew'"
+            class="rounded-lg px-4 py-3 text-sm font-bold transition-colors"
+            :class="activeTab === 'homebrew' ? 'bg-cyan-300 text-slate-950' : 'text-slate-400 hover:bg-white/5 hover:text-white'"
+          >
+            Homebrew
           </button>
           <button
             @click="activeTab = 'manual'"
@@ -132,6 +140,48 @@ const downloadDMG = () => {
                 <span class="ml-2 text-xs font-medium text-slate-500">Terminal</span>
               </div>
               <pre class="max-w-full overflow-x-auto whitespace-pre-wrap break-all p-4 text-sm leading-7 text-lime-200"><code>{{ curlCommand }}</code></pre>
+            </div>
+          </div>
+
+          <div v-else-if="activeTab === 'homebrew'">
+            <div class="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-black text-white">Install with Homebrew</h3>
+                <p class="mt-1 text-sm text-slate-400">Handles the quarantine flag for you. Requires <a href="https://brew.sh" target="_blank" rel="noopener" class="text-cyan-300 underline">Homebrew</a>.</p>
+              </div>
+              <button
+                @click="copyToClipboard(brewCommand, 'brew')"
+                class="grid h-11 w-11 flex-shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+                :class="copiedStates['brew'] ? 'border-lime-300/30 bg-lime-300/15 text-lime-100' : ''"
+                aria-label="Copy Homebrew command"
+              >
+                <svg v-if="!copiedStates['brew']" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-black">
+              <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+                <span class="h-3 w-3 rounded-full bg-red-400"></span>
+                <span class="h-3 w-3 rounded-full bg-amber-300"></span>
+                <span class="h-3 w-3 rounded-full bg-lime-300"></span>
+                <span class="ml-2 text-xs font-medium text-slate-500">Terminal</span>
+              </div>
+              <pre class="max-w-full overflow-x-auto whitespace-pre-wrap break-all p-4 text-sm leading-7 text-lime-200"><code>{{ brewCommand }}</code></pre>
+            </div>
+
+            <div class="mt-7 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-4">
+              <div class="flex items-start gap-3">
+                <div class="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-cyan-300"></div>
+                <div>
+                  <h4 class="font-bold text-cyan-100">Updates handled by EyeBreak</h4>
+                  <p class="mt-1 text-sm text-slate-300">From v2.4.0 onwards EyeBreak updates itself, so you will not need <code class="text-cyan-200">brew upgrade</code> to stay current.</p>
+                </div>
+              </div>
             </div>
           </div>
 
