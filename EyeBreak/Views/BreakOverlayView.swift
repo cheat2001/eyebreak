@@ -79,7 +79,7 @@ struct BreakOverlayView: View {
             startTimer()
             isMessageFocused = true
             
-            // Add ESC key monitoring safely
+            // Local monitor: catches key events when our window is key
             eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [onSkip] event in
                 if event.keyCode == 53 { // ESC key
                     DispatchQueue.main.async {
@@ -89,10 +89,10 @@ struct BreakOverlayView: View {
                 }
                 return event
             }
+
         }
         .onDisappear {
             stopTimer()
-            // Remove event monitor to prevent leaks
             if let monitor = eventMonitor {
                 NSEvent.removeMonitor(monitor)
                 eventMonitor = nil

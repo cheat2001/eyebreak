@@ -78,7 +78,7 @@ class IdleDetector {
             
             if let property = property?.takeRetainedValue() {
                 var idleNanos: Int64 = 0
-                CFNumberGetValue(property as! CFNumber, .sInt64Type, &idleNanos)
+                CFNumberGetValue((property as! CFNumber), .sInt64Type, &idleNanos)
                 idleTime = TimeInterval(idleNanos) / TimeInterval(NSEC_PER_SEC)
             }
         }

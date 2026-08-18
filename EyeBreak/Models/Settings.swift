@@ -25,6 +25,8 @@ class AppSettings: ObservableObject {
     @AppStorage("sessionType") private var sessionTypeRaw: String = SessionType.standard.rawValue
     @AppStorage("idleDetectionEnabled") var idleDetectionEnabled: Bool = true
     @AppStorage("idleThresholdMinutes") var idleThresholdMinutes: Int = 5
+    @AppStorage("pauseWhenSharing") var pauseWhenSharing: Bool = true
+    @AppStorage("pauseWhenWatchingMedia") var pauseWhenWatchingMedia: Bool = true
     @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
     @AppStorage("hasLaunchedBefore") var hasLaunchedBefore: Bool = false
     @AppStorage("autoStartTimer") var autoStartTimer: Bool = true // Auto-start timer when app launches

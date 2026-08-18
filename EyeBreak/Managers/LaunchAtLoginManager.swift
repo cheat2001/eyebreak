@@ -1,4 +1,4 @@
- //
+//
 //  LaunchAtLoginManager.swift
 //  EyeBreak
 //

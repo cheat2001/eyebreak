@@ -23,13 +23,7 @@ class NotificationManager: NSObject {
     // MARK: - Authorization
     
     func requestAuthorization() {
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error = error {
-            }
-            
-            if granted {
-            } else {
-            }
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in
         }
     }
     
@@ -56,10 +50,7 @@ class NotificationManager: NSObject {
             trigger: nil
         )
         
-        center.add(request) { error in
-            if let error = error {
-            }
-        }
+        center.add(request) { _ in }
     }
     
     func sendBreakStartNotification() {
@@ -74,10 +65,7 @@ class NotificationManager: NSObject {
             trigger: nil
         )
         
-        center.add(request) { error in
-            if let error = error {
-            }
-        }
+        center.add(request) { _ in }
     }
     
     func sendBreakCompleteNotification() {
@@ -92,10 +80,7 @@ class NotificationManager: NSObject {
             trigger: nil
         )
         
-        center.add(request) { error in
-            if let error = error {
-            }
-        }
+        center.add(request) { _ in }
     }
     
     func sendIdlePausedNotification() {
@@ -110,10 +95,7 @@ class NotificationManager: NSObject {
             trigger: nil
         )
         
-        center.add(request) { error in
-            if let error = error {
-            }
-        }
+        center.add(request) { _ in }
     }
     
     func cancelAllNotifications() {
