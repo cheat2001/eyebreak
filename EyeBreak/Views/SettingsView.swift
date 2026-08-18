@@ -1358,11 +1358,59 @@ struct UpdateCheckCard: View {
     }
 }
 
+// MARK: - Keyboard Shortcuts Permission Card
+
+/// Shows whether the global shortcuts can actually fire. Because EyeBreak is
+/// ad-hoc signed, macOS revokes this grant on every update, so users need a
+/// visible way to notice and restore it.
+struct KeyboardShortcutsCard: View {
+    @ObservedObject var permission: AccessibilityPermission
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: permission.isTrusted ? "keyboard.fill" : "exclamationmark.triangle.fill")
+                    .foregroundStyle(permission.isTrusted ? .blue : .orange)
+                Text("Keyboard Shortcuts")
+                    .font(.system(size: 14, weight: .semibold))
+
+                Spacer()
+
+                Text(permission.isTrusted ? "Enabled" : "Needs permission")
+                    .font(.system(size: 11))
+                    .foregroundColor(permission.isTrusted ? .secondary : .orange)
+            }
+
+            if !permission.isTrusted {
+                Text("macOS resets this permission whenever EyeBreak updates, which stops \u{2318}\u{21E7}B and the other shortcuts from working. Timers and break reminders are unaffected.")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Button("Open Accessibility Settings") {
+                    permission.openAccessibilitySettings()
+                }
+            }
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill((permission.isTrusted ? Color.blue : Color.orange).opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke((permission.isTrusted ? Color.blue : Color.orange).opacity(0.15), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 24)
+    }
+}
+
 // MARK: - About View
 
 struct AboutView: View {
     @EnvironmentObject var settings: AppSettings
     @StateObject private var updateChecker = UpdateChecker.shared
+    @StateObject private var accessibility = AccessibilityPermission.shared
     @State private var isHoveringGithub = false
     @State private var isHoveringIssue = false
 
@@ -1420,6 +1468,8 @@ struct AboutView: View {
                 }
 
                 UpdateCheckCard(updateChecker: updateChecker)
+
+                KeyboardShortcutsCard(permission: accessibility)
 
                 // Description Card
                 VStack(alignment: .leading, spacing: 12) {

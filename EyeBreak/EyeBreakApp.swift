@@ -91,6 +91,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Start Sparkle. It schedules its own background checks and, when an
         // update is found, offers to install and relaunch in one click.
         _ = UpdateChecker.shared
+
+        // The global shortcuts below need Accessibility permission. macOS drops
+        // that grant whenever the app's code signature changes, which happens on
+        // every update, so check and offer to restore it instead of letting the
+        // shortcuts fail silently.
+        AccessibilityPermission.shared.promptIfNeededOnLaunch()
         
         // Start ambient reminders if enabled
         if AppSettings.shared.ambientRemindersEnabled {
