@@ -1,6 +1,6 @@
 cask "eyebreak" do
-  version "2.4.0"
-  sha256 "c89e99758b140d7ad8baa729266866a26d67c595bd5195bbb71686f9fdb70765"
+  version "2.4.1"
+  sha256 "be25d2edbfa010c3e0fe52dc48f9737b4fe2bdc51e4fcfe489b5b04b264f11af"
 
   url "https://github.com/cheat2001/eyebreak/releases/download/v#{version}/EyeBreak-v#{version}.dmg"
   name "EyeBreak"

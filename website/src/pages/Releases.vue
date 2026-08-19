@@ -16,10 +16,27 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: '2.4.1',
+    date: 'August 19, 2026',
+    title: 'Idle CPU Fix',
+    badge: 'Latest',
+    features: [
+      {
+        title: '🔋 Much lower CPU and battery use',
+        items: [
+          'Idle CPU use drops from about a third of a CPU core to under 2%',
+          'The settings interface was being redrawn every second into a window nobody could see',
+          'It is now only built while its window is actually on screen',
+          'Reminder countdowns no longer publish updates when nothing has changed',
+          'Affected v2.3.0 and earlier too, not just the previous release'
+        ]
+      }
+    ]
+  },
+  {
     version: '2.4.0',
     date: 'August 18, 2026',
     title: 'Automatic Updates',
-    badge: 'Latest',
     features: [
       {
         title: '🔄 One-Click Automatic Updates',
