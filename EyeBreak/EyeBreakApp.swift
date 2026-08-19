@@ -14,10 +14,7 @@ struct EyeBreakApp: App {
     var body: some Scene {
         // Settings window - shown on first launch
         Window("EyeBreak Settings", id: "settings") {
-            SettingsView()
-                .environmentObject(BreakTimerManager.shared)
-                .environmentObject(AppSettings.shared)
-                .frame(minWidth: 600, minHeight: 500)
+            SettingsWindowHost()
         }
         .defaultSize(width: 700, height: 600)
         .defaultPosition(.center)

@@ -109,15 +109,22 @@ class AmbientReminderManager: ObservableObject {
         // When paused, keep the saved value frozen - don't recalculate
         guard !isPausedDueToScreenLock else { return }
         
-        // Only update if reminders are active and a date is set
+        // Only update if reminders are active and a date is set.
+        // @Published fires on every assignment, not only on change, so assigning
+        // an unchanged value would wake every observing view once a second even
+        // when this feature is switched off. Only publish real changes.
         guard isEnabled, let nextDate = nextReminderDate else {
-            secondsUntilNextReminder = 0
+            if secondsUntilNextReminder != 0 {
+                secondsUntilNextReminder = 0
+            }
             return
         }
-        
+
         // Calculate remaining seconds until next reminder
-        let remaining = Int(nextDate.timeIntervalSinceNow)
-        secondsUntilNextReminder = max(0, remaining)
+        let remaining = max(0, Int(nextDate.timeIntervalSinceNow))
+        if remaining != secondsUntilNextReminder {
+            secondsUntilNextReminder = remaining
+        }
     }
     
     private func showRandomReminder() {

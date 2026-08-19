@@ -20,6 +20,7 @@
 		A1000000D /* ScreenBlurManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000C /* ScreenBlurManager.swift */; };
 		A10000071 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000070 /* UpdateChecker.swift */; };
 		A10000091 /* AccessibilityPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000090 /* AccessibilityPermission.swift */; };
+		A100000B1 /* SettingsWindowHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000B0 /* SettingsWindowHost.swift */; };
 		A10000082 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A10000081 /* Sparkle */; };
 		A1000000F /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000E /* MenuBarView.swift */; };
 		A10000011 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010 /* SettingsView.swift */; };
@@ -47,6 +48,7 @@
 		A1000000C /* ScreenBlurManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenBlurManager.swift; sourceTree = "<group>"; };
 		A10000070 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		A10000090 /* AccessibilityPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermission.swift; sourceTree = "<group>"; };
+		A100000B0 /* SettingsWindowHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowHost.swift; sourceTree = "<group>"; };
 		A1000000E /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		A10000010 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A10000012 /* BreakOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakOverlayView.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				99A7D5132E9EA7AB00466080 /* FloatingBreakWindow.swift */,
 				A1000000E /* MenuBarView.swift */,
 				A10000010 /* SettingsView.swift */,
+				A100000B0 /* SettingsWindowHost.swift */,
 				A10000012 /* BreakOverlayView.swift */,
 				A10000014 /* OnboardingView.swift */,
 				A10000016 /* StatsView.swift */,
@@ -242,6 +245,7 @@
 				A1000000D /* ScreenBlurManager.swift in Sources */,
 				A10000071 /* UpdateChecker.swift in Sources */,
 				A10000091 /* AccessibilityPermission.swift in Sources */,
+				A100000B1 /* SettingsWindowHost.swift in Sources */,
 				A1000000F /* MenuBarView.swift in Sources */,
 				A10000011 /* SettingsView.swift in Sources */,
 				99A7D5142E9EA7AB00466080 /* FloatingBreakWindow.swift in Sources */,
